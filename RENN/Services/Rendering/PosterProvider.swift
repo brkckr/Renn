@@ -27,51 +27,79 @@ actor PosterProvider: PosterProviding {
     }
 
     func posterJPEG(for projectID: ProjectID) async -> Data? {
-        guard let record = try? await projects.project(projectID), record.readiness == .ready,
-              let source = record.sources.first(where: { $0.role == .primary }) ?? record.sources.first
-        else { return nil }
+        guard let record = try? await projects.project(projectID), record.readiness == .ready else { return nil }
         let key = PosterPolicy.cacheKey(
             project: projectID, recipeRevision: record.recipeRevision, renderVersion: record.recipe.renderVersion)
         let file = cacheDirectory.appendingPathComponent("\(key).jpg")
         if let cached = try? Data(contentsOf: file) { return cached }
 
-        let url = await projects.fileURL(source.relativePath)
-        guard let data = await Self.render(
-            url: url, source: source, recipe: record.recipe, engine: engine, maximumPixelSize: maximumPixelSize)
-        else { return nil }
+        guard let data = await render(record) else { return nil }
         try? FileManager.default.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
         try? data.write(to: file, options: .atomic)
         return data
     }
 
-    private static func render(
-        url: URL, source: SourceReference, recipe: Recipe, engine: RenderEngine, maximumPixelSize: Int
-    ) async -> Data? {
+    /// Single source, or the Dual-Cam composite (main + inset at the same composition time).
+    private func render(_ record: ProjectRecord) async -> Data? {
+        let rear = record.sources.first { $0.role == .rearCamera }
+        let front = record.sources.first { $0.role == .frontCamera }
+        if let rear, let front, let layout = record.recipe.dualLayout {
+            guard let timing = try? DualSourceTiming(
+                rearStart: rear.metadata.startOffset, rearDuration: rear.metadata.duration,
+                frontStart: front.metadata.startOffset, frontDuration: front.metadata.duration)
+            else { return nil }
+            let time = PosterPolicy.representativeTime(duration: timing.duration)
+            guard let rearFrame = await frame(await projects.fileURL(rear.relativePath), at: time + timing.rearOffset),
+                  let frontFrame = await frame(await projects.fileURL(front.relativePath), at: time + timing.frontOffset)
+            else { return nil }
+            let (main, inset) = layout.mainCamera(at: time) == .rear ? (rearFrame, frontFrame) : (frontFrame, rearFrame)
+            let size = outputSize(rear.metadata.displayDimensions)
+            var request = RenderEngine.FrameRequest(
+                source: main.image, orientation: main.orientation, recipe: record.recipe, time: time,
+                outputSize: size, watermark: nil, watermarkFrame: nil)
+            if let canvas = try? PixelDimensions(width: Int(size.width), height: Int(size.height)) {
+                request.inset = RenderEngine.Inset(
+                    source: inset.image, orientation: inset.orientation, mirrored: false,
+                    layout: DualInsetLayout(canvas: canvas, corner: layout.insetCorner))
+            }
+            return encode(engine.image(for: request), size: size)
+        }
+        guard let source = record.sources.first(where: { $0.role == .primary }) ?? record.sources.first else { return nil }
+        let time = PosterPolicy.representativeTime(duration: source.metadata.duration)
+        guard let single = await frame(await projects.fileURL(source.relativePath), at: time) else { return nil }
+        let size = outputSize(source.metadata.displayDimensions)
+        return encode(engine.image(for: RenderEngine.FrameRequest(
+            source: single.image, orientation: single.orientation, recipe: record.recipe, time: time,
+            outputSize: size, watermark: nil, watermarkFrame: nil)), size: size)
+    }
+
+    private func outputSize(_ display: PixelDimensions) -> CGSize {
+        let scale = min(1, Double(maximumPixelSize) / Double(display.longEdge))
+        return CGSize(
+            width: max(2, (Double(display.width) * scale).rounded()),
+            height: max(2, (Double(display.height) * scale).rounded()))
+    }
+
+    /// Decoded source frame in storage orientation; the render graph applies orientation, as in
+    /// preview/export.
+    private func frame(_ url: URL, at time: RationalTime) async -> (image: CIImage, orientation: CGImagePropertyOrientation)? {
         let asset = AVURLAsset(url: url)
         guard let track = try? await asset.loadTracks(withMediaType: .video).first,
               let transform = try? await track.load(.preferredTransform)
         else { return nil }
-        let time = PosterPolicy.representativeTime(duration: source.metadata.duration)
         let generator = AVAssetImageGenerator(asset: asset)
-        // Orientation is applied by the render graph, exactly as in preview/export.
         generator.appliesPreferredTrackTransform = false
         generator.requestedTimeToleranceBefore = CMTime(value: 1, timescale: 30)
         generator.requestedTimeToleranceAfter = CMTime(value: 1, timescale: 30)
         guard let (cgImage, _) = try? await generator.image(at: CMTime(value: time.value, timescale: time.timescale))
         else { return nil }
+        return (CIImage(cgImage: cgImage), RenderEngine.orientation(for: transform))
+    }
 
-        let display = source.metadata.displayDimensions
-        let scale = min(1, Double(maximumPixelSize) / Double(display.longEdge))
-        let size = CGSize(
-            width: max(2, (Double(display.width) * scale).rounded()),
-            height: max(2, (Double(display.height) * scale).rounded()))
-        let image = engine.image(for: RenderEngine.FrameRequest(
-            source: CIImage(cgImage: cgImage), orientation: RenderEngine.orientation(for: transform),
-            recipe: recipe, time: time, outputSize: size, watermark: nil, watermarkFrame: nil))
+    private func encode(_ image: CIImage, size: CGSize) -> Data? {
         guard let rendered = engine.context.createCGImage(
             image, from: CGRect(origin: .zero, size: size), format: .RGBA8, colorSpace: engine.outputColorSpace)
         else { return nil }
-
         let output = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(output, UTType.jpeg.identifier as CFString, 1, nil)
         else { return nil }
