@@ -3656,6 +3656,74 @@
         }
       }
     },
+    "settings.storage": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Storage"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Depolama"
+          }
+        }
+      }
+    },
+    "settings.storage.cache": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cache"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önbellek"
+          }
+        }
+      }
+    },
+    "settings.storage.cacheFooter": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clearing the cache only removes cover images RENN can recreate. Your projects stay."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önbelleği temizlemek yalnızca RENN'in yeniden oluşturabileceği kapak görsellerini siler. Projelerin olduğu gibi kalır."
+          }
+        }
+      }
+    },
+    "settings.storage.clearCache": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear cache"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önbelleği temizle"
+          }
+        }
+      }
+    },
     "settings.storage.footer": {
       "extractionState": "manual",
       "localizations": {
@@ -3669,6 +3737,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Projeler yalnızca bu iPhone'da saklanır. Uygulamayı silmek projeleri de siler; satın almaları geri yüklemek videoları geri getirmez."
+          }
+        }
+      }
+    },
+    "settings.storage.projects": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projects"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projeler"
           }
         }
       }

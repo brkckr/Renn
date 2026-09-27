@@ -17,20 +17,26 @@ public final class SettingsViewModel {
     public private(set) var language: AppLanguage
     public private(set) var diagnosticsConsent: DiagnosticsConsent
     public private(set) var restoreState: RestoreState = .idle
+    /// Nil until measured, or when no storage provider is configured.
+    public private(set) var storage: StorageUsage?
+    public private(set) var isClearingCache = false
 
     private let purchases: any Purchasing
     private let preferencesStore: any AppPreferencesStoring
+    private let storageUsage: (any StorageUsageProviding)?
     private let onLanguageChange: @MainActor (AppLanguage) -> Void
     private let onShowPaywall: @MainActor () -> Void
 
     public init(
         purchases: any Purchasing,
         preferencesStore: any AppPreferencesStoring,
+        storageUsage: (any StorageUsageProviding)? = nil,
         onLanguageChange: @escaping @MainActor (AppLanguage) -> Void,
         onShowPaywall: @escaping @MainActor () -> Void
     ) {
         self.purchases = purchases
         self.preferencesStore = preferencesStore
+        self.storageUsage = storageUsage
         self.onLanguageChange = onLanguageChange
         self.onShowPaywall = onShowPaywall
         let preferences = preferencesStore.load()
@@ -63,6 +69,20 @@ public final class SettingsViewModel {
         var preferences = preferencesStore.load()
         preferences.diagnosticsConsent = consent
         preferencesStore.save(preferences)
+    }
+
+    public func refreshStorage() async {
+        guard let storageUsage else { return }
+        storage = await storageUsage.usage()
+    }
+
+    /// Clears regenerable cache (posters); projects are untouched. Repeated taps are ignored.
+    public func clearCache() async {
+        guard let storageUsage, !isClearingCache else { return }
+        isClearingCache = true
+        await storageUsage.clearCache()
+        storage = await storageUsage.usage()
+        isClearingCache = false
     }
 
     public func showPaywall() {

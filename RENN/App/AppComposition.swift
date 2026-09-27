@@ -57,7 +57,9 @@ final class AppComposition {
         renderEngine = engine
         let timelines = AVBeatTimelineProvider()
         beatTimelines = timelines
-        posters = PosterProvider(projects: projectStore, engine: engine)
+        posters = PosterProvider(
+            projects: projectStore, engine: engine,
+            cacheDirectory: Self.cacheRoot.appendingPathComponent("Posters", isDirectory: true))
         exportCoordinator = ExportCoordinator(
             projects: projectStore, access: purchases,
             renderer: AVExportRenderer(engine: engine, beatTimelines: timelines),
@@ -96,9 +98,13 @@ final class AppComposition {
     /// SwiftData metadata + owned files under Application Support/RENN (05 V07).
     /// If the store cannot be opened (e.g. written by a newer version), projects report
     /// "unavailable" and nothing is deleted; the database is never wiped (05 V08).
+    static let dataRoot = URL.applicationSupportDirectory.appendingPathComponent("RENN", isDirectory: true)
+    /// Regenerable data only (posters); Settings may clear it at any time.
+    static let cacheRoot = URL.cachesDirectory.appendingPathComponent("RENN", isDirectory: true)
+
     private static func makeStorage() -> (projects: ProjectLibrary, lookPreferences: any LookPreferencesStoring) {
         let files = FileSystemOwnedFileStore(
-            rootURL: URL.applicationSupportDirectory.appendingPathComponent("RENN", isDirectory: true),
+            rootURL: Self.dataRoot,
             temporaryURL: URL.temporaryDirectory.appendingPathComponent("RENN", isDirectory: true))
         let library: ProjectLibrary
         let lookPreferences: any LookPreferencesStoring
@@ -165,6 +171,9 @@ final class AppComposition {
         SettingsViewModel(
             purchases: purchases,
             preferencesStore: preferencesStore,
+            storageUsage: FileStorageUsage(
+                projectsRoot: Self.dataRoot.appendingPathComponent("Projects", isDirectory: true),
+                cacheRoot: Self.cacheRoot),
             onLanguageChange: { [localization] in localization.apply($0) },
             onShowPaywall: { [router] in router.showPaywall(.settings) })
     }
