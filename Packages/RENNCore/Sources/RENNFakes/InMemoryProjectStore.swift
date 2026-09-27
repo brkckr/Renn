@@ -92,6 +92,10 @@ public actor InMemoryProjectStore: ProjectStoring {
         FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).\(fileExtension)")
     }
 
+    public func makeStagingFileURL(fileExtension: String) async throws(ProjectStoreError) -> URL {
+        FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).\(fileExtension)")
+    }
+
     public func commitOutput(_ output: FinishedOutput, to id: ProjectID) async throws(ProjectStoreError) -> OutputRecord {
         guard var record = records[id] else { throw .notFound(id) }
         let outputID = OutputID()

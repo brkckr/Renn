@@ -87,6 +87,18 @@ struct RouterTests {
         #expect(router.presentedFlow == nil)
     }
 
+    @Test func nestedPaywallOnlyOverAFlowAndClearedOnDismiss() {
+        let router = router()
+        router.showNestedPaywall(.freeDurationLimit)
+        #expect(router.nestedPaywall == nil)
+        router.openCreationMenu()
+        router.choose(.importVideo)
+        router.showNestedPaywall(.freeDurationLimit)
+        #expect(router.nestedPaywall == .freeDurationLimit)
+        router.dismissFlow()
+        #expect(router.nestedPaywall == nil)
+    }
+
     @Test func emptyProjectsRouteOpensHomeCreation() {
         let router = router()
         router.select(.projects)

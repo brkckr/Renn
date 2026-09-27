@@ -284,6 +284,14 @@ public actor ProjectLibrary: ProjectStoring {
         }
     }
 
+    public func makeStagingFileURL(fileExtension: String) async throws(ProjectStoreError) -> URL {
+        do {
+            return try await files.makeStagingURL(fileExtension: fileExtension)
+        } catch {
+            throw .storageFailure
+        }
+    }
+
     public func commitOutput(_ output: FinishedOutput, to id: ProjectID) async throws(ProjectStoreError) -> OutputRecord {
         await acquire()
         defer { release() }

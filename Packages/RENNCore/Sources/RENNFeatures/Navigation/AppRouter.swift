@@ -2,10 +2,12 @@ import Observation
 import RENNDomain
 
 /// Why the paywall is shown (06 C04 entry points only).
-public enum PaywallReason: Hashable, Sendable {
+public enum PaywallReason: Hashable, Sendable, Identifiable {
     case settings
     case exportUpgrade
     case freeDurationLimit
+
+    public var id: Self { self }
 }
 
 /// Full-screen flows that hide the global tab navigation (01 P02).
@@ -36,6 +38,9 @@ public final class AppRouter {
     public var presentedFlow: PresentedFlow?
     /// Look inspection sheet, a baseline subview of the catalog (02 D05).
     public var inspectedLookID: LookID?
+    /// Paywall shown over a running flow (import Free limit, export upgrade intent), so the
+    /// flow keeps its state and continues once after a verified upgrade (06 C03).
+    public var nestedPaywall: PaywallReason?
 
     private let captureCapabilities: any CaptureCapabilityProviding
 
@@ -129,9 +134,15 @@ public final class AppRouter {
         presentedFlow = .paywall(reason)
     }
 
+    public func showNestedPaywall(_ reason: PaywallReason) {
+        guard presentedFlow != nil else { return }
+        nestedPaywall = reason
+    }
+
     /// Closing a flow returns to the originating tab; tab views stay alive, so list
     /// positions are preserved.
     public func dismissFlow() {
+        nestedPaywall = nil
         presentedFlow = nil
     }
 

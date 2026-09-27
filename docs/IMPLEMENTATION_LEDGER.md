@@ -57,3 +57,22 @@ Firebase/RevenueCat SDKs and `Package.resolved` (M06), final motion (M07).
 Package tests: 121 passing on Linux (Swift 6.2.4), five consecutive runs stable for storage tests.
 Not in M01 by plan: export jobs/outputs records (M02), poster cache (M05), debounced recipe
 autosave from preview (M02/M05). Projects can only be created once M02's capture/import exists.
+
+## M02 Media proof: in progress (2026-09-27)
+
+Done so far (package, tested on Linux, 164 tests):
+- Pure rules: `CadenceLimiter` (source timestamps kept, VFR tolerant), `WatermarkLayout`, `ImportGate`,
+  `ExportPlan`, `ExportProgress`; `OutputRecord` + Photos save state; `ProjectLibrary.commitOutput`.
+- ViewModels: `ImportFlowViewModel` (Free >30 s → Pro or another source, no trim), `ExportCoordinator`
+  (one job, cancel before commit, render ≠ Photos save, save-only retry, lease while exporting),
+  `ProjectPreviewViewModel` (500 ms intensity autosave, mute keeps Beat choice, export summary/Pro intent).
+
+Written, not yet compiled (app target):
+- `AVMediaInspector` / `AVVideoImporter`, `RenderEngine` (diagnostic DEV Look, deterministic grain,
+  watermark), `WatermarkRenderer`, `ExportWorker` (AVAssetReader → Core Image → AVAssetWriter, AAC audio,
+  HEVC above 1080p/30), `OutputValidator`, `AVExportRenderer`, `PhotoLibrarySaver`, `PreviewPlayer`,
+  `MetalPreviewView`.
+
+Remaining for M02: preview/export/import screens and composition wiring, simulator media integration test
+with a synthesized fixture video, ordinary camera capture (`CaptureController` + `SourceRecorder`),
+ADR 0003 (codec/VFR/HDR decisions), then physical-device validation.
