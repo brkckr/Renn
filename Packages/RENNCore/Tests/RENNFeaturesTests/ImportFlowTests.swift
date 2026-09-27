@@ -76,6 +76,16 @@ struct ImportFlowTests {
         #expect(await h.importer.prepareCount == 1, "The staged copy is reused, not copied again")
     }
 
+    @Test func accessStreamContinuesGatedImportOnce() async throws {
+        let h = harness(seconds: 50)
+        await h.viewModel.didPick(URL(fileURLWithPath: "/picked.mov"))
+        let task = Task { await h.viewModel.observeAccess() }
+        defer { task.cancel() }
+        await h.purchases.setAccess(AccessState(level: .pro, provenance: .developmentFake))
+        #expect(await eventually { if case .finished = h.viewModel.state { true } else { false } })
+        #expect(try await h.store.projects().count == 1)
+    }
+
     @Test func chooseAnotherDiscardsTheStagedCopy() async throws {
         let h = harness(seconds: 45)
         await h.viewModel.didPick(URL(fileURLWithPath: "/picked.mov"))

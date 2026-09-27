@@ -84,6 +84,13 @@ public final class ProjectPreviewViewModel {
         }
     }
 
+    /// Follows access changes so the preview watermark matches the current tier.
+    public func observeAccess() async {
+        for await state in await access.accessUpdates() {
+            showsWatermark = state.effectiveTier == .free
+        }
+    }
+
     /// The preview shows the effective watermark placement for the current access (02 D07).
     public func refreshWatermark() async {
         showsWatermark = await access.currentAccess().effectiveTier == .free

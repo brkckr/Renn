@@ -90,6 +90,19 @@ public final class ImportFlowViewModel {
         }
     }
 
+    /// The picker could not hand over a file (e.g. iCloud transfer failed or was cancelled).
+    public func didPickFailed() async {
+        guard !isWorking else { return }
+        state = .failed(.unreadable)
+    }
+
+    /// Follows access changes for the lifetime of the view (e.g. Pro granted in the paywall).
+    public func observeAccess() async {
+        for await _ in await access.accessUpdates() {
+            await accessMayHaveChanged()
+        }
+    }
+
     /// Re-checks access after a paywall (e.g. Pro granted) and continues once.
     public func accessMayHaveChanged() async {
         guard case .requiresPro = state, let prepared, !isWorking else { return }

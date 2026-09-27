@@ -1,5 +1,6 @@
 import CoreImage
 import MetalKit
+import QuartzCore
 import SwiftUI
 import RENNDomain
 

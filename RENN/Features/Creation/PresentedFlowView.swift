@@ -9,6 +9,19 @@ struct PresentedFlowView: View {
     let composition: AppComposition
 
     var body: some View {
+        @Bindable var router = composition.router
+        flowContent
+            .sheet(item: $router.nestedPaywall) { reason in
+                PaywallView(
+                    viewModel: composition.makeNestedPaywallViewModel(reason: reason),
+                    termsURL: composition.configuration.termsURL,
+                    privacyURL: composition.configuration.privacyURL)
+                    .environment(\.locale, composition.localization.locale)
+            }
+    }
+
+    @ViewBuilder
+    private var flowContent: some View {
         switch flow {
         case .camera(let lookID):
             MilestonePlaceholderView(
@@ -25,13 +38,11 @@ struct PresentedFlowView: View {
                 onImport: { composition.router.replaceFlow(with: .importVideo(lookID: lookID)) },
                 onClose: { composition.router.dismissFlow() })
         case .importVideo(let lookID):
-            MilestonePlaceholderView(
-                title: "flow.import.title", milestone: "M02", lookID: lookID,
-                onClose: { composition.router.dismissFlow() })
-        case .projectPreview:
-            MilestonePlaceholderView(
-                title: "flow.preview.title", milestone: "M02", lookID: nil,
-                onClose: { composition.router.dismissFlow() })
+            ImportFlowView(viewModel: composition.makeImportFlowViewModel(lookID: lookID))
+        case .projectPreview(let projectID):
+            ProjectPreviewView(
+                viewModel: composition.makeProjectPreviewViewModel(projectID: projectID),
+                engine: composition.renderEngine)
         case .paywall(let reason):
             PaywallView(
                 viewModel: composition.makePaywallViewModel(reason: reason),

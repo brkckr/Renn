@@ -312,11 +312,13 @@ final class ExportWorker: @unchecked Sendable {
         return result
     }
 
-    private static let rec709: [String: Any] = [
-        AVVideoColorPrimariesKey: AVVideoColorPrimaries_ITU_R_709_2,
-        AVVideoTransferFunctionKey: AVVideoTransferFunction_ITU_R_709_2,
-        AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_709_2,
-    ]
+    private static var rec709: [String: Any] {
+        [
+            AVVideoColorPrimariesKey: AVVideoColorPrimaries_ITU_R_709_2,
+            AVVideoTransferFunctionKey: AVVideoTransferFunction_ITU_R_709_2,
+            AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_709_2,
+        ]
+    }
 }
 
 /// Verifies a finished file before it can be called a result (05 V09): readable video track

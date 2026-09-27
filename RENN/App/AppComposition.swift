@@ -12,6 +12,10 @@ final class AppComposition {
     let configuration: AppConfiguration
     let router: AppRouter
     let localization: LocalizationController
+    /// App-lifetime GPU/Core Image context shared by preview and export (04 A03).
+    let renderEngine: RenderEngine
+    /// App-lifetime export owner: jobs survive sheet dismissal (04 A03).
+    let exportCoordinator: ExportCoordinator
 
     private let preferencesStore: any AppPreferencesStoring
     private let purchases: any Purchasing
@@ -39,11 +43,17 @@ final class AppComposition {
         router = AppRouter(captureCapabilities: captureCapabilities)
         localization = LocalizationController(language: preferencesStore.load().language)
         // Consent is read at send time, so turning diagnostics off stops the next event.
-        telemetry = ConsentGatedTelemetry(
+        let telemetry = ConsentGatedTelemetry(
             isCollectionAllowed: { [preferencesStore] in
                 await preferencesStore.load().diagnosticsConsent.allowsCollection
             },
             sink: telemetrySink)
+        self.telemetry = telemetry
+        let engine = RenderEngine()
+        renderEngine = engine
+        exportCoordinator = ExportCoordinator(
+            projects: projectStore, access: purchases, renderer: AVExportRenderer(engine: engine),
+            photos: PhotoLibrarySaver(), lookPreferences: lookPreferencesStore, telemetry: telemetry)
     }
 
     /// Live composition for app launches.
@@ -155,7 +165,49 @@ final class AppComposition {
             purchases: purchases,
             telemetry: telemetry,
             onClose: { [router] in router.dismissFlow() },
-            // Export upgrade intent resumes in M02/M06; from Settings the sheet just closes.
             onGranted: { [router] in router.dismissFlow() })
+    }
+
+    /// Paywall over a running flow: closing returns to that flow, which re-checks access
+    /// and continues the user's original request once (06 C03).
+    func makeNestedPaywallViewModel(reason: PaywallReason) -> PaywallViewModel {
+        PaywallViewModel(
+            reason: reason,
+            purchases: purchases,
+            telemetry: telemetry,
+            onClose: { [router] in router.nestedPaywall = nil },
+            onGranted: { [router] in router.nestedPaywall = nil })
+    }
+
+    func makeImportFlowViewModel(lookID: LookID?) -> ImportFlowViewModel {
+        ImportFlowViewModel(
+            lookID: lookID,
+            importer: AVVideoImporter(projects: projectStore),
+            projects: projectStore,
+            access: purchases,
+            lookCatalog: lookCatalog,
+            lookPreferences: lookPreferencesStore,
+            telemetry: telemetry,
+            makeName: { [localization] date in
+                ProjectNameGenerator(
+                    prefix: localization.string("project.defaultNamePrefix"),
+                    locale: localization.locale,
+                    timeZone: .current
+                ).defaultName(createdAt: date)
+            },
+            onShowPaywall: { [router] in router.showNestedPaywall(.freeDurationLimit) },
+            onFinished: { [router] in router.replaceFlow(with: .projectPreview($0)) },
+            onClose: { [router] in router.dismissFlow() })
+    }
+
+    func makeProjectPreviewViewModel(projectID: ProjectID) -> ProjectPreviewViewModel {
+        ProjectPreviewViewModel(
+            projectID: projectID,
+            projects: projectStore,
+            access: purchases,
+            exporter: exportCoordinator,
+            telemetry: telemetry,
+            onClose: { [router] in router.dismissFlow() },
+            onShowPaywall: { [router] in router.showNestedPaywall(.exportUpgrade) })
     }
 }
