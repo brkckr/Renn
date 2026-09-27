@@ -138,4 +138,7 @@ Evidence status:
 - Camera (02 D06): Look / Beat / Indicators before recording through `RecipeDraftEditor`, locked from
   countdown until the take is finalized; the draft seeds the project for single and Dual-Cam capture.
 - Look history: already recorded on successful creation and successful export only (tested).
+- Settings storage (02 D09): space used by projects and by the regenerable cache, Clear cache (posters
+  only; projects are removed only by deleting projects). VM tested on Linux.
+- Export result cassette shows the project's own processed cover and its deterministic case variant.
 
