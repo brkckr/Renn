@@ -3,8 +3,8 @@ import RENNDomain
 import RENNFeatures
 
 /// RENN Pro paywall (02 D09, 06 C04). Prices come only from the Store/provider; when
-/// products are unavailable it offers retry / restore / continue Free. The animated
-/// three-object selection stage (03 M04) is added in M07.
+/// products are unavailable it offers retry / restore / continue Free. `PaywallStage` shows the
+/// decorative three-object selection motion (03 M04); billing data never depends on it.
 struct PaywallView: View {
     @State private var viewModel: PaywallViewModel
     /// Owner-hosted documents; nil until supplied (08 I04). Shown disabled, never faked.
@@ -107,6 +107,7 @@ struct PaywallView: View {
             .glassBackground(cornerRadius: RENNMetrics.cardRadius)
         case .ready(let products):
             VStack(spacing: 10) {
+                PaywallStage(products: products, selectedID: viewModel.selectedProductID, accent: accentColor(for:))
                 ForEach(products) { product in
                     planRow(product)
                 }
