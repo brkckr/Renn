@@ -75,10 +75,10 @@ struct DualCompositionTests {
         #expect(throws: DualSourceTiming.TimingError.noCommonInterval) {
             try DualSourceTiming(rearStart: .zero, rearDuration: .seconds(2), frontStart: .seconds(3), frontDuration: .seconds(2))
         }
-        #expect(throws: DualSourceTiming.TimingError.tooShort(t(1, 2))) {
+        #expect(throws: DualSourceTiming.TimingError.tooShort(t(1, 5))) {
             try DualSourceTiming(
                 rearStart: .zero, rearDuration: .seconds(2),
-                frontStart: t(3, 2), frontDuration: .seconds(2))
+                frontStart: t(9, 5), frontDuration: .seconds(2))
         }
     }
 }

@@ -37,8 +37,9 @@ public struct DualInsetLayout: Sendable, Equatable {
 
 /// Timing of one Dual-Cam take on the shared capture clock.
 public struct DualSourceTiming: Sendable, Equatable {
-    /// Shortest usable common interval; shorter takes are not a valid project (05 V03).
-    public static let minimumDuration = RationalTime.seconds(1)
+    /// Shortest usable common interval (half a second); shorter takes are not a valid
+    /// project (05 V03). A development value pending product review.
+    public static let minimumDuration = try! RationalTime(value: 1, timescale: 2)
 
     public enum TimingError: Error, Equatable, Sendable {
         case noCommonInterval

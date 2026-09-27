@@ -108,7 +108,7 @@ struct DualCaptureFlowTests {
 
     @Test func tooShortCommonIntervalIsNotAProject() async throws {
         let (viewModel, capture, store, _) = make()
-        capture.frontStart = t(9, 2)  // 4.5 s late on a 5 s take: 0.5 s overlap.
+        capture.frontStart = t(24, 5)  // 4.8 s late on a 5 s take: 0.2 s overlap.
         await viewModel.start()
         await viewModel.record()
         await viewModel.stop()

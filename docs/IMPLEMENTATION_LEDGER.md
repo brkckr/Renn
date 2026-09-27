@@ -80,9 +80,11 @@ Bugs found by the simulator integration tests and fixed:
   `requestMediaDataWhenReady` queues (commit f16b891).
 
 Evidence status:
-- Simulator media integration (import inspection, Free 720p30 with audio and same duration, muted export
-  without audio, Pro 1080×1920 at 60 FPS, deterministic render, date indicator drawn, poster): pending the
-  CI run for the deadlock fix.
+- Simulator media integration: **passed** on CI run 36357990546 (commit 943f7c6, iPhone
+  simulator): import inspection, Free 720p30 with audio and same duration, muted export without audio,
+  Pro 1080×1920 keeping 60 FPS, deterministic render, date indicator drawn, processed poster cached; Look
+  LUT tests and SwiftData persistence also passed. Fixtures are short (CI simulators render on the CPU at
+  about a second per 1080×1920 frame), so these prove correctness, not speed.
 - Physical device: nothing run yet (camera, HDR route, A/V sync, performance, Photos permission flow).
 
 ## M03 Beat and render core: in progress (2026-09-27)
