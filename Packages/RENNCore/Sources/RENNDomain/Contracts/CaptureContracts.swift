@@ -78,3 +78,37 @@ public protocol CaptureControlling: AnyObject {
     /// Releases camera and microphone when leaving the flow.
     func tearDown()
 }
+
+/// Finalized Dual-Cam take (05 V03): two clean sources on one capture clock. Exactly one of them
+/// (the rear) carries the shared microphone track.
+public struct DualRecordedTake: Sendable, Equatable {
+    public let rear: RecordedTake
+    public let front: RecordedTake
+    /// First-sample times on the shared capture clock, relative to the earlier of the two.
+    public let rearStart: RationalTime
+    public let frontStart: RationalTime
+
+    public init(rear: RecordedTake, front: RecordedTake, rearStart: RationalTime, frontStart: RationalTime) {
+        self.rear = rear
+        self.front = front
+        self.rearStart = rearStart
+        self.frontStart = frontStart
+    }
+}
+
+/// Simultaneous front/rear capture (01 P05, 05 V03). A failure of either stream stops the whole
+/// take coherently; there is no hidden single-camera substitution.
+@MainActor
+public protocol DualCaptureControlling: AnyObject {
+    var events: AsyncStream<CaptureEvent> { get }
+    /// Configures the multi-camera session with the validated 1080p30 format pair.
+    func prepare(withAudio: Bool) async throws(CaptureFailure)
+    /// Starts both clean writers. `maximumDuration` is the Free limit, nil for Pro.
+    func startRecording(rearFile: URL, frontFile: URL, maximumDuration: RationalTime?) async throws(CaptureFailure)
+    /// Composition time of the newest frame of the running take (both sources started), else nil.
+    /// Live swaps are stamped with it, so preview and export replay them on the same frame.
+    func currentCompositionTime() async -> RationalTime?
+    /// Finalizes both files. Repeated calls converge on one finalization.
+    func stopRecording() async throws(CaptureFailure) -> DualRecordedTake
+    func tearDown()
+}

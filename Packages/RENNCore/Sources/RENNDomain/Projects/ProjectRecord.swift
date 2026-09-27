@@ -9,6 +9,8 @@ public struct SourceMetadata: Sendable, Equatable, Codable {
     public var displayDimensions: PixelDimensions
     public var frameRate: FrameRate
     public var hasUsableAudio: Bool
+    /// The file's pixels were mirrored at capture (front camera, same as its preview). Renderers
+    /// never mirror again; the flag documents the persisted mirror choice (05 V03).
     public var isMirrored: Bool
     /// Exactly one source owns the shared microphone track in Dual-Cam (05 V03).
     public var ownsSharedAudio: Bool

@@ -363,9 +363,11 @@ final class ExportWorker: @unchecked Sendable {
                             audioMuted: job.plan.recipe.audioMuted),
                         indicators: inputs.indicators)
                     if let dual = job.plan.dual, let frontBuffer, let insetLayout, let companion {
-                        let rear = (image: request.source, orientation: orientation, mirrored: dual.rear.metadata.isMirrored)
+                        // The persisted mirror choice is baked into the recorded pixels at capture
+                        // (`SourceMetadata.isMirrored` is informational), so nothing is mirrored twice.
+                        let rear = (image: request.source, orientation: orientation, mirrored: false)
                         let front = (image: CIImage(cvPixelBuffer: frontBuffer), orientation: companion.orientation,
-                                     mirrored: dual.front.metadata.isMirrored)
+                                     mirrored: false)
                         // Swap events are on the composition timeline (05 V03).
                         let (main, inset) = dual.layout.mainCamera(at: mediaTime) == .rear ? (rear, front) : (front, rear)
                         request.source = main.image
