@@ -326,3 +326,86 @@ struct PaywallViewModelTests {
         ])
     }
 }
+
+@MainActor
+@Suite("Projects rename and delete (01 P03)")
+struct ProjectsActionsTests {
+    private func makeViewModel(_ store: InMemoryProjectStore) -> ProjectsViewModel {
+        ProjectsViewModel(projectStore: store, onOpenProject: { _ in }, onCreateFirst: {})
+    }
+
+    @Test func renameValidatesInput() async throws {
+        let project = makeProject("Tape", minutesAgo: 1)
+        let store = InMemoryProjectStore(projects: [project])
+        let viewModel = makeViewModel(store)
+        await #expect(throws: ProjectsViewModel.RenameError.empty) { try await viewModel.rename(project.id, to: "  ") }
+        await #expect(throws: ProjectsViewModel.RenameError.multiline) { try await viewModel.rename(project.id, to: "a\nb") }
+        await #expect(throws: ProjectsViewModel.RenameError.tooLong(maximum: 80)) {
+            try await viewModel.rename(project.id, to: String(repeating: "x", count: 81))
+        }
+        try await viewModel.rename(project.id, to: "  Beach day ")
+        #expect(try await store.project(project.id).name.value == "Beach day")
+    }
+
+    @Test func deleteRequiresConfirmationAndRunsOnce() async throws {
+        let project = makeProject("Tape", minutesAgo: 1)
+        let store = InMemoryProjectStore(projects: [project])
+        let viewModel = makeViewModel(store)
+        let task = Task { await viewModel.observe() }
+        defer { task.cancel() }
+        #expect(await eventually { viewModel.projects.count == 1 })
+
+        viewModel.requestDelete(project.id)
+        #expect(viewModel.pendingDeletion?.id == project.id)
+        #expect(try await store.projects().count == 1, "Nothing is deleted before confirmation")
+        viewModel.cancelDelete()
+        #expect(viewModel.pendingDeletion == nil)
+
+        viewModel.requestDelete(project.id)
+        async let first: Void = viewModel.confirmDelete()
+        async let second: Void = viewModel.confirmDelete()
+        _ = await (first, second)
+        #expect(viewModel.actionError == nil, "The repeated confirmation is ignored, not reported as a failure")
+        #expect(try await store.projects().isEmpty)
+        #expect(await eventually { viewModel.isEmpty })
+    }
+
+    @Test func leasedProjectReportsInUse() async throws {
+        let project = makeProject("Tape", minutesAgo: 1)
+        let store = InMemoryProjectStore(projects: [project])
+        let viewModel = makeViewModel(store)
+        let task = Task { await viewModel.observe() }
+        defer { task.cancel() }
+        #expect(await eventually { viewModel.projects.count == 1 })
+        let lease = try await store.acquireLease(project.id, purpose: .export)
+        viewModel.requestDelete(project.id)
+        await viewModel.confirmDelete()
+        #expect(viewModel.actionError == .projectInUse)
+        #expect(try await store.projects().count == 1)
+        await store.releaseLease(lease)
+    }
+
+    @Test func unavailableMetadataIsReported() async {
+        let viewModel = ProjectsViewModel(
+            projectStore: UnavailableProjectStore(), onOpenProject: { _ in }, onCreateFirst: {})
+        await viewModel.observe()
+        #expect(viewModel.loadState == .unavailable)
+    }
+}
+
+/// Store whose metadata cannot be opened.
+private struct UnavailableProjectStore: ProjectStoring {
+    func projects() async throws(ProjectStoreError) -> [ProjectSummary] { throw .metadataUnavailable }
+    func projectUpdates() async -> AsyncStream<[ProjectSummary]> { AsyncStream { $0.finish() } }
+    func project(_ id: ProjectID) async throws(ProjectStoreError) -> ProjectRecord { throw .metadataUnavailable }
+    func createProject(_ draft: NewProjectDraft) async throws(ProjectStoreError) -> ProjectRecord { throw .metadataUnavailable }
+    func updateRecipe(_ id: ProjectID, expectedRevision: Int, recipe: Recipe) async throws(ProjectStoreError) -> ProjectRecord {
+        throw .metadataUnavailable
+    }
+    func rename(_ id: ProjectID, to name: ProjectName) async throws(ProjectStoreError) { throw .metadataUnavailable }
+    func delete(_ id: ProjectID) async throws(ProjectStoreError) { throw .metadataUnavailable }
+    func acquireLease(_ id: ProjectID, purpose: ProjectLease.Purpose) async throws(ProjectStoreError) -> ProjectLease {
+        throw .metadataUnavailable
+    }
+    func releaseLease(_ lease: ProjectLease) async {}
+}

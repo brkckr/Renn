@@ -10,6 +10,7 @@
 		8CA02E9E5F3758FCD2BD0E90 /* RENNDomain in Frameworks */ = {isa = PBXBuildFile; productRef = F269A67C864335CC0D73F961 /* RENNDomain */; };
 		DF728900804122296C47C920 /* RENNFeatures in Frameworks */ = {isa = PBXBuildFile; productRef = B2C05826F15EFBBAC11F3C66 /* RENNFeatures */; };
 		21264E520EEF120AB505F10C /* RENNFakes in Frameworks */ = {isa = PBXBuildFile; productRef = 246A0595B590F18F9AD61991 /* RENNFakes */; };
+		F6B66F51854C1B7130CAC291 /* RENNStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 596E913551BB0F0B6B5CBA79 /* RENNStorage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,7 @@
 				8CA02E9E5F3758FCD2BD0E90 /* RENNDomain in Frameworks */,
 				DF728900804122296C47C920 /* RENNFeatures in Frameworks */,
 				21264E520EEF120AB505F10C /* RENNFakes in Frameworks */,
+				F6B66F51854C1B7130CAC291 /* RENNStorage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -122,6 +124,7 @@
 				F269A67C864335CC0D73F961 /* RENNDomain */,
 				B2C05826F15EFBBAC11F3C66 /* RENNFeatures */,
 				246A0595B590F18F9AD61991 /* RENNFakes */,
+				596E913551BB0F0B6B5CBA79 /* RENNStorage */,
 			);
 			productName = RENN;
 			productReference = B77B418FAF6BA8079A7C4FA4 /* RENN.app */;
@@ -439,6 +442,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AE6C9E1BE27A11721C5075EF /* XCLocalSwiftPackageReference "Packages/RENNCore" */;
 			productName = RENNFakes;
+		};
+		596E913551BB0F0B6B5CBA79 /* RENNStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AE6C9E1BE27A11721C5075EF /* XCLocalSwiftPackageReference "Packages/RENNCore" */;
+			productName = RENNStorage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

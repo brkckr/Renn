@@ -27,6 +27,7 @@ RENNTests/               App-bundle tests (bundle identity, localization, config
 Packages/RENNCore/       Swift package, platform independent
   RENNDomain             Value models, product rules, service contracts
   RENNFeatures           @MainActor @Observable ViewModels and the app router
+  RENNStorage            ProjectLibrary (commit/delete/recovery ordering) and owned file store
   RENNFakes              In-memory fakes for tests, previews and development only
 Config/                  xcconfig files and Info.plist additions
 scripts/                 Repository checks (String Catalog completeness)
