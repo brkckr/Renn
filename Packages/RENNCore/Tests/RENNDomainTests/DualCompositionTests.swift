@@ -142,3 +142,33 @@ struct DualExportPlanTests {
         #expect(plan.dual?.timing.duration == .seconds(28), "28 s overlap fits Free even though each file is 40 s")
     }
 }
+
+@Suite("Dual-Cam format selection")
+struct DualFormatSelectionTests {
+    static func candidate(_ index: Int, _ width: Int, _ height: Int, fps: Double, multiCam: Bool = true) -> DualFormatSelection.Candidate {
+        .init(index: index, dimensions: try! PixelDimensions(width: width, height: height),
+              maximumFrameRate: fps, isMultiCamSupported: multiCam)
+    }
+
+    @Test func picksTheLargestMultiCamFormatUpTo1080p30() {
+        let rear = [
+            Self.candidate(0, 3840, 2160, fps: 30),
+            Self.candidate(1, 1920, 1080, fps: 60),
+            Self.candidate(2, 1920, 1080, fps: 30),
+            Self.candidate(3, 1280, 720, fps: 30),
+            Self.candidate(4, 1920, 1440, fps: 30, multiCam: false),
+        ]
+        let front = [Self.candidate(0, 1280, 720, fps: 30), Self.candidate(1, 1920, 1080, fps: 30)]
+        let pair = DualFormatSelection.select(rear: rear, front: front)
+        #expect(pair?.rear.index == 2, "1080p at the lowest sufficient rate; 4K and non-multicam excluded")
+        #expect(pair?.front.index == 1)
+        #expect(pair?.frameRate == .fps(30))
+    }
+
+    @Test func noQualifyingFormatMeansUnsupported() {
+        let rear = [Self.candidate(0, 1920, 1080, fps: 30, multiCam: false)]
+        let front = [Self.candidate(0, 1920, 1080, fps: 30)]
+        #expect(DualFormatSelection.select(rear: rear, front: front) == nil)
+        #expect(DualFormatSelection.select(rear: front, front: [Self.candidate(0, 1920, 1080, fps: 24)]) == nil)
+    }
+}
