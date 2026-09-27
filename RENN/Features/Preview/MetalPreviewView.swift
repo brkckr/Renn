@@ -30,6 +30,8 @@ struct MetalPreviewView: UIViewRepresentable {
     let bypassCreative: Bool
     /// Canonical Beat timeline (same as export); nil renders Look-only.
     var beatTimeline: BeatTimeline? = nil
+    /// Composition time → Beat timeline time (Dual-Cam audio owner offset).
+    var beatTimeOffset: RationalTime = .zero
 
     func makeCoordinator() -> PreviewRenderer {
         PreviewRenderer(engine: engine)
@@ -56,6 +58,7 @@ struct MetalPreviewView: UIViewRepresentable {
         renderer.showsWatermark = showsWatermark
         renderer.bypassCreative = bypassCreative
         renderer.beatTimeline = beatTimeline
+        renderer.beatTimeOffset = beatTimeOffset
     }
 
     static func dismantleUIView(_ view: MTKView, coordinator: PreviewRenderer) {
@@ -74,6 +77,7 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
     var showsWatermark = true
     var bypassCreative = false
     var beatTimeline: BeatTimeline?
+    var beatTimeOffset: RationalTime = .zero
 
     private var lastSource: CIImage?
     private var lastTime = RationalTime.zero
@@ -102,28 +106,37 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
         var frame = CIImage(color: .black).cropped(to: bounds)
         if let sourceImage = lastSource, let recipe, let dimensions = sourceDimensions {
             let fit = Self.aspectFit(dimensions, in: drawableSize)
+            let fitDimensions = try? PixelDimensions(width: Int(fit.width), height: Int(fit.height))
+            // Dual-Cam: same inset reservations as export, so overlays never cover the inset.
+            let dual = source as? any DualPreviewFrameSource
+            let insetLayout = fitDimensions.flatMap { canvas in dual.map { DualInsetLayout(canvas: canvas, corner: $0.insetCorner) } }
             var watermark: CIImage?
             var watermarkFrame: WatermarkLayout.Rect?
-            if showsWatermark, let fitDimensions = try? PixelDimensions(width: Int(fit.width), height: Int(fit.height)) {
+            if showsWatermark, let fitDimensions {
                 let rendered = watermarkImage(forShortEdge: Double(fitDimensions.shortEdge))
                 watermark = rendered?.image
-                watermarkFrame = rendered.map { WatermarkLayout(output: fitDimensions, aspectRatio: $0.aspect).frame }
+                watermarkFrame = rendered.map {
+                    WatermarkLayout(
+                        output: fitDimensions, aspectRatio: $0.aspect,
+                        reservedBottomRight: insetLayout?.reservedBottomRight(canvas: fitDimensions) ?? 0).frame
+                }
             }
             var indicators: [IndicatorRenderer.Overlay] = []
-            if let fitDimensions = try? PixelDimensions(width: Int(fit.width), height: Int(fit.height)) {
-                indicators = indicatorOverlays(recipe.indicators, output: fitDimensions, watermarkFrame: watermarkFrame)
+            if let fitDimensions {
+                indicators = indicatorOverlays(
+                    recipe.indicators, output: fitDimensions,
+                    reserved: [watermarkFrame, insetLayout?.frame].compactMap { $0 })
             }
             var request = RenderEngine.FrameRequest(
                 source: sourceImage, orientation: source.frameOrientation, recipe: recipe, time: lastTime,
                 outputSize: CGSize(width: Int(fit.width), height: Int(fit.height)),
                 watermark: watermark, watermarkFrame: watermarkFrame, bypassCreative: bypassCreative,
-                beat: BeatModulation.at(lastTime, timeline: beatTimeline, beat: recipe.beat, audioMuted: recipe.audioMuted),
+                beat: BeatModulation.at(
+                    lastTime + beatTimeOffset, timeline: beatTimeline, beat: recipe.beat, audioMuted: recipe.audioMuted),
                 indicators: indicators)
-            if let dual = source as? any DualPreviewFrameSource, let insetImage = dual.insetFrame(),
-               let fitDimensions = try? PixelDimensions(width: Int(fit.width), height: Int(fit.height)) {
+            if let dual, let insetLayout, let insetImage = dual.insetFrame() {
                 request.inset = RenderEngine.Inset(
-                    source: insetImage, orientation: dual.frameOrientation, mirrored: false,
-                    layout: DualInsetLayout(canvas: fitDimensions, corner: dual.insetCorner))
+                    source: insetImage, orientation: dual.frameOrientation, mirrored: false, layout: insetLayout)
             }
             let image = engine.image(for: request)
             let offset = CGAffineTransform(
@@ -140,11 +153,11 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
 
     /// Preview shows the same effective indicator placement as export (02 D07).
     private func indicatorOverlays(
-        _ settings: IndicatorSettings, output: PixelDimensions, watermarkFrame: WatermarkLayout.Rect?
+        _ settings: IndicatorSettings, output: PixelDimensions, reserved: [WatermarkLayout.Rect]
     ) -> [IndicatorRenderer.Overlay] {
-        let key = "\(output)-\(settings.showsRec)\(settings.showsPlay)\(settings.showsBattery)\(settings.showsDate)-\(settings.stampDate.text)-\(watermarkFrame != nil)"
+        let key = "\(output)-\(settings.showsRec)\(settings.showsPlay)\(settings.showsBattery)\(settings.showsDate)-\(settings.stampDate.text)-\(reserved)"
         if let cached = indicatorCache, cached.key == key { return cached.overlays }
-        let layout = IndicatorLayout.resolve(output: output, settings: settings, reserved: watermarkFrame.map { [$0] } ?? [])
+        let layout = IndicatorLayout.resolve(output: output, settings: settings, reserved: reserved)
         let overlays = IndicatorRenderer.overlays(for: layout, settings: settings)
         indicatorCache = (key, overlays)
         return overlays

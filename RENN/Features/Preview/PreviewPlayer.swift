@@ -37,7 +37,19 @@ final class PreviewPlayer {
             failed = true
             return
         }
-        let item = AVPlayerItem(asset: asset)
+        attach(AVPlayerItem(asset: asset))
+    }
+
+    /// Dual-Cam: one composition clock; frames arrive packed (rear | front), upright.
+    func load(dual: DualPreviewComposition) {
+        orientation = .up
+        durationSeconds = dual.composition.duration.seconds
+        let item = AVPlayerItem(asset: dual.composition)
+        item.videoComposition = dual.videoComposition
+        attach(item)
+    }
+
+    private func attach(_ item: AVPlayerItem) {
         item.add(output)
         player.replaceCurrentItem(with: item)
         player.actionAtItemEnd = .pause

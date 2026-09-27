@@ -405,4 +405,43 @@ struct MediaPipelineTests {
         #expect(isRed(beforeMain) && isGreen(beforeInset), "Rear main, front inset before the swap: \(beforeMain) \(beforeInset)")
         #expect(isGreen(afterMain) && isRed(afterInset), "Swap at 0.5 s replayed: \(afterMain) \(afterInset)")
     }
+
+    @Test @MainActor func dualPreviewCompositionPacksBothSourcesOnOneClock() async throws {
+        let rear = try await Self.makeFixture(seconds: 1, fps: 30, audio: true, color: (220, 40, 40))
+        let front = try await Self.makeFixture(seconds: 1, fps: 30, audio: false, color: (40, 200, 60))
+        defer {
+            try? FileManager.default.removeItem(at: rear.directory)
+            try? FileManager.default.removeItem(at: front.directory)
+        }
+        let timing = try DualSourceTiming(
+            rearStart: .zero, rearDuration: .seconds(1),
+            frontStart: try RationalTime(value: 1, timescale: 10), frontDuration: .seconds(1))
+        let dual = try await DualPreviewComposition.make(
+            rearURL: rear.url, frontURL: front.url, timing: timing, audioFromRear: true)
+        #expect(dual.packedSize == CGSize(width: 2160, height: 1920))
+        #expect(abs(dual.composition.duration.seconds - 0.9) < 0.01, "Common interval only")
+        #expect(try await dual.composition.loadTracks(withMediaType: .audio).count == 1, "One shared audio track")
+
+        let generator = AVAssetImageGenerator(asset: dual.composition)
+        generator.videoComposition = dual.videoComposition
+        generator.requestedTimeToleranceBefore = .zero
+        generator.requestedTimeToleranceAfter = .zero
+        let (image, _) = try await generator.image(at: CMTime(value: 3, timescale: 10))
+        let packed = CIImage(cgImage: image)
+        let parts = DualPreviewComposition.split(packed, rearWidth: dual.rearWidth)
+        #expect(parts.rear.extent.size == CGSize(width: 1080, height: 1920))
+        #expect(parts.front.extent.size == CGSize(width: 1080, height: 1920))
+
+        let context = CIContext()
+        func centre(_ part: CIImage) -> [Int] {
+            var pixel = [UInt8](repeating: 0, count: 4)
+            context.render(
+                part, toBitmap: &pixel, rowBytes: 4, bounds: CGRect(x: 540, y: 960, width: 1, height: 1),
+                format: .RGBA8, colorSpace: CGColorSpaceCreateDeviceRGB())
+            return pixel.prefix(3).map(Int.init)
+        }
+        let rearPixel = centre(parts.rear), frontPixel = centre(parts.front)
+        #expect(rearPixel[0] > rearPixel[1] + 60, "Rear half is the red source: \(rearPixel)")
+        #expect(frontPixel[1] > frontPixel[0] + 60, "Front half is the green source: \(frontPixel)")
+    }
 }

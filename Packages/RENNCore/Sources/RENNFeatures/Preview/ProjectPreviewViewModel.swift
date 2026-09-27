@@ -33,7 +33,20 @@ public final class ProjectPreviewViewModel {
 
     public private(set) var loadState: LoadState = .loading
     public private(set) var record: ProjectRecord?
+    /// The single source, or the Dual-Cam audio owner (drives Beat and sound).
     public private(set) var sourceURL: URL?
+    /// Present for Dual-Cam projects: both files and their common interval (05 V03).
+    public private(set) var dualPreview: DualPreview?
+    /// Beat timeline times are file times of `sourceURL`; composition time + this offset.
+    public private(set) var beatTimeOffset: RationalTime = .zero
+
+    public struct DualPreview: Sendable, Equatable {
+        public let rearURL: URL
+        public let frontURL: URL
+        public let timing: DualSourceTiming
+        public let layout: DualCameraLayout
+        public let audioFromRear: Bool
+    }
     /// Working copy of the recipe shown by the preview; persisted in revisions.
     public private(set) var recipe: Recipe?
     public private(set) var showsWatermark = true
@@ -76,8 +89,11 @@ public final class ProjectPreviewViewModel {
     public var exportState: ExportCoordinator.JobState { exporter.state }
     public var isMuted: Bool { recipe?.audioMuted ?? false }
     public var intensity: Double { recipe?.intensity.value ?? 0 }
-    public var hasAudio: Bool { record?.sources.first?.metadata.hasUsableAudio ?? false }
-    public var displayDimensions: PixelDimensions? { record?.sources.first?.metadata.displayDimensions }
+    public var hasAudio: Bool { record.flatMap(Self.audioSource)?.metadata.hasUsableAudio ?? false }
+    /// Canvas of the single source, or of the rear camera for Dual-Cam.
+    public var displayDimensions: PixelDimensions? {
+        (record?.sources.first { $0.role == .primary || $0.role == .rearCamera } ?? record?.sources.first)?.metadata.displayDimensions
+    }
     public var name: String { record?.name.value ?? "" }
     public var isBeatEnabled: Bool { recipe?.beat.isEnabled ?? false }
     public var beatIntensity: Double { recipe?.beat.intensity ?? 0 }
@@ -87,12 +103,38 @@ public final class ProjectPreviewViewModel {
         return recipe.beat.isEffective(audioMuted: recipe.audioMuted, sourceHasUsableAudio: beatAvailability == .available)
     }
 
+    /// The source whose audio the project uses: the single source, or the declared Dual-Cam owner
+    /// (the rear camera when none owns it, which then means a silent take).
+    static func audioSource(_ record: ProjectRecord) -> SourceReference? {
+        if let primary = record.sources.first(where: { $0.role == .primary }) { return primary }
+        return record.sources.first { $0.metadata.ownsSharedAudio }
+            ?? record.sources.first { $0.role == .rearCamera }
+            ?? record.sources.first
+    }
+
     public func load() async {
         do {
             let loaded = try await projects.project(projectID)
-            guard loaded.readiness == .ready, let source = loaded.sources.first else {
+            guard loaded.readiness == .ready, let source = Self.audioSource(loaded) else {
                 loadState = .unavailable(loaded.readiness)
                 return
+            }
+            if let rear = loaded.sources.first(where: { $0.role == .rearCamera }),
+               let front = loaded.sources.first(where: { $0.role == .frontCamera }) {
+                // A Dual-Cam project previews as a composite or not at all; never one camera.
+                guard let layout = loaded.recipe.dualLayout,
+                      let timing = try? DualSourceTiming(
+                          rearStart: rear.metadata.startOffset, rearDuration: rear.metadata.duration,
+                          frontStart: front.metadata.startOffset, frontDuration: front.metadata.duration)
+                else {
+                    loadState = .unavailable(nil)
+                    return
+                }
+                dualPreview = DualPreview(
+                    rearURL: await projects.fileURL(rear.relativePath),
+                    frontURL: await projects.fileURL(front.relativePath),
+                    timing: timing, layout: layout, audioFromRear: source.role == .rearCamera)
+                beatTimeOffset = source.role == .rearCamera ? timing.rearOffset : timing.frontOffset
             }
             record = loaded
             recipe = loaded.recipe

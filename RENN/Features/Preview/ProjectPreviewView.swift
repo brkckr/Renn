@@ -8,6 +8,8 @@ import RENNFeatures
 struct ProjectPreviewView: View {
     @State private var viewModel: ProjectPreviewViewModel
     @State private var player = PreviewPlayer()
+    /// Dual-Cam projects render main + inset from the packed composition frames.
+    @State private var dualSource: DualPlaybackFrameSource?
     @State private var showsIndicators = false
     let engine: RenderEngine
 
@@ -30,7 +32,15 @@ struct ProjectPreviewView: View {
         }
         .task {
             await viewModel.load()
-            if let url = viewModel.sourceURL {
+            if let dual = viewModel.dualPreview {
+                guard let composition = try? await DualPreviewComposition.make(
+                    rearURL: dual.rearURL, frontURL: dual.frontURL, timing: dual.timing, audioFromRear: dual.audioFromRear)
+                else { return }
+                player.load(dual: composition)
+                dualSource = DualPlaybackFrameSource(player: player, rearWidth: composition.rearWidth, layout: dual.layout)
+                player.setMuted(viewModel.isMuted)
+                player.play()
+            } else if let url = viewModel.sourceURL {
                 await player.load(url: url)
                 player.setMuted(viewModel.isMuted)
                 player.play()
@@ -61,7 +71,7 @@ struct ProjectPreviewView: View {
         .sheet(isPresented: $showsIndicators) {
             if let recipe = viewModel.recipe {
                 IndicatorsPanelView(
-                    engine: engine, source: player, recipe: recipe, sourceDimensions: viewModel.displayDimensions,
+                    engine: engine, source: frameSource, recipe: recipe, sourceDimensions: viewModel.displayDimensions,
                     showsWatermark: viewModel.showsWatermark,
                     onApply: { draft in
                         viewModel.applyIndicators(draft)
@@ -73,6 +83,11 @@ struct ProjectPreviewView: View {
         .fullScreenCover(isPresented: statusBinding) {
             ExportStatusView(viewModel: viewModel)
         }
+    }
+
+    private var frameSource: any PreviewFrameSource {
+        if let dualSource { return dualSource }
+        return player
     }
 
     private var content: some View {
@@ -90,9 +105,10 @@ struct ProjectPreviewView: View {
             .padding(.horizontal, RENNMetrics.sideMargin)
 
             MetalPreviewView(
-                engine: engine, source: player, recipe: viewModel.recipe,
+                engine: engine, source: frameSource, recipe: viewModel.recipe,
                 sourceDimensions: viewModel.displayDimensions, showsWatermark: viewModel.showsWatermark,
-                bypassCreative: viewModel.showsOriginal, beatTimeline: viewModel.beatTimeline)
+                bypassCreative: viewModel.showsOriginal, beatTimeline: viewModel.beatTimeline,
+                beatTimeOffset: viewModel.beatTimeOffset)
                 .clipShape(RoundedRectangle(cornerRadius: RENNMetrics.cardRadius, style: .continuous))
                 .padding(.horizontal, RENNMetrics.sideMargin)
                 .accessibilityLabel(Text("preview.accessibility"))
