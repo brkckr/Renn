@@ -62,23 +62,41 @@ final class RenderEngine: @unchecked Sendable {
         var beat: BeatModulation = .none
         /// Decorative indicators, already placed by `IndicatorLayout` (drawn once per size).
         var indicators: [IndicatorRenderer.Overlay] = []
+        /// Persisted mirror choice for the main source (front camera in Dual-Cam).
+        var mirrored = false
+        /// Dual-Cam inset source; the main source fills the canvas (05 V03).
+        var inset: Inset?
+    }
+
+    struct Inset {
+        var source: CIImage
+        var orientation: CGImagePropertyOrientation
+        var mirrored: Bool
+        var layout: DualInsetLayout
     }
 
     /// Builds the frame graph. Lazy: no GPU work happens until `render`.
     func image(for request: FrameRequest) -> CIImage {
-        var image = request.source.oriented(request.orientation)
-        image = image.transformed(by: CGAffineTransform(translationX: -image.extent.minX, y: -image.extent.minY))
-        image = scaled(image, to: request.outputSize)
-
-        if !request.bypassCreative, request.recipe.intensity.value > 0, request.recipe.lookID != nil {
-            image = lookGraph(image, recipe: request.recipe, time: request.time)
-        }
-        // Beat is an independent modulation layer (05 V04), applied even at Look intensity 0.
-        if !request.bypassCreative, request.beat != .none {
-            image = beatModulated(image, request.beat)
-        }
-
         let bounds = CGRect(origin: .zero, size: request.outputSize)
+        // Dual-Cam order: normalize each source → same Look/Beat on each → compose (05 V03).
+        var image = creative(
+            normalized(request.source, request.orientation, mirrored: request.mirrored, fill: request.outputSize,
+                       exact: request.inset == nil),
+            request)
+        if let inset = request.inset {
+            let frame = inset.layout.frame
+            let size = CGSize(width: frame.width, height: frame.height)
+            let insetImage = creative(normalized(inset.source, inset.orientation, mirrored: inset.mirrored, fill: size, exact: false), request)
+            let ciY = Double(request.outputSize.height) - frame.y - frame.height
+            let mask = roundedMask(size: size, radius: inset.layout.cornerRadius)
+                .transformed(by: CGAffineTransform(translationX: frame.x, y: ciY))
+            let placed = insetImage.transformed(by: CGAffineTransform(translationX: frame.x, y: ciY))
+            let blend = CIFilter.blendWithAlphaMask()
+            blend.inputImage = placed
+            blend.backgroundImage = image
+            blend.maskImage = mask
+            image = blend.outputImage?.cropped(to: bounds) ?? image
+        }
         // Order: effects → OSD → policy watermark (05 V03/V04). Neither is attenuated by intensity.
         for overlay in request.indicators {
             image = place(overlay.image, in: overlay.frame, outputHeight: request.outputSize.height).composited(over: image)
@@ -105,6 +123,44 @@ final class RenderEngine: @unchecked Sendable {
     }
 
     // MARK: Graph pieces
+
+    /// Upright, origin-anchored and sized. `exact` stretches to the size (single-source output
+    /// already has the source aspect); otherwise aspect-fill with a centred crop.
+    private func normalized(_ source: CIImage, _ orientation: CGImagePropertyOrientation, mirrored: Bool, fill size: CGSize, exact: Bool) -> CIImage {
+        var image = source.oriented(orientation)
+        if mirrored { image = image.oriented(.upMirrored) }
+        image = image.transformed(by: CGAffineTransform(translationX: -image.extent.minX, y: -image.extent.minY))
+        if exact { return scaled(image, to: size) }
+        let extent = image.extent
+        guard extent.width > 0, extent.height > 0 else { return image }
+        let scale = max(size.width / extent.width, size.height / extent.height)
+        let fitted = CGSize(width: (extent.width * scale).rounded(), height: (extent.height * scale).rounded())
+        let filled = scaled(image, to: fitted)
+        let offset = CGAffineTransform(
+            translationX: -((fitted.width - size.width) / 2).rounded(), y: -((fitted.height - size.height) / 2).rounded())
+        return filled.transformed(by: offset).cropped(to: CGRect(origin: .zero, size: size))
+    }
+
+    /// Look then Beat, identical for every source of the request.
+    private func creative(_ image: CIImage, _ request: FrameRequest) -> CIImage {
+        var image = image
+        if !request.bypassCreative, request.recipe.intensity.value > 0, request.recipe.lookID != nil {
+            image = lookGraph(image, recipe: request.recipe, time: request.time)
+        }
+        // Beat is an independent modulation layer (05 V04), applied even at Look intensity 0.
+        if !request.bypassCreative, request.beat != .none {
+            image = beatModulated(image, request.beat)
+        }
+        return image
+    }
+
+    private func roundedMask(size: CGSize, radius: Double) -> CIImage {
+        let filter = CIFilter.roundedRectangleGenerator()
+        filter.extent = CGRect(origin: .zero, size: size)
+        filter.radius = Float(radius)
+        filter.color = .white
+        return filter.outputImage ?? CIImage(color: .white).cropped(to: CGRect(origin: .zero, size: size))
+    }
 
     private func scaled(_ image: CIImage, to size: CGSize) -> CIImage {
         let extent = image.extent
