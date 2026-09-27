@@ -67,6 +67,7 @@ public final class ProjectPreviewViewModel {
     private let telemetry: any TelemetryRecording
     private let beatTimelines: (any BeatTimelineProviding)?
     private let lookCatalog: (any LookCatalogProviding)?
+    private let posters: (any PosterProviding)?
     private let onClose: @MainActor () -> Void
     private let onShowPaywall: @MainActor () -> Void
 
@@ -78,11 +79,13 @@ public final class ProjectPreviewViewModel {
         telemetry: any TelemetryRecording,
         beatTimelines: (any BeatTimelineProviding)? = nil,
         lookCatalog: (any LookCatalogProviding)? = nil,
+        posters: (any PosterProviding)? = nil,
         onClose: @escaping @MainActor () -> Void,
         onShowPaywall: @escaping @MainActor () -> Void
     ) {
         self.beatTimelines = beatTimelines
         self.lookCatalog = lookCatalog
+        self.posters = posters
         self.projectID = projectID
         self.projects = projects
         self.access = access
@@ -101,6 +104,13 @@ public final class ProjectPreviewViewModel {
         (record?.sources.first { $0.role == .primary || $0.role == .rearCamera } ?? record?.sources.first)?.metadata.displayDimensions
     }
     public var name: String { record?.name.value ?? "" }
+    /// Same deterministic case as on the Projects shelf (01 P03).
+    public var caseVariant: Int { ProjectsViewModel.caseVariant(for: projectID) }
+
+    /// The project's own processed cover for the result cassette; nil shows the empty case.
+    public func poster() async -> Data? {
+        await posters?.posterJPEG(for: projectID)
+    }
     public var isBeatEnabled: Bool { recipe?.beat.isEnabled ?? false }
     public var beatIntensity: Double { recipe?.beat.intensity ?? 0 }
     /// Beat modulation actually applies: enabled, not muted, usable audio (01 P06).

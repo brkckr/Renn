@@ -87,6 +87,7 @@ struct ExportStatusView: View {
     let viewModel: ProjectPreviewViewModel
 
     @State private var outputURL: URL?
+    @State private var cover: UIImage?
     @State private var watching = false
     @Environment(\.openURL) private var openURL
 
@@ -160,7 +161,7 @@ struct ExportStatusView: View {
             Button {
                 watching = true
             } label: {
-                VHSCaseShell(name: viewModel.name, variant: 0)
+                VHSCaseShell(name: viewModel.name, variant: viewModel.caseVariant, poster: cover)
                     .frame(width: 140)
             }
             .buttonStyle(.plain)
@@ -180,7 +181,10 @@ struct ExportStatusView: View {
                 .buttonStyle(.rennSecondary)
                 .disabled(outputURL == nil)
         }
-        .task(id: output.id) { outputURL = await viewModel.url(for: output) }
+        .task(id: output.id) {
+            outputURL = await viewModel.url(for: output)
+            cover = await viewModel.poster().flatMap(UIImage.init(data:))
+        }
     }
 
     @ViewBuilder
