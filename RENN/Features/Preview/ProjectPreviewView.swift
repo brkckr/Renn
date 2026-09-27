@@ -77,7 +77,7 @@ struct ProjectPreviewView: View {
             .padding(.horizontal, RENNMetrics.sideMargin)
 
             MetalPreviewView(
-                engine: engine, player: player, recipe: viewModel.recipe,
+                engine: engine, source: player, recipe: viewModel.recipe,
                 sourceDimensions: viewModel.displayDimensions, showsWatermark: viewModel.showsWatermark,
                 bypassCreative: viewModel.showsOriginal)
                 .clipShape(RoundedRectangle(cornerRadius: RENNMetrics.cardRadius, style: .continuous))

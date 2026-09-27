@@ -4,11 +4,19 @@ import QuartzCore
 import SwiftUI
 import RENNDomain
 
+/// Supplies frames to the Metal preview: a project's player or the live camera.
+@MainActor
+protocol PreviewFrameSource: AnyObject {
+    /// A new frame if one is available since the last call; nil keeps the previous frame.
+    func nextFrame() -> (image: CIImage, time: RationalTime)?
+    var frameOrientation: CGImagePropertyOrientation { get }
+}
+
 /// Draws the live preview through the same RenderEngine graph as export (05 V04), aspect-fit
 /// and letterboxed in the UI only; the output itself never inherits the bars (02 D05).
 struct MetalPreviewView: UIViewRepresentable {
     let engine: RenderEngine
-    let player: PreviewPlayer
+    let source: any PreviewFrameSource
     let recipe: Recipe?
     let sourceDimensions: PixelDimensions?
     let showsWatermark: Bool
@@ -33,7 +41,7 @@ struct MetalPreviewView: UIViewRepresentable {
 
     func updateUIView(_ view: MTKView, context: Context) {
         let renderer = context.coordinator
-        renderer.player = player
+        renderer.source = source
         renderer.recipe = recipe
         renderer.sourceDimensions = sourceDimensions
         renderer.showsWatermark = showsWatermark
@@ -50,7 +58,7 @@ struct MetalPreviewView: UIViewRepresentable {
 final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
     let engine: RenderEngine
     private let commandQueue: MTLCommandQueue?
-    weak var player: PreviewPlayer?
+    weak var source: (any PreviewFrameSource)?
     var recipe: Recipe?
     var sourceDimensions: PixelDimensions?
     var showsWatermark = true
@@ -70,21 +78,17 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
 
     func draw(in view: MTKView) {
-        guard let player, let drawable = view.currentDrawable,
+        guard let source, let drawable = view.currentDrawable,
               let commandBuffer = commandQueue?.makeCommandBuffer() else { return }
-        let itemTime = player.output.itemTime(forHostTime: CACurrentMediaTime())
-        if player.output.hasNewPixelBuffer(forItemTime: itemTime),
-           let buffer = player.output.copyPixelBuffer(forItemTime: itemTime, itemTimeForDisplay: nil) {
-            lastSource = CIImage(cvPixelBuffer: buffer)
-            if itemTime.isNumeric, let time = try? RationalTime(value: itemTime.value, timescale: itemTime.timescale) {
-                lastTime = time
-            }
+        if let frame = source.nextFrame() {
+            lastSource = frame.image
+            lastTime = frame.time
         }
 
         let drawableSize = view.drawableSize
         let bounds = CGRect(origin: .zero, size: drawableSize)
         var frame = CIImage(color: .black).cropped(to: bounds)
-        if let source = lastSource, let recipe, let dimensions = sourceDimensions {
+        if let sourceImage = lastSource, let recipe, let dimensions = sourceDimensions {
             let fit = Self.aspectFit(dimensions, in: drawableSize)
             var watermark: CIImage?
             var watermarkFrame: WatermarkLayout.Rect?
@@ -94,7 +98,7 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
                 watermarkFrame = rendered.map { WatermarkLayout(output: fitDimensions, aspectRatio: $0.aspect).frame }
             }
             let image = engine.image(for: RenderEngine.FrameRequest(
-                source: source, orientation: player.orientation, recipe: recipe, time: lastTime,
+                source: sourceImage, orientation: source.frameOrientation, recipe: recipe, time: lastTime,
                 outputSize: CGSize(width: Int(fit.width), height: Int(fit.height)),
                 watermark: watermark, watermarkFrame: watermarkFrame, bypassCreative: bypassCreative))
             let offset = CGAffineTransform(

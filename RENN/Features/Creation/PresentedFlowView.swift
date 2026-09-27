@@ -24,9 +24,7 @@ struct PresentedFlowView: View {
     private var flowContent: some View {
         switch flow {
         case .camera(let lookID):
-            MilestonePlaceholderView(
-                title: "flow.camera.title", milestone: "M02", lookID: lookID,
-                onClose: { composition.router.dismissFlow() })
+            CameraView(parts: composition.makeCameraParts(lookID: lookID), engine: composition.renderEngine)
         case .dualCamera(let lookID):
             MilestonePlaceholderView(
                 title: "flow.dualCamera.title", milestone: "M04", lookID: lookID,

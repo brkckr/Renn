@@ -1,4 +1,5 @@
 import AVFoundation
+import CoreImage
 import Observation
 import QuartzCore
 import RENNDomain
@@ -95,5 +96,19 @@ final class PreviewPlayer {
         } else {
             isPlaying = false
         }
+    }
+}
+
+extension PreviewPlayer: PreviewFrameSource {
+    var frameOrientation: CGImagePropertyOrientation { orientation }
+
+    func nextFrame() -> (image: CIImage, time: RationalTime)? {
+        let itemTime = output.itemTime(forHostTime: CACurrentMediaTime())
+        guard output.hasNewPixelBuffer(forItemTime: itemTime),
+              let buffer = output.copyPixelBuffer(forItemTime: itemTime, itemTimeForDisplay: nil),
+              itemTime.isNumeric,
+              let time = try? RationalTime(value: itemTime.value, timescale: itemTime.timescale)
+        else { return nil }
+        return (CIImage(cvPixelBuffer: buffer), time)
     }
 }

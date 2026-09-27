@@ -200,6 +200,31 @@ final class AppComposition {
             onClose: { [router] in router.dismissFlow() })
     }
 
+    /// One capture controller per camera flow (04 A03 camera-flow lifetime).
+    func makeCameraParts(lookID: LookID?) -> CameraView.Parts {
+        let controller = AVCaptureController()
+        let viewModel = CaptureFlowViewModel(
+            lookID: lookID,
+            capture: controller,
+            permissions: AVCapturePermissions(),
+            projects: projectStore,
+            access: purchases,
+            lookCatalog: lookCatalog,
+            lookPreferences: lookPreferencesStore,
+            telemetry: telemetry,
+            makeName: { [localization] date in
+                ProjectNameGenerator(
+                    prefix: localization.string("project.defaultNamePrefix"),
+                    locale: localization.locale,
+                    timeZone: .current
+                ).defaultName(createdAt: date)
+            },
+            onFinished: { [router] in router.replaceFlow(with: .projectPreview($0)) },
+            onImportInstead: { [router] in router.replaceFlow(with: .importVideo(lookID: lookID)) },
+            onClose: { [router] in router.dismissFlow() })
+        return CameraView.Parts(viewModel: viewModel, frames: controller.frames)
+    }
+
     func makeProjectPreviewViewModel(projectID: ProjectID) -> ProjectPreviewViewModel {
         ProjectPreviewViewModel(
             projectID: projectID,
