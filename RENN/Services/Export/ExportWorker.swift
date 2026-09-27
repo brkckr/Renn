@@ -69,24 +69,18 @@ final class ExportWorker: @unchecked Sendable {
         let pipeline = try makePipeline(
             asset: asset, videoTrack: videoTrack, audioTrack: audioTrack, audioFormat: audioFormat)
 
+        let totalSeconds = duration.seconds
+        let orientation = RenderEngine.orientation(for: transform)
         return try await withCheckedThrowingContinuation { continuation in
             queue.async { [self] in
-                do {
-                    let written = try self.pump(
-                        pipeline, origin: origin, orientation: RenderEngine.orientation(for: transform),
-                        totalSeconds: duration.seconds, progress: progress)
-                    pipeline.writer.finishWriting {
-                        if pipeline.writer.status == .completed {
-                            continuation.resume(returning: written)
-                        } else {
-                            continuation.resume(throwing: ExportWorkerError.cannotWrite)
-                        }
+                self.start(
+                    pipeline, origin: origin, orientation: orientation, totalSeconds: totalSeconds,
+                    progress: progress
+                ) { result in
+                    if case .failure = result {
+                        try? FileManager.default.removeItem(at: self.job.outputURL)
                     }
-                } catch {
-                    pipeline.reader.cancelReading()
-                    pipeline.writer.cancelWriting()
-                    try? FileManager.default.removeItem(at: self.job.outputURL)
-                    continuation.resume(throwing: error)
+                    continuation.resume(with: result)
                 }
             }
         }
@@ -211,16 +205,23 @@ final class ExportWorker: @unchecked Sendable {
             videoInput: videoInput, audioInput: audioInput, adaptor: adaptor)
     }
 
-    /// Runs on `queue`. Interleaves video and audio so neither input starves the writer.
-    private func pump(
+    /// Starts reading/writing. Video and audio drain on their own queues through
+    /// `requestMediaDataWhenReady`, so a full audio buffer can never block video decoding (and
+    /// vice versa) while the writer waits to interleave. Completion is called exactly once.
+    private func start(
         _ pipeline: Pipeline, origin: CMTime, orientation: CGImagePropertyOrientation, totalSeconds: Double,
-        progress: @escaping @Sendable (Double) -> Void
-    ) throws -> RationalTime {
+        progress: @escaping @Sendable (Double) -> Void,
+        completion: @escaping @Sendable (Result<RationalTime, any Error>) -> Void
+    ) {
         guard pipeline.reader.startReading(), pipeline.writer.startWriting() else {
-            throw ExportWorkerError.cannotRead
+            pipeline.reader.cancelReading()
+            completion(.failure(ExportWorkerError.cannotRead))
+            return
         }
         pipeline.writer.startSession(atSourceTime: .zero)
 
+        let state = PumpState()
+        let group = DispatchGroup()
         let outputSize = CGSize(width: job.plan.policy.dimensions.width, height: job.plan.policy.dimensions.height)
         let watermarkFrame = job.watermark.map { _ in
             WatermarkLayout(output: job.plan.policy.dimensions, aspectRatio: job.watermarkAspect).frame
@@ -229,78 +230,104 @@ final class ExportWorker: @unchecked Sendable {
         let indicatorLayout = IndicatorLayout.resolve(
             output: job.plan.policy.dimensions, settings: job.plan.recipe.indicators,
             reserved: watermarkFrame.map { [$0] } ?? [])
-        let indicators = IndicatorRenderer.overlays(for: indicatorLayout, settings: job.plan.recipe.indicators)
-        var limiter = CadenceLimiter(outputRate: job.plan.policy.frameRate)
-        var videoDone = false
-        var audioDone = pipeline.audioOutput == nil
-        var lastWritten = CMTime.zero
-        var lastReported = -1.0
+        let inputs = RenderInputs(
+            outputSize: outputSize, watermarkFrame: watermarkFrame,
+            indicators: IndicatorRenderer.overlays(for: indicatorLayout, settings: job.plan.recipe.indicators))
 
-        while !videoDone || !audioDone {
-            if isCancelled { throw ExportWorkerError.cancelled }
-            var progressed = false
+        let videoQueue = DispatchQueue(label: "renn.export.video", qos: .userInitiated)
+        let audioQueue = DispatchQueue(label: "renn.export.audio", qos: .userInitiated)
+        let videoTrack = VideoPumpState(limiter: CadenceLimiter(outputRate: job.plan.policy.frameRate))
 
-            if !videoDone, pipeline.videoInput.isReadyForMoreMediaData {
-                progressed = true
-                if let sample = pipeline.videoOutput.copyNextSampleBuffer() {
-                    let pts = CMSampleBufferGetPresentationTimeStamp(sample)
-                    let relative = CMTimeSubtract(pts, origin)
-                    guard let buffer = CMSampleBufferGetImageBuffer(sample),
-                          let mediaTime = try? RationalTime(value: relative.value, timescale: relative.timescale)
-                    else { continue }
-                    if limiter.shouldKeep(presentationTime: mediaTime) {
-                        try autoreleasepool {
-                            guard let pool = pipeline.adaptor.pixelBufferPool else { throw ExportWorkerError.renderFailed }
-                            var outputBuffer: CVPixelBuffer?
-                            CVPixelBufferPoolCreatePixelBuffer(nil, pool, &outputBuffer)
-                            guard let outputBuffer else { throw ExportWorkerError.renderFailed }
-                            let image = job.engine.image(for: RenderEngine.FrameRequest(
-                                source: CIImage(cvPixelBuffer: buffer), orientation: orientation,
-                                recipe: job.plan.recipe, time: mediaTime, outputSize: outputSize,
-                                watermark: job.watermark, watermarkFrame: watermarkFrame,
-                                beat: BeatModulation.at(
-                                    mediaTime, timeline: job.beatTimeline, beat: job.plan.recipe.beat,
-                                    audioMuted: job.plan.recipe.audioMuted),
-                                indicators: indicators))
-                            job.engine.render(image, to: outputBuffer)
-                            // Source timestamps are kept; only frames above the cadence ceiling are skipped.
-                            guard pipeline.adaptor.append(outputBuffer, withPresentationTime: relative) else {
-                                throw ExportWorkerError.cannotWrite
-                            }
-                        }
-                        lastWritten = relative
-                        let seconds = relative.seconds
-                        if seconds - lastReported >= 0.25 {
-                            lastReported = seconds
-                            progress(seconds)
-                        }
-                    }
-                } else {
-                    guard pipeline.reader.status != .failed else { throw ExportWorkerError.cannotRead }
-                    pipeline.videoInput.markAsFinished()
-                    videoDone = true
+        group.enter()
+        pipeline.videoInput.requestMediaDataWhenReady(on: videoQueue) { [self] in
+            while pipeline.videoInput.isReadyForMoreMediaData, !videoTrack.done {
+                if isCancelled || state.hasFailed {
+                    state.fail(isCancelled ? ExportWorkerError.cancelled : ExportWorkerError.cannotWrite)
+                    videoTrack.finish(pipeline.videoInput, group)
+                    return
                 }
-            }
-
-            if !audioDone, let audioOutput = pipeline.audioOutput, let audioInput = pipeline.audioInput,
-               audioInput.isReadyForMoreMediaData {
-                progressed = true
-                if let sample = audioOutput.copyNextSampleBuffer() {
-                    let adjusted = Self.shifted(sample, by: origin) ?? sample
-                    guard audioInput.append(adjusted) else { throw ExportWorkerError.cannotWrite }
-                } else {
-                    audioInput.markAsFinished()
-                    audioDone = true
+                guard let sample = pipeline.videoOutput.copyNextSampleBuffer() else {
+                    if pipeline.reader.status == .failed { state.fail(ExportWorkerError.cannotRead) }
+                    videoTrack.finish(pipeline.videoInput, group)
+                    return
                 }
-            }
-
-            if !progressed {
-                // Inputs are busy encoding; yield briefly (bounded, no unbounded queue growth).
-                Thread.sleep(forTimeInterval: 0.002)
+                let pts = CMSampleBufferGetPresentationTimeStamp(sample)
+                let relative = CMTimeSubtract(pts, origin)
+                guard let buffer = CMSampleBufferGetImageBuffer(sample),
+                      let mediaTime = try? RationalTime(value: relative.value, timescale: relative.timescale),
+                      videoTrack.limiter.shouldKeep(presentationTime: mediaTime)
+                else { continue }
+                let appended: Bool = autoreleasepool {
+                    guard let pool = pipeline.adaptor.pixelBufferPool else { return false }
+                    var outputBuffer: CVPixelBuffer?
+                    CVPixelBufferPoolCreatePixelBuffer(nil, pool, &outputBuffer)
+                    guard let outputBuffer else { return false }
+                    let image = job.engine.image(for: RenderEngine.FrameRequest(
+                        source: CIImage(cvPixelBuffer: buffer), orientation: orientation,
+                        recipe: job.plan.recipe, time: mediaTime, outputSize: inputs.outputSize,
+                        watermark: job.watermark, watermarkFrame: inputs.watermarkFrame,
+                        beat: BeatModulation.at(
+                            mediaTime, timeline: job.beatTimeline, beat: job.plan.recipe.beat,
+                            audioMuted: job.plan.recipe.audioMuted),
+                        indicators: inputs.indicators))
+                    job.engine.render(image, to: outputBuffer)
+                    // Source timestamps are kept; only frames above the cadence ceiling are skipped.
+                    return pipeline.adaptor.append(outputBuffer, withPresentationTime: relative)
+                }
+                guard appended else {
+                    state.fail(ExportWorkerError.renderFailed)
+                    videoTrack.finish(pipeline.videoInput, group)
+                    return
+                }
+                videoTrack.lastWritten = relative
+                let seconds = relative.seconds
+                if seconds - videoTrack.lastReported >= 0.25 {
+                    videoTrack.lastReported = seconds
+                    progress(seconds)
+                }
             }
         }
-        progress(totalSeconds)
-        return (try? RationalTime(value: lastWritten.value, timescale: lastWritten.timescale)) ?? .zero
+
+        if let audioOutput = pipeline.audioOutput, let audioInput = pipeline.audioInput {
+            let audioTrack = AudioPumpState()
+            group.enter()
+            audioInput.requestMediaDataWhenReady(on: audioQueue) { [self] in
+                while audioInput.isReadyForMoreMediaData, !audioTrack.done {
+                    if isCancelled || state.hasFailed {
+                        audioTrack.finish(audioInput, group)
+                        return
+                    }
+                    guard let sample = audioOutput.copyNextSampleBuffer() else {
+                        audioTrack.finish(audioInput, group)
+                        return
+                    }
+                    let adjusted = Self.shifted(sample, by: origin) ?? sample
+                    if !audioInput.append(adjusted) {
+                        state.fail(ExportWorkerError.cannotWrite)
+                        audioTrack.finish(audioInput, group)
+                        return
+                    }
+                }
+            }
+        }
+
+        group.notify(queue: queue) {
+            if let error = state.error {
+                pipeline.reader.cancelReading()
+                pipeline.writer.cancelWriting()
+                completion(.failure(error))
+                return
+            }
+            progress(totalSeconds)
+            let written = (try? RationalTime(value: videoTrack.lastWritten.value, timescale: videoTrack.lastWritten.timescale)) ?? .zero
+            pipeline.writer.finishWriting {
+                if pipeline.writer.status == .completed {
+                    completion(.success(written))
+                } else {
+                    completion(.failure(ExportWorkerError.cannotWrite))
+                }
+            }
+        }
     }
 
     /// Shifts audio timing by the video origin so both tracks share a zero-based timeline.
@@ -321,6 +348,52 @@ final class ExportWorker: @unchecked Sendable {
             allocator: nil, sampleBuffer: sample, sampleTimingEntryCount: count,
             sampleTimingArray: &timing, sampleBufferOut: &result)
         return result
+    }
+
+    /// Per-job render inputs, created once and only read on the video queue.
+    private final class RenderInputs: @unchecked Sendable {
+        let outputSize: CGSize
+        let watermarkFrame: WatermarkLayout.Rect?
+        let indicators: [IndicatorRenderer.Overlay]
+        init(outputSize: CGSize, watermarkFrame: WatermarkLayout.Rect?, indicators: [IndicatorRenderer.Overlay]) {
+            self.outputSize = outputSize
+            self.watermarkFrame = watermarkFrame
+            self.indicators = indicators
+        }
+    }
+
+    /// First error wins; read after both tracks finished.
+    private final class PumpState: @unchecked Sendable {
+        private let lock = OSAllocatedUnfairLock<(any Error)?>(initialState: nil)
+        var error: (any Error)? { lock.withLock { $0 } }
+        var hasFailed: Bool { error != nil }
+        func fail(_ error: any Error) { lock.withLock { if $0 == nil { $0 = error } } }
+    }
+
+    /// Video pump state, touched only on the video queue.
+    private final class VideoPumpState: @unchecked Sendable {
+        var limiter: CadenceLimiter
+        var lastWritten = CMTime.zero
+        var lastReported = -1.0
+        private(set) var done = false
+        init(limiter: CadenceLimiter) { self.limiter = limiter }
+        func finish(_ input: AVAssetWriterInput, _ group: DispatchGroup) {
+            guard !done else { return }
+            done = true
+            input.markAsFinished()
+            group.leave()
+        }
+    }
+
+    /// Audio pump state, touched only on the audio queue.
+    private final class AudioPumpState: @unchecked Sendable {
+        private(set) var done = false
+        func finish(_ input: AVAssetWriterInput, _ group: DispatchGroup) {
+            guard !done else { return }
+            done = true
+            input.markAsFinished()
+            group.leave()
+        }
     }
 
     private static var rec709: [String: Any] {
