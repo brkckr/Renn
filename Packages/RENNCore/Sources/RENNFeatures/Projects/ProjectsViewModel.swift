@@ -87,6 +87,16 @@ public final class ProjectsViewModel {
         }
     }
 
+    /// Non-throwing variant for views: returns the validation/storage error, or nil on success.
+    public func renameResult(_ id: ProjectID, to text: String) async -> RenameError? {
+        do {
+            try await rename(id, to: text)
+            return nil
+        } catch {
+            return error
+        }
+    }
+
     public func requestDelete(_ id: ProjectID) {
         guard !isDeleting else { return }
         actionError = nil

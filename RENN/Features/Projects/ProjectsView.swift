@@ -29,7 +29,7 @@ struct ProjectsView: View {
         .task { await viewModel.observe() }
         .sheet(item: $renaming) { project in
             RenameProjectSheet(project: project) { text in
-                try await viewModel.rename(project.id, to: text)
+                await viewModel.renameResult(project.id, to: text)
             }
         }
         .confirmationDialog(
@@ -174,7 +174,8 @@ struct ProjectsView: View {
 /// Rename sheet with inline validation (80 characters, single line, not empty).
 private struct RenameProjectSheet: View {
     let project: ProjectSummary
-    let onSave: (String) async throws(ProjectsViewModel.RenameError) -> Void
+    /// Returns the error to show, or nil when the rename succeeded.
+    let onSave: (String) async -> ProjectsViewModel.RenameError?
 
     @Environment(\.dismiss) private var dismiss
     @State private var text: String
@@ -182,7 +183,7 @@ private struct RenameProjectSheet: View {
     @State private var isSaving = false
     @FocusState private var focused: Bool
 
-    init(project: ProjectSummary, onSave: @escaping (String) async throws(ProjectsViewModel.RenameError) -> Void) {
+    init(project: ProjectSummary, onSave: @escaping (String) async -> ProjectsViewModel.RenameError?) {
         self.project = project
         self.onSave = onSave
         _text = State(initialValue: project.name.value)
@@ -227,12 +228,12 @@ private struct RenameProjectSheet: View {
         guard !isSaving else { return }
         isSaving = true
         Task {
-            defer { isSaving = false }
-            do {
-                try await onSave(text)
+            let failure = await onSave(text)
+            isSaving = false
+            if let failure {
+                error = failure
+            } else {
                 dismiss()
-            } catch {
-                self.error = error
             }
         }
     }

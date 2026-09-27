@@ -343,7 +343,8 @@ struct ProjectsActionsTests {
         await #expect(throws: ProjectsViewModel.RenameError.tooLong(maximum: 80)) {
             try await viewModel.rename(project.id, to: String(repeating: "x", count: 81))
         }
-        try await viewModel.rename(project.id, to: "  Beach day ")
+        #expect(await viewModel.renameResult(project.id, to: "") == .empty)
+        #expect(await viewModel.renameResult(project.id, to: "  Beach day ") == nil)
         #expect(try await store.project(project.id).name.value == "Beach day")
     }
 
