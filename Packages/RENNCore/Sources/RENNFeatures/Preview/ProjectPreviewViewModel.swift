@@ -59,11 +59,6 @@ public final class ProjectPreviewViewModel {
     public private(set) var lookSelection: LookSelection?
     public private(set) var catalog: LookCatalog?
 
-    public struct LookSelection: Equatable, Sendable {
-        public var lookID: LookID?
-        public var intensity: Double
-    }
-
     private var pendingSave: Task<Void, Never>?
     private let projectID: ProjectID
     private let projects: any ProjectStoring
@@ -175,7 +170,7 @@ public final class ProjectPreviewViewModel {
     public var displayRecipe: Recipe? {
         guard let recipe else { return nil }
         guard let lookSelection else { return recipe }
-        return Self.staged(recipe, selection: lookSelection, catalog: catalog)
+        return lookSelection.applied(to: recipe, catalog: catalog)
     }
 
     // MARK: Look selector (02 D05)
@@ -189,12 +184,10 @@ public final class ProjectPreviewViewModel {
     /// Selecting another Look stages its default intensity; re-selecting the project's own Look
     /// restores the saved intensity.
     public func stageLook(_ id: LookID) {
-        guard lookSelection != nil, let recipe else { return }
-        if id == recipe.lookID {
-            lookSelection = LookSelection(lookID: id, intensity: recipe.intensity.value)
-        } else if let look = catalog?.look(id) {
-            lookSelection = LookSelection(lookID: id, intensity: look.defaultIntensity.value)
-        }
+        guard lookSelection != nil, let recipe,
+              let staged = LookSelection.staging(id, over: recipe, catalog: catalog)
+        else { return }
+        lookSelection = staged
     }
 
     public func stageIntensity(_ value: Double) {
@@ -205,7 +198,7 @@ public final class ProjectPreviewViewModel {
     /// Apply: one recipe revision for the whole staged change (01 P07).
     public func applyLookSelection() {
         guard let lookSelection, let recipe else { return }
-        let updated = Self.staged(recipe, selection: lookSelection, catalog: catalog)
+        let updated = lookSelection.applied(to: recipe, catalog: catalog)
         self.lookSelection = nil
         guard updated != recipe else { return }
         self.recipe = updated
@@ -214,15 +207,6 @@ public final class ProjectPreviewViewModel {
 
     public func cancelLookSelection() {
         lookSelection = nil
-    }
-
-    static func staged(_ recipe: Recipe, selection: LookSelection, catalog: LookCatalog?) -> Recipe {
-        var result = recipe
-        if selection.lookID != recipe.lookID, let id = selection.lookID, let look = catalog?.look(id) {
-            result = recipe.switchingLook(to: look)
-        }
-        if let intensity = LookIntensity(selection.intensity) { result.intensity = intensity }
-        return result
     }
 
     // MARK: Adjustments

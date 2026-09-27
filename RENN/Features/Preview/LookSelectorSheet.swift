@@ -7,7 +7,7 @@ import RENNFeatures
 /// behind the sheet renders the staged choice; nothing is saved until Apply.
 struct LookSelectorSheet: View {
     let looks: [LookDefinition]
-    let selection: ProjectPreviewViewModel.LookSelection
+    let selection: LookSelection
     let onSelect: (LookID) -> Void
     let onIntensity: (Double) -> Void
     let onApply: () -> Void

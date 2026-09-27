@@ -36,15 +36,20 @@ public final class CaptureFlowViewModel {
         case couldNotSave
     }
 
-    public private(set) var state: State = .idle
+    public private(set) var state: State = .idle {
+        // Look, Beat and indicators are locked from countdown until the take is finalized (02 D06).
+        didSet { draft.isLocked = isCountingDown || isRecording || state == .finalizing }
+    }
+    /// Pre-record Look/Beat/indicators; seeds the new project's recipe.
+    public let draft = RecipeDraftEditor()
     public private(set) var position: CameraPosition = .rear
     /// Microphone denied: silent capture, Beat unavailable (05 V02).
     public private(set) var isSilent = false
     public private(set) var recordingLimit: RationalTime?
     public private(set) var wasInterrupted = false
-    /// Recipe the live preview renders with: the chosen Look at its default intensity. The
-    /// recorded file stays clean (05 V02); the same recipe seeds the new project.
-    public private(set) var previewRecipe: Recipe?
+    /// Recipe the live preview renders with (the draft, or the staged Look while the selector is
+    /// open). The recorded file stays clean (05 V02); the draft seeds the new project.
+    public var previewRecipe: Recipe? { draft.displayRecipe }
     /// Retained within this camera flow only.
     public var timer: Timer = .off
 
@@ -115,11 +120,11 @@ public final class CaptureFlowViewModel {
     public func start() async {
         guard state == .idle || isFailedRetryable else { return }
         state = .preparing
-        if previewRecipe == nil {
+        if draft.recipe == nil {
             let catalog = try? await lookCatalog.catalog()
             let look = lookID.flatMap { catalog?.look($0) } ?? catalog?.recommendedLook
             if let stamp = try? StampDate(date: now(), timeZone: timeZone) {
-                previewRecipe = Recipe.initial(look: look, creationStamp: stamp, seed: UInt64.random(in: .min ... .max))
+                draft.begin(Recipe.initial(look: look, creationStamp: stamp, seed: UInt64.random(in: .min ... .max)), catalog: catalog)
             }
         }
         var camera = await permissions.cameraStatus()
@@ -282,12 +287,11 @@ public final class CaptureFlowViewModel {
             return
         }
         var recipe = Recipe.initial(look: look, creationStamp: stamp, seed: UInt64.random(in: .min ... .max))
-        if let previewRecipe {
-            // Keep what the user saw while recording (Look, intensity, seed); stamp = creation date.
-            recipe.intensity = previewRecipe.intensity
-            recipe.seed = previewRecipe.seed
+        if let chosen = draft.recipe {
+            // What the user set up and saw while recording: Look, intensity, Beat, indicators, seed.
+            recipe = chosen
         }
-        let draft = NewProjectDraft(
+        let projectDraft = NewProjectDraft(
             createdAt: createdAt,
             name: makeName(createdAt),
             sourceMode: .camera,
@@ -305,7 +309,7 @@ public final class CaptureFlowViewModel {
                     isHDR: false))],
             recipe: recipe)
         do {
-            let record = try await projects.createProject(draft)
+            let record = try await projects.createProject(projectDraft)
             if let lookID = record.recipe.lookID {
                 await lookPreferences.recordUse(of: lookID)
             }

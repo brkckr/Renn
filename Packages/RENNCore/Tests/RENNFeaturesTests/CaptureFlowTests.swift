@@ -55,6 +55,35 @@ struct CaptureFlowTests {
         #expect(stored.intensity == preview.intensity)
     }
 
+    @Test func preRecordLookBeatAndIndicatorsSeedTheProjectAndLockWhileRecording() async throws {
+        let (viewModel, _, store, _) = make()
+        await viewModel.start()
+        viewModel.draft.openLookSelector()
+        viewModel.draft.stageIntensity(0.3)
+        #expect(viewModel.previewRecipe?.intensity.value == 0.3, "Live preview shows the staged Look")
+        viewModel.draft.applyLookSelection()
+        viewModel.draft.setBeatEnabled(true)
+        viewModel.draft.setBeatIntensity(0.8)
+        var indicators = IndicatorsDraft(viewModel.draft.recipe!.indicators)
+        indicators.showsRec = true
+        viewModel.draft.applyIndicators(indicators)
+
+        await viewModel.record()
+        #expect(viewModel.draft.isLocked)
+        viewModel.draft.setBeatEnabled(false)
+        viewModel.draft.openLookSelector()
+        #expect(viewModel.draft.recipe?.beat.isEnabled == true, "Beat is locked while recording")
+        #expect(viewModel.draft.lookSelection == nil, "Look selector is locked while recording")
+
+        await viewModel.stop()
+        guard case .finished(let id) = viewModel.state else { Issue.record("Expected finished"); return }
+        let recipe = try await store.project(id).recipe
+        #expect(recipe.intensity.value == 0.3)
+        #expect(recipe.beat == BeatSettings(isEnabled: true, intensity: 0.8))
+        #expect(recipe.indicators.showsRec)
+        #expect(recipe.seed == viewModel.draft.recipe?.seed)
+    }
+
     @Test func proHasNoRecordingLimit() async {
         let (viewModel, capture, _, _) = make(access: AccessState(level: .pro, provenance: .developmentFake))
         await viewModel.start()

@@ -13,13 +13,18 @@ public final class DualCaptureFlowViewModel {
     public typealias Failure = CaptureFlowViewModel.Failure
     public typealias Timer = CaptureFlowViewModel.Timer
 
-    public private(set) var state: State = .idle
+    public private(set) var state: State = .idle {
+        // Look, Beat and indicators are locked from countdown until the take is finalized (02 D06).
+        didSet { draft.isLocked = isCountingDown || isRecording || state == .finalizing }
+    }
+    /// Pre-record Look/Beat/indicators; seeds the new project's recipe.
+    public let draft = RecipeDraftEditor()
     /// Corner fixed before recording; the swap timeline is persisted with it.
     public private(set) var layout = DualCameraLayout()
     public private(set) var isSilent = false
     public private(set) var recordingLimit: RationalTime?
     public private(set) var wasInterrupted = false
-    public private(set) var previewRecipe: Recipe?
+    public var previewRecipe: Recipe? { draft.displayRecipe }
     public var timer: Timer = .off
 
     private var countdownTask: Task<Void, Never>?
@@ -93,11 +98,11 @@ public final class DualCaptureFlowViewModel {
     public func start() async {
         guard state == .idle || isFailedRetryable else { return }
         state = .preparing
-        if previewRecipe == nil {
+        if draft.recipe == nil {
             let catalog = try? await lookCatalog.catalog()
             let look = lookID.flatMap { catalog?.look($0) } ?? catalog?.recommendedLook
             if let stamp = try? StampDate(date: now(), timeZone: timeZone) {
-                previewRecipe = Recipe.initial(look: look, creationStamp: stamp, seed: UInt64.random(in: .min ... .max))
+                draft.begin(Recipe.initial(look: look, creationStamp: stamp, seed: UInt64.random(in: .min ... .max)), catalog: catalog)
             }
         }
         var camera = await permissions.cameraStatus()
@@ -268,9 +273,9 @@ public final class DualCaptureFlowViewModel {
             return
         }
         var recipe = Recipe.initial(look: look, creationStamp: stamp, seed: UInt64.random(in: .min ... .max))
-        if let previewRecipe {
-            recipe.intensity = previewRecipe.intensity
-            recipe.seed = previewRecipe.seed
+        if let chosen = draft.recipe {
+            // What the user set up and saw while recording: Look, intensity, Beat, indicators, seed.
+            recipe = chosen
         }
         recipe.dualLayout = layout
         func staged(_ recorded: RecordedTake, role: SourceRole, start: RationalTime, ownsAudio: Bool) -> StagedSource {
@@ -282,7 +287,7 @@ public final class DualCaptureFlowViewModel {
                     hasUsableAudio: ownsAudio && recorded.hasAudio, isMirrored: recorded.isMirrored,
                     ownsSharedAudio: ownsAudio && recorded.hasAudio, isHDR: false))
         }
-        let draft = NewProjectDraft(
+        let projectDraft = NewProjectDraft(
             createdAt: createdAt,
             name: makeName(createdAt),
             sourceMode: .dualCamera,
@@ -293,7 +298,7 @@ public final class DualCaptureFlowViewModel {
             ],
             recipe: recipe)
         do {
-            let record = try await projects.createProject(draft)
+            let record = try await projects.createProject(projectDraft)
             if let lookID = record.recipe.lookID {
                 await lookPreferences.recordUse(of: lookID)
             }

@@ -1,6 +1,23 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "camera.beat.silent": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No microphone access, so this take has no sound and Beat can't respond. The Look still applies."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mikrofon izni olmadığı için bu çekimde ses yok ve Beat tepki veremez. Look yine uygulanır."
+          }
+        }
+      }
+    },
     "camera.countdown %lld": {
       "extractionState": "manual",
       "localizations": {

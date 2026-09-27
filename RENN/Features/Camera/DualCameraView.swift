@@ -40,7 +40,11 @@ struct DualCameraView: View {
             VStack {
                 topBar
                 Spacer()
-                if viewModel.state == .ready { cornerPicker }
+                if viewModel.state == .ready {
+                    CaptureRecipeControls(draft: viewModel.draft, isSilent: viewModel.isSilent, engine: engine, source: source)
+                        .padding(.bottom, 12)
+                    cornerPicker
+                }
                 bottomBar
             }
             .padding(RENNMetrics.sideMargin)

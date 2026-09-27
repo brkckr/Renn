@@ -93,6 +93,9 @@ struct CameraView: View {
 
     private var bottomBar: some View {
         VStack(spacing: 12) {
+            if viewModel.state == .ready {
+                CaptureRecipeControls(draft: viewModel.draft, isSilent: viewModel.isSilent, engine: engine, source: source)
+            }
             HStack {
                 Button {
                     Task { await viewModel.switchCamera() }
