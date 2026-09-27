@@ -127,3 +127,64 @@ struct BeatAnalysisTests {
         #expect(changed != .v1, "Changed constants make a different cache key")
     }
 }
+
+@Suite("Beat modulation and cache key (05 V04/V05)")
+struct BeatModulationTests {
+    private func timeline() -> BeatTimeline {
+        let rate = 48_000.0
+        var samples = [Float](repeating: 0, count: Int(2 * rate))
+        for offset in 0..<Int(0.02 * rate) {
+            samples[Int(rate) + offset] = Float(sin(Double(offset) * 0.3)) * Float(exp(-Double(offset) / 200))
+        }
+        return BeatAnalyzer.timeline(samples: samples)
+    }
+
+    private func source(hash: UInt64 = 1) throws -> SourceReference {
+        let id = ProjectID()
+        return SourceReference(
+            role: .primary, relativePath: try ProjectFileLayout.file("a.mov", in: .sources, of: id),
+            fingerprint: FileFingerprint(byteCount: 10, sampleHash: hash),
+            metadata: SourceMetadata(
+                duration: .seconds(2), displayDimensions: try PixelDimensions(width: 4, height: 4),
+                frameRate: .fps(30), hasUsableAudio: true, ownsSharedAudio: true))
+    }
+
+    @Test func intensityZeroAndMuteEqualBeatOff() {
+        let timeline = timeline()
+        let peak = timeline.frames.max { $0.onset < $1.onset }!
+        let time = try! RationalTime(value: peak.endSample, timescale: 48_000)
+        #expect(BeatModulation.at(time, timeline: timeline, beat: BeatSettings(isEnabled: true, intensity: 0), audioMuted: false) == .none)
+        #expect(BeatModulation.at(time, timeline: timeline, beat: BeatSettings(isEnabled: true, intensity: 1), audioMuted: true) == .none)
+        #expect(BeatModulation.at(time, timeline: timeline, beat: BeatSettings(isEnabled: false, intensity: 1), audioMuted: false) == .none)
+        #expect(BeatModulation.at(time, timeline: nil, beat: BeatSettings(isEnabled: true, intensity: 1), audioMuted: false) == .none)
+        let active = BeatModulation.at(time, timeline: timeline, beat: BeatSettings(isEnabled: true, intensity: 1), audioMuted: false)
+        #expect(active.brightness > 0)
+    }
+
+    @Test func modulationIsAlwaysBounded() {
+        let timeline = timeline()
+        for frame in timeline.frames {
+            let time = try! RationalTime(value: frame.endSample, timescale: 48_000)
+            let modulation = BeatModulation.at(time, timeline: timeline, beat: BeatSettings(isEnabled: true, intensity: 1), audioMuted: false)
+            #expect(modulation.brightness <= 0.06 && modulation.brightness >= 0)
+            #expect(modulation.zoom <= 0.015 && modulation.zoom >= 0)
+        }
+    }
+
+    @Test func cacheKeyDependsOnSourceAndConstantsOnly() throws {
+        let a = try source(hash: 1)
+        let b = try source(hash: 2)
+        #expect(BeatTimeline.cacheKey(for: a) == BeatTimeline.cacheKey(for: a))
+        #expect(BeatTimeline.cacheKey(for: a) != BeatTimeline.cacheKey(for: b))
+        var changed = BeatAnalysisConfiguration.v1
+        changed.refractorySeconds = 0.2
+        #expect(BeatTimeline.cacheKey(for: a, configuration: changed) != BeatTimeline.cacheKey(for: a))
+        #expect(BeatTimeline.cacheKey(for: a).hasPrefix("beat-v1-"))
+    }
+
+    @Test func timelineRoundTripsThroughJSON() throws {
+        let original = timeline()
+        let decoded = try JSONDecoder().decode(BeatTimeline.self, from: JSONEncoder().encode(original))
+        #expect(decoded == original)
+    }
+}

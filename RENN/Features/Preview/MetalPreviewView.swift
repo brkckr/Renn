@@ -21,6 +21,8 @@ struct MetalPreviewView: UIViewRepresentable {
     let sourceDimensions: PixelDimensions?
     let showsWatermark: Bool
     let bypassCreative: Bool
+    /// Canonical Beat timeline (same as export); nil renders Look-only.
+    var beatTimeline: BeatTimeline? = nil
 
     func makeCoordinator() -> PreviewRenderer {
         PreviewRenderer(engine: engine)
@@ -46,6 +48,7 @@ struct MetalPreviewView: UIViewRepresentable {
         renderer.sourceDimensions = sourceDimensions
         renderer.showsWatermark = showsWatermark
         renderer.bypassCreative = bypassCreative
+        renderer.beatTimeline = beatTimeline
     }
 
     static func dismantleUIView(_ view: MTKView, coordinator: PreviewRenderer) {
@@ -63,6 +66,7 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
     var sourceDimensions: PixelDimensions?
     var showsWatermark = true
     var bypassCreative = false
+    var beatTimeline: BeatTimeline?
 
     private var lastSource: CIImage?
     private var lastTime = RationalTime.zero
@@ -100,7 +104,8 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
             let image = engine.image(for: RenderEngine.FrameRequest(
                 source: sourceImage, orientation: source.frameOrientation, recipe: recipe, time: lastTime,
                 outputSize: CGSize(width: Int(fit.width), height: Int(fit.height)),
-                watermark: watermark, watermarkFrame: watermarkFrame, bypassCreative: bypassCreative))
+                watermark: watermark, watermarkFrame: watermarkFrame, bypassCreative: bypassCreative,
+                beat: BeatModulation.at(lastTime, timeline: beatTimeline, beat: recipe.beat, audioMuted: recipe.audioMuted)))
             let offset = CGAffineTransform(
                 translationX: ((drawableSize.width - fit.width) / 2).rounded(),
                 y: ((drawableSize.height - fit.height) / 2).rounded())

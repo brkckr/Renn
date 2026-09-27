@@ -14,6 +14,15 @@ public final class ProjectPreviewViewModel {
         case unavailable(ProjectSummary.Readiness?)
     }
 
+    /// What the Beat panel can say about the source audio (02 D05 S11).
+    public enum BeatAvailability: Equatable, Sendable {
+        case analyzing
+        case available
+        /// The video has no usable sound: Look-only processing stays available.
+        case noAudio
+        case failed
+    }
+
     public enum ExportEntry: Equatable, Sendable {
         case none
         case summary(ExportSummary)
@@ -29,6 +38,8 @@ public final class ProjectPreviewViewModel {
     public private(set) var recipe: Recipe?
     public private(set) var showsWatermark = true
     public private(set) var exportEntry: ExportEntry = .none
+    public private(set) var beatTimeline: BeatTimeline?
+    public private(set) var beatAvailability: BeatAvailability = .analyzing
     public var showsOriginal = false
     public var isLooping = true
 
@@ -38,6 +49,7 @@ public final class ProjectPreviewViewModel {
     private let access: any AccessStateProviding
     private let exporter: ExportCoordinator
     private let telemetry: any TelemetryRecording
+    private let beatTimelines: (any BeatTimelineProviding)?
     private let onClose: @MainActor () -> Void
     private let onShowPaywall: @MainActor () -> Void
 
@@ -47,9 +59,11 @@ public final class ProjectPreviewViewModel {
         access: any AccessStateProviding,
         exporter: ExportCoordinator,
         telemetry: any TelemetryRecording,
+        beatTimelines: (any BeatTimelineProviding)? = nil,
         onClose: @escaping @MainActor () -> Void,
         onShowPaywall: @escaping @MainActor () -> Void
     ) {
+        self.beatTimelines = beatTimelines
         self.projectID = projectID
         self.projects = projects
         self.access = access
@@ -65,6 +79,13 @@ public final class ProjectPreviewViewModel {
     public var hasAudio: Bool { record?.sources.first?.metadata.hasUsableAudio ?? false }
     public var displayDimensions: PixelDimensions? { record?.sources.first?.metadata.displayDimensions }
     public var name: String { record?.name.value ?? "" }
+    public var isBeatEnabled: Bool { recipe?.beat.isEnabled ?? false }
+    public var beatIntensity: Double { recipe?.beat.intensity ?? 0 }
+    /// Beat modulation actually applies: enabled, not muted, usable audio (01 P06).
+    public var isBeatEffective: Bool {
+        guard let recipe else { return false }
+        return recipe.beat.isEffective(audioMuted: recipe.audioMuted, sourceHasUsableAudio: beatAvailability == .available)
+    }
 
     public func load() async {
         do {
@@ -79,6 +100,7 @@ public final class ProjectPreviewViewModel {
             await refreshWatermark()
             loadState = .ready
             await telemetry.record(.previewReady)
+            await loadBeatTimeline(source: source)
         } catch {
             loadState = .unavailable(nil)
         }
@@ -101,6 +123,21 @@ public final class ProjectPreviewViewModel {
     public func setIntensity(_ value: Double) {
         guard var recipe, let intensity = LookIntensity(value) else { return }
         recipe.intensity = intensity
+        self.recipe = recipe
+        scheduleSave()
+    }
+
+    public func setBeatEnabled(_ enabled: Bool) {
+        guard var recipe, recipe.beat.isEnabled != enabled else { return }
+        recipe.beat = BeatSettings(isEnabled: enabled, intensity: recipe.beat.intensity)
+        self.recipe = recipe
+        scheduleSave(immediately: true)
+    }
+
+    /// Beat intensity 0 renders identically to Beat off (05 V04).
+    public func setBeatIntensity(_ value: Double) {
+        guard var recipe else { return }
+        recipe.beat = BeatSettings(isEnabled: recipe.beat.isEnabled, intensity: value)
         self.recipe = recipe
         scheduleSave()
     }
@@ -168,6 +205,23 @@ public final class ProjectPreviewViewModel {
 
     public func retryPhotosSave() async {
         await exporter.retrySave()
+    }
+
+    private func loadBeatTimeline(source: SourceReference) async {
+        guard source.metadata.hasUsableAudio else {
+            beatAvailability = .noAudio
+            return
+        }
+        guard let beatTimelines, let url = sourceURL else {
+            beatAvailability = .failed
+            return
+        }
+        do {
+            beatTimeline = try await beatTimelines.timeline(for: source, fileURL: url)
+            beatAvailability = beatTimeline == nil ? .noAudio : .available
+        } catch {
+            beatAvailability = .failed
+        }
     }
 
     // MARK: Persistence

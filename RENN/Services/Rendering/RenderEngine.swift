@@ -51,8 +51,10 @@ final class RenderEngine: @unchecked Sendable {
         /// Free watermark, already rendered at output scale; nil for Pro.
         var watermark: CIImage?
         var watermarkFrame: WatermarkLayout.Rect?
-        /// Before/after bypass: disables creative Look only, never the policy watermark (02 D05).
+        /// Before/after bypass: disables creative Look and Beat, never the policy watermark (02 D05).
         var bypassCreative = false
+        /// Bounded Beat modulation for this media time; `.none` when Beat is not effective.
+        var beat: BeatModulation = .none
     }
 
     /// Builds the frame graph. Lazy: no GPU work happens until `render`.
@@ -64,6 +66,10 @@ final class RenderEngine: @unchecked Sendable {
         let intensity = request.recipe.intensity.value
         if !request.bypassCreative, intensity > 0, request.recipe.lookID != nil {
             image = diagnosticLook(image, intensity: intensity, seed: request.recipe.seed, time: request.time)
+        }
+        // Beat is an independent modulation layer (05 V04), applied even at Look intensity 0.
+        if !request.bypassCreative, request.beat != .none {
+            image = beatModulated(image, request.beat)
         }
 
         let bounds = CGRect(origin: .zero, size: request.outputSize)
@@ -99,6 +105,27 @@ final class RenderEngine: @unchecked Sendable {
         filter.scale = Float(scale)
         filter.aspectRatio = Float((size.width / extent.width) / scale)
         return filter.outputImage ?? image
+    }
+
+    private func beatModulated(_ image: CIImage, _ beat: BeatModulation) -> CIImage {
+        let extent = image.extent
+        var result = image
+        if beat.zoom > 0 {
+            let scale = 1 + beat.zoom
+            let transform = CGAffineTransform(translationX: extent.midX, y: extent.midY)
+                .scaledBy(x: scale, y: scale)
+                .translatedBy(x: -extent.midX, y: -extent.midY)
+            result = result.transformed(by: transform).cropped(to: extent)
+        }
+        if beat.brightness > 0 {
+            let controls = CIFilter.colorControls()
+            controls.inputImage = result
+            controls.brightness = Float(beat.brightness)
+            controls.saturation = 1
+            controls.contrast = 1
+            result = controls.outputImage ?? result
+        }
+        return result
     }
 
     private func diagnosticLook(_ image: CIImage, intensity: Double, seed: UInt64, time: RationalTime) -> CIImage {

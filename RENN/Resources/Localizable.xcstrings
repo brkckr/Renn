@@ -2262,6 +2262,125 @@
         }
       }
     },
+    "preview.beat": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beat"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beat"
+          }
+        }
+      }
+    },
+    "preview.beat.analyzing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Listening to the video's sound…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videonun sesi analiz ediliyor…"
+          }
+        }
+      }
+    },
+    "preview.beat.failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The sound couldn't be analysed. The Look still applies."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ses analiz edilemedi. Look yine uygulanır."
+          }
+        }
+      }
+    },
+    "preview.beat.muted": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sound is muted, so Beat is paused. Unmute to bring it back."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ses kapalı olduğu için Beat duraklatıldı. Geri getirmek için sesi aç."
+          }
+        }
+      }
+    },
+    "preview.beat.noAudio": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This video has no sound, so Beat isn't available. The Look still applies."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu videoda ses yok, bu yüzden Beat kullanılamıyor. Look yine uygulanır."
+          }
+        }
+      }
+    },
+    "preview.beat.source": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Effects follow this video's own sound."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Efektler bu videonun kendi sesini izler."
+          }
+        }
+      }
+    },
+    "preview.beatIntensity": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beat intensity"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beat yoğunluğu"
+          }
+        }
+      }
+    },
     "preview.beforeAfter": {
       "extractionState": "manual",
       "localizations": {

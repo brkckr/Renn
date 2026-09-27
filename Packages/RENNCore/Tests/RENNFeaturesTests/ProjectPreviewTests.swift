@@ -117,3 +117,60 @@ struct ProjectPreviewTests {
         #expect(log.entries == ["close"])
     }
 }
+
+private struct StubBeatTimelines: BeatTimelineProviding {
+    let result: BeatTimeline?
+    func timeline(for source: SourceReference, fileURL: URL) async throws -> BeatTimeline? { result }
+}
+
+@MainActor
+@Suite("Preview Beat controls (01 P06, 02 D05)")
+struct PreviewBeatTests {
+    private func make(timeline: BeatTimeline?, audio: Bool = true) async throws -> (ProjectPreviewViewModel, InMemoryProjectStore, ProjectID) {
+        let store = InMemoryProjectStore()
+        let record = try await store.createProject(NewProjectDraft(
+            createdAt: Date(), name: try ProjectName("Tape"), sourceMode: .imported,
+            sources: [StagedSource(
+                role: .primary, stagedFile: URL(fileURLWithPath: "/s.mov"), fileName: "source.mov",
+                metadata: SourceMetadata(
+                    duration: .seconds(5), displayDimensions: try PixelDimensions(width: 1080, height: 1920),
+                    frameRate: .fps(30), hasUsableAudio: audio, ownsSharedAudio: audio))],
+            recipe: Recipe.initial(look: nil, creationStamp: try StampDate(year: 2026, month: 9, day: 27), seed: 1)))
+        let purchases = FakePurchaseService()
+        let viewModel = ProjectPreviewViewModel(
+            projectID: record.id, projects: store, access: purchases,
+            exporter: ExportCoordinator(
+                projects: store, access: purchases, renderer: FakeExportRenderer(), photos: FakePhotosSaver(),
+                lookPreferences: InMemoryLookPreferencesStore(), telemetry: RecordingTelemetry()),
+            telemetry: RecordingTelemetry(), beatTimelines: StubBeatTimelines(result: timeline),
+            onClose: {}, onShowPaywall: {})
+        return (viewModel, store, record.id)
+    }
+
+    private var sampleTimeline: BeatTimeline {
+        BeatAnalyzer.timeline(samples: [Float](repeating: 0.2, count: 48_000))
+    }
+
+    @Test func enableAndIntensityPersistAndMutePausesBeat() async throws {
+        let (viewModel, store, id) = try await make(timeline: sampleTimeline)
+        await viewModel.load()
+        #expect(viewModel.beatAvailability == .available)
+        viewModel.setBeatEnabled(true)
+        viewModel.setBeatIntensity(0.8)
+        await viewModel.flush()
+        let stored = try await store.project(id).recipe
+        #expect(stored.beat == BeatSettings(isEnabled: true, intensity: 0.8))
+        #expect(viewModel.isBeatEffective)
+        viewModel.toggleMute()
+        #expect(!viewModel.isBeatEffective, "Mute disables Beat modulation")
+        #expect(viewModel.isBeatEnabled, "…without changing the Beat choice")
+    }
+
+    @Test func silentSourceReportsNoAudioAndStaysLookOnly() async throws {
+        let (viewModel, _, _) = try await make(timeline: nil, audio: false)
+        await viewModel.load()
+        #expect(viewModel.beatAvailability == .noAudio)
+        viewModel.setBeatEnabled(true)
+        #expect(!viewModel.isBeatEffective, "No invented beats without audio")
+    }
+}

@@ -65,7 +65,8 @@ public struct BeatTimeline: Sendable, Equatable, Codable {
     public func frame(at time: RationalTime) -> BeatFrame? {
         let local = time.approximateSeconds - startOffset.approximateSeconds
         guard local >= 0, !frames.isEmpty else { return nil }
-        let index = Int(floor(local * configuration.sampleRate))
+        // Small tolerance so a time that is exactly a window end maps to that window.
+        let index = Int(floor(local * configuration.sampleRate + 1e-6))
         // Frames end at windowSize - 1 + k * hop.
         let k = (index - (configuration.windowSize - 1)) / configuration.hopSize
         guard index >= configuration.windowSize - 1 else { return nil }
@@ -296,5 +297,80 @@ struct RealFFT: Sendable {
         }
         let scale = 2 / Double(size)
         return (0...size / 2).map { Float((real[$0] * real[$0] + imaginary[$0] * imaginary[$0]).squareRoot() * scale) }
+    }
+}
+
+/// Canonical Beat timeline for a stored source (05 V05). The live adapter decodes the source's
+/// own audio and caches by source fingerprint + algorithm configuration; intensity and mute
+/// never invalidate the cache. Returns nil when the source has no usable audio.
+public protocol BeatTimelineProviding: Sendable {
+    func timeline(for source: SourceReference, fileURL: URL) async throws -> BeatTimeline?
+}
+
+extension BeatTimeline {
+    /// Cache identity: source fingerprint, algorithm version and constants.
+    public static func cacheKey(for source: SourceReference, configuration: BeatAnalysisConfiguration = .v1) -> String {
+        var hasher = StableHasher()
+        hasher.mix(UInt64(bitPattern: source.fingerprint.byteCount))
+        hasher.mix(source.fingerprint.sampleHash)
+        hasher.mix(UInt64(configuration.version))
+        for value in [
+            configuration.sampleRate, Double(configuration.windowSize), Double(configuration.hopSize),
+            configuration.silenceGateDBFS, configuration.onsetStandardDeviations, configuration.refractorySeconds,
+            configuration.attackSeconds, configuration.releaseSeconds, configuration.normalizationSeconds,
+            configuration.minimumRelativeFlux, configuration.lowBand.lowerBound, configuration.lowBand.upperBound,
+            configuration.midBand.lowerBound, configuration.midBand.upperBound,
+            configuration.highBand.lowerBound, configuration.highBand.upperBound,
+        ] {
+            hasher.mix(value.bitPattern)
+        }
+        hasher.mix(UInt64(bitPattern: source.metadata.startOffset.value))
+        hasher.mix(UInt64(source.metadata.startOffset.timescale))
+        return "beat-v\(configuration.version)-" + String(hasher.value, radix: 16)
+    }
+}
+
+/// FNV-1a over 64-bit words; stable across launches and platforms (unlike `Hasher`).
+struct StableHasher {
+    private(set) var value: UInt64 = 0xcbf2_9ce4_8422_2325
+
+    mutating func mix(_ word: UInt64) {
+        var word = word
+        for _ in 0..<8 {
+            value ^= word & 0xFF
+            value = value &* 0x0000_0100_0000_01B3
+            word >>= 8
+        }
+    }
+}
+
+/// Bounded Beat modulation for one frame (05 V04): pulse from onsets, sway from energy. Both
+/// are zero when Beat is not effective or intensity is zero, so intensity 0 equals Beat off.
+public struct BeatModulation: Sendable, Equatable {
+    /// Brightness lift, at most 0.06 (no full-frame strobing).
+    public let brightness: Double
+    /// Scale above 1, at most 1.5% (no uncontrolled shake).
+    public let zoom: Double
+
+    public static let none = BeatModulation(brightness: 0, zoom: 0)
+
+    public init(brightness: Double, zoom: Double) {
+        self.brightness = brightness
+        self.zoom = zoom
+    }
+
+    public static func at(
+        _ time: RationalTime, timeline: BeatTimeline?, beat: BeatSettings, audioMuted: Bool
+    ) -> BeatModulation {
+        guard let timeline,
+              beat.isEffective(audioMuted: audioMuted, sourceHasUsableAudio: true),
+              beat.intensity > 0,
+              let frame = timeline.frame(at: time)
+        else { return .none }
+        let intensity = beat.intensity
+        let pulse = Double(max(frame.onset, frame.low * 0.5))
+        return BeatModulation(
+            brightness: min(0.06, 0.06 * intensity * pulse),
+            zoom: min(0.015, 0.015 * intensity * Double(frame.energy) * pulse))
     }
 }

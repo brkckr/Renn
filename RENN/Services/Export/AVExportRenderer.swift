@@ -6,6 +6,7 @@ import RENNDomain
 /// cancels the worker; any failure removes the partial file.
 struct AVExportRenderer: ExportRendering {
     let engine: RenderEngine
+    var beatTimelines: (any BeatTimelineProviding)?
 
     func render(
         plan: ExportPlan,
@@ -22,9 +23,15 @@ struct AVExportRenderer: ExportRendering {
             watermark = rendered.image
             aspect = rendered.aspectRatio
         }
+        // Beat never blocks export: without a timeline the video exports Look-only (05 V05).
+        var timeline: BeatTimeline?
+        if plan.recipe.beat.isEffective(audioMuted: plan.recipe.audioMuted, sourceHasUsableAudio: plan.source.metadata.hasUsableAudio) {
+            timeline = try? await beatTimelines?.timeline(for: plan.source, fileURL: sourceURL)
+        }
         let worker = ExportWorker(job: ExportWorker.Job(
             plan: plan, sourceURL: sourceURL, outputURL: outputURL, engine: engine,
-            watermark: watermark, watermarkAspect: aspect, isHDRSource: plan.source.metadata.isHDR ?? false))
+            watermark: watermark, watermarkAspect: aspect, isHDRSource: plan.source.metadata.isHDR ?? false,
+            beatTimeline: timeline))
         do {
             _ = try await withTaskCancellationHandler {
                 try await worker.run(progress: progress)

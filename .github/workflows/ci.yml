@@ -12,7 +12,9 @@ on:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # Queue instead of cancelling so a running simulator build always reports its result;
+  # media tests have a time limit, so a hang cannot block the queue for long.
+  cancel-in-progress: false
 
 jobs:
   core-linux:

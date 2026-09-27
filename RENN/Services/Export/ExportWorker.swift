@@ -27,6 +27,8 @@ final class ExportWorker: @unchecked Sendable {
         var watermark: CIImage?
         var watermarkAspect: Double
         var isHDRSource: Bool
+        /// Canonical Beat timeline of the source (same one the preview uses).
+        var beatTimeline: BeatTimeline?
     }
 
     private let job: Job
@@ -250,7 +252,10 @@ final class ExportWorker: @unchecked Sendable {
                             let image = job.engine.image(for: RenderEngine.FrameRequest(
                                 source: CIImage(cvPixelBuffer: buffer), orientation: orientation,
                                 recipe: job.plan.recipe, time: mediaTime, outputSize: outputSize,
-                                watermark: job.watermark, watermarkFrame: watermarkFrame))
+                                watermark: job.watermark, watermarkFrame: watermarkFrame,
+                                beat: BeatModulation.at(
+                                    mediaTime, timeline: job.beatTimeline, beat: job.plan.recipe.beat,
+                                    audioMuted: job.plan.recipe.audioMuted)))
                             job.engine.render(image, to: outputBuffer)
                             // Source timestamps are kept; only frames above the cadence ceiling are skipped.
                             guard pipeline.adaptor.append(outputBuffer, withPresentationTime: relative) else {

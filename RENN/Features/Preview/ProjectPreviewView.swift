@@ -79,7 +79,7 @@ struct ProjectPreviewView: View {
             MetalPreviewView(
                 engine: engine, source: player, recipe: viewModel.recipe,
                 sourceDimensions: viewModel.displayDimensions, showsWatermark: viewModel.showsWatermark,
-                bypassCreative: viewModel.showsOriginal)
+                bypassCreative: viewModel.showsOriginal, beatTimeline: viewModel.beatTimeline)
                 .clipShape(RoundedRectangle(cornerRadius: RENNMetrics.cardRadius, style: .continuous))
                 .padding(.horizontal, RENNMetrics.sideMargin)
                 .accessibilityLabel(Text("preview.accessibility"))
@@ -122,6 +122,9 @@ struct ProjectPreviewView: View {
             }
             .padding(.horizontal, RENNMetrics.sideMargin)
 
+            beatPanel
+                .padding(.horizontal, RENNMetrics.sideMargin)
+
             Button("preview.export") {
                 Task { await viewModel.requestExport() }
             }
@@ -129,6 +132,38 @@ struct ProjectPreviewView: View {
             .disabled(viewModel.exportState != .idle && isExportRunning)
             .padding(.horizontal, RENNMetrics.sideMargin)
             .padding(.bottom, 8)
+        }
+    }
+
+    /// Beat: enable + intensity only, with audio availability information (02 D05 S11).
+    private var beatPanel: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Toggle(isOn: Binding(get: { viewModel.isBeatEnabled }, set: { viewModel.setBeatEnabled($0) })) {
+                Text("preview.beat")
+                    .font(RENNFont.secondary)
+                    .foregroundStyle(RENNColor.textSecondary)
+            }
+            .tint(RENNColor.brandYellow)
+            .disabled(viewModel.beatAvailability != .available)
+            if viewModel.isBeatEnabled, viewModel.beatAvailability == .available {
+                Slider(
+                    value: Binding(get: { viewModel.beatIntensity }, set: { viewModel.setBeatIntensity($0) }),
+                    in: 0...1)
+                    .tint(RENNColor.brandOrange)
+                    .accessibilityLabel(Text("preview.beatIntensity"))
+            }
+            Text(beatNote)
+                .font(RENNFont.roboto(12, relativeTo: .caption))
+                .foregroundStyle(RENNColor.textSecondary)
+        }
+    }
+
+    private var beatNote: LocalizedStringKey {
+        switch viewModel.beatAvailability {
+        case .analyzing: "preview.beat.analyzing"
+        case .noAudio: "preview.beat.noAudio"
+        case .failed: "preview.beat.failed"
+        case .available: viewModel.isMuted ? "preview.beat.muted" : "preview.beat.source"
         }
     }
 

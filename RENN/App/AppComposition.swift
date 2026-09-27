@@ -16,6 +16,8 @@ final class AppComposition {
     let renderEngine: RenderEngine
     /// App-lifetime export owner: jobs survive sheet dismissal (04 A03).
     let exportCoordinator: ExportCoordinator
+    /// Canonical Beat timelines shared by preview and export (05 V05).
+    let beatTimelines: AVBeatTimelineProvider
 
     private let preferencesStore: any AppPreferencesStoring
     private let purchases: any Purchasing
@@ -51,8 +53,11 @@ final class AppComposition {
         self.telemetry = telemetry
         let engine = RenderEngine()
         renderEngine = engine
+        let timelines = AVBeatTimelineProvider()
+        beatTimelines = timelines
         exportCoordinator = ExportCoordinator(
-            projects: projectStore, access: purchases, renderer: AVExportRenderer(engine: engine),
+            projects: projectStore, access: purchases,
+            renderer: AVExportRenderer(engine: engine, beatTimelines: timelines),
             photos: PhotoLibrarySaver(), lookPreferences: lookPreferencesStore, telemetry: telemetry)
     }
 
@@ -232,6 +237,7 @@ final class AppComposition {
             access: purchases,
             exporter: exportCoordinator,
             telemetry: telemetry,
+            beatTimelines: beatTimelines,
             onClose: { [router] in router.dismissFlow() },
             onShowPaywall: { [router] in router.showNestedPaywall(.exportUpgrade) })
     }
