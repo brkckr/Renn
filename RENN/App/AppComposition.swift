@@ -18,6 +18,8 @@ final class AppComposition {
     let exportCoordinator: ExportCoordinator
     /// Canonical Beat timelines shared by preview and export (05 V05).
     let beatTimelines: AVBeatTimelineProvider
+    /// Processed-frame posters for VHS cases (01 P03).
+    let posters: PosterProvider
 
     private let preferencesStore: any AppPreferencesStoring
     private let purchases: any Purchasing
@@ -55,6 +57,7 @@ final class AppComposition {
         renderEngine = engine
         let timelines = AVBeatTimelineProvider()
         beatTimelines = timelines
+        posters = PosterProvider(projects: projectStore, engine: engine)
         exportCoordinator = ExportCoordinator(
             projects: projectStore, access: purchases,
             renderer: AVExportRenderer(engine: engine, beatTimelines: timelines),
@@ -128,6 +131,7 @@ final class AppComposition {
             projectStore: projectStore,
             lookCatalog: lookCatalog,
             lookPreferencesStore: lookPreferencesStore,
+            posters: posters,
             onSeeAll: { [router] in router.showAllProjects() },
             onInspectLook: { [router] in router.inspectLook($0) },
             onOpenProject: { [router] in router.openProject($0) })
@@ -152,6 +156,7 @@ final class AppComposition {
     func makeProjectsViewModel() -> ProjectsViewModel {
         ProjectsViewModel(
             projectStore: projectStore,
+            posters: posters,
             onOpenProject: { [router] in router.openProject($0) },
             onCreateFirst: { [router] in router.goHomeAndOpenCreation() })
     }

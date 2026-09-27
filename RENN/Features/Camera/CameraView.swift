@@ -43,6 +43,14 @@ struct CameraView: View {
                 bottomBar
             }
             .padding(RENNMetrics.sideMargin)
+            if case .countdown(let remaining) = viewModel.state {
+                // UI only: the countdown never enters the recorded pixels (01 P05).
+                Text(verbatim: "\(remaining)")
+                    .font(RENNFont.roboto(96, medium: true, relativeTo: .largeTitle))
+                    .foregroundStyle(RENNColor.textPrimary)
+                    .shadow(color: .black.opacity(0.6), radius: 8)
+                    .accessibilityLabel(Text("camera.countdown \(remaining)"))
+            }
             if case .failed(let failure) = viewModel.state {
                 failureOverlay(failure)
             }
@@ -102,7 +110,19 @@ struct CameraView: View {
                 Spacer()
                 recordButton
                 Spacer()
-                Color.clear.frame(width: 52, height: 52)
+                Button {
+                    viewModel.timer = next(viewModel.timer)
+                } label: {
+                    Text(timerLabel(viewModel.timer))
+                        .font(RENNFont.roboto(13, medium: true, relativeTo: .footnote))
+                        .foregroundStyle(viewModel.timer == .off ? RENNColor.textPrimary : RENNColor.onPrimary)
+                        .frame(width: 52, height: 52)
+                        .background(Circle().fill(viewModel.timer == .off ? Color.white.opacity(0.12) : RENNColor.brandYellow))
+                }
+                .disabled(viewModel.state != .ready)
+                .opacity(viewModel.isRecording ? 0 : 1)
+                .accessibilityLabel(Text("camera.timer"))
+                .accessibilityValue(Text(timerLabel(viewModel.timer)))
             }
         }
         .padding(.bottom, 8)
@@ -113,6 +133,8 @@ struct CameraView: View {
             Task {
                 if viewModel.isRecording {
                     await viewModel.stop()
+                } else if viewModel.isCountingDown {
+                    viewModel.cancelCountdown()
                 } else {
                     await viewModel.record()
                 }
@@ -130,8 +152,24 @@ struct CameraView: View {
                 }
             }
         }
-        .disabled(!(viewModel.state == .ready || viewModel.isRecording))
+        .disabled(!(viewModel.state == .ready || viewModel.isRecording || viewModel.isCountingDown))
         .accessibilityLabel(Text(viewModel.isRecording ? LocalizedStringKey("camera.stop") : LocalizedStringKey("camera.record")))
+    }
+
+    private func next(_ timer: CaptureFlowViewModel.Timer) -> CaptureFlowViewModel.Timer {
+        switch timer {
+        case .off: .three
+        case .three: .ten
+        case .ten: .off
+        }
+    }
+
+    private func timerLabel(_ timer: CaptureFlowViewModel.Timer) -> LocalizedStringKey {
+        switch timer {
+        case .off: "camera.timer.off"
+        case .three: "camera.timer.three"
+        case .ten: "camera.timer.ten"
+        }
     }
 
     private func failureOverlay(_ failure: CaptureFlowViewModel.Failure) -> some View {

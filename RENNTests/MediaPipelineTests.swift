@@ -2,6 +2,7 @@ import AVFoundation
 import CoreImage
 import Foundation
 import Testing
+import UIKit
 import RENNDomain
 import RENNStorage
 @testable import RENN
@@ -248,4 +249,69 @@ struct MediaPipelineTests {
         #expect(pixels(at: .seconds(1)) == first, "Same recipe and media time reproduce the same pixels")
         #expect(pixels(at: try RationalTime(value: 61, timescale: 60)) != first, "Grain advances with media time")
     }
+
+    /// RGBA bytes of a region of the frame at `seconds`, for before/after comparisons.
+    static func regionBytes(_ url: URL, at seconds: Double, region: CGRect) async throws -> [UInt8] {
+        let generator = AVAssetImageGenerator(asset: AVURLAsset(url: url))
+        generator.appliesPreferredTrackTransform = true
+        generator.requestedTimeToleranceBefore = .zero
+        generator.requestedTimeToleranceAfter = .zero
+        let (image, _) = try await generator.image(at: CMTime(seconds: seconds, preferredTimescale: 600))
+        let width = Int(region.width), height = Int(region.height)
+        var bytes = [UInt8](repeating: 0, count: width * height * 4)
+        let context = try #require(CGContext(
+            data: &bytes, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+            space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+        // CGContext has a bottom-left origin; draw the image offset so `region` (top-left) lands at 0,0.
+        context.draw(image, in: CGRect(
+            x: -region.minX, y: -(CGFloat(image.height) - region.maxY),
+            width: CGFloat(image.width), height: CGFloat(image.height)))
+        return bytes
+    }
+
+    @Test func dateIndicatorIsDrawnIntoTheExport() async throws {
+        let fixture = try await Self.makeFixture(seconds: 1, audio: false)
+        defer { try? FileManager.default.removeItem(at: fixture.directory) }
+        let library = try makeLibrary(fixture.directory)
+        var record = try await importAndCreate(fixture, library: library)
+        let pro = AccessState(level: .pro, provenance: .developmentFake)
+
+        let plain = try await library.makeJobFileURL(fileExtension: "mp4")
+        let plainPlan = try ExportPlan.make(record: record, access: pro)
+        _ = try await AVExportRenderer(engine: RenderEngine()).render(
+            plan: plainPlan, sourceURL: await library.fileURL(plainPlan.source.relativePath), outputURL: plain) { _ in }
+
+        var recipe = record.recipe
+        recipe.indicators.showsDate = true
+        record = try await library.updateRecipe(record.id, expectedRevision: record.recipeRevision, recipe: recipe)
+        let dated = try await library.makeJobFileURL(fileExtension: "mp4")
+        let datedPlan = try ExportPlan.make(record: record, access: pro)
+        _ = try await AVExportRenderer(engine: RenderEngine()).render(
+            plan: datedPlan, sourceURL: await library.fileURL(datedPlan.source.relativePath), outputURL: dated) { _ in }
+
+        let layout = IndicatorLayout.resolve(output: datedPlan.policy.dimensions, settings: recipe.indicators)
+        let frame = try #require(layout.indicators.first?.frame)
+        let region = CGRect(x: frame.x, y: frame.y, width: frame.width, height: frame.height)
+        let before = try await Self.regionBytes(plain, at: 0.5, region: region)
+        let after = try await Self.regionBytes(dated, at: 0.5, region: region)
+        let changed = zip(before, after).filter { abs(Int($0) - Int($1)) > 24 }.count
+        #expect(changed > before.count / 50, "Date glyphs change the bottom-right region (changed bytes: \(changed))")
+    }
+
+    @Test func posterIsTheProjectsOwnProcessedFrameAndIsCached() async throws {
+        let fixture = try await Self.makeFixture(seconds: 2, audio: false)
+        defer { try? FileManager.default.removeItem(at: fixture.directory) }
+        let library = try makeLibrary(fixture.directory)
+        let record = try await importAndCreate(fixture, library: library)
+        let cache = fixture.directory.appendingPathComponent("Posters")
+        let provider = PosterProvider(projects: library, engine: RenderEngine(), cacheDirectory: cache)
+        let data = try #require(await provider.posterJPEG(for: record.id))
+        let image = try #require(UIImage(data: data))
+        #expect(Int(image.size.height) == 480 && Int(image.size.width) == 270, "Portrait ratio kept, long edge 480")
+        let files = try FileManager.default.contentsOfDirectory(atPath: cache.path)
+        #expect(files.count == 1)
+        #expect(await provider.posterJPEG(for: record.id) == data, "Second call is served from the cache")
+        #expect(await provider.posterJPEG(for: ProjectID()) == nil, "Unknown project: no substitute image")
+    }
 }
+

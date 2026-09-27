@@ -8,10 +8,19 @@ import RENNDomain
 @MainActor
 @Observable
 public final class CaptureFlowViewModel {
+    /// Capture timer (01 P05): both tiers and modes; default Off on a new flow.
+    public enum Timer: Int, Sendable, CaseIterable {
+        case off = 0
+        case three = 3
+        case ten = 10
+    }
+
     public enum State: Equatable, Sendable {
         case idle
         case preparing
         case ready
+        /// Seconds left; nothing is being recorded yet.
+        case countdown(Int)
         case recording(RationalTime)
         case finalizing
         case failed(Failure)
@@ -36,6 +45,11 @@ public final class CaptureFlowViewModel {
     /// Recipe the live preview renders with: the chosen Look at its default intensity. The
     /// recorded file stays clean (05 V02); the same recipe seeds the new project.
     public private(set) var previewRecipe: Recipe?
+    /// Retained within this camera flow only.
+    public var timer: Timer = .off
+
+    private var countdownTask: Task<Void, Never>?
+    private let sleep: @Sendable (Duration) async throws -> Void
 
     private var isStopping = false
     private let lookID: LookID?
@@ -67,8 +81,10 @@ public final class CaptureFlowViewModel {
         timeZone: TimeZone = .current,
         onFinished: @escaping @MainActor (ProjectID) -> Void,
         onImportInstead: @escaping @MainActor () -> Void,
-        onClose: @escaping @MainActor () -> Void
+        onClose: @escaping @MainActor () -> Void,
+        sleep: @escaping @Sendable (Duration) async throws -> Void = { try await Task.sleep(for: $0) }
     ) {
+        self.sleep = sleep
         self.lookID = lookID
         self.capture = capture
         self.permissions = permissions
@@ -83,6 +99,11 @@ public final class CaptureFlowViewModel {
         self.onFinished = onFinished
         self.onImportInstead = onImportInstead
         self.onClose = onClose
+    }
+
+    public var isCountingDown: Bool {
+        if case .countdown = state { return true }
+        return false
     }
 
     public var isRecording: Bool {
@@ -132,6 +153,7 @@ public final class CaptureFlowViewModel {
                 await stop()
             case .interrupted:
                 wasInterrupted = true
+                cancelCountdown()
                 if isRecording { await stop() }
             }
         }
@@ -151,8 +173,43 @@ public final class CaptureFlowViewModel {
         }
     }
 
+    /// Starts the countdown (if a timer is set) and then recording. The countdown is not
+    /// recorded and does not count toward the Free limit.
     public func record() async {
         guard state == .ready else { return }
+        guard timer != .off else {
+            await beginRecording()
+            return
+        }
+        countdownTask?.cancel()
+        let task = Task { [weak self] in
+            guard let self else { return }
+            for remaining in stride(from: self.timer.rawValue, to: 0, by: -1) {
+                self.state = .countdown(remaining)
+                do {
+                    try await self.sleep(.seconds(1))
+                } catch {
+                    return
+                }
+                guard !Task.isCancelled, self.isCountingDown else { return }
+            }
+            await self.beginRecording()
+        }
+        countdownTask = task
+        await task.value
+    }
+
+    /// Back/background/interruption cancel a running countdown (01 P05).
+    public func cancelCountdown() {
+        guard isCountingDown else { return }
+        countdownTask?.cancel()
+        countdownTask = nil
+        state = .ready
+    }
+
+    private func beginRecording() async {
+        guard state == .ready || isCountingDown else { return }
+        countdownTask = nil
         let tier = await access.currentAccess().effectiveTier
         recordingLimit = tier == .free ? AccessPolicy.freeMaximumDuration : nil
         wasInterrupted = false
@@ -195,6 +252,9 @@ public final class CaptureFlowViewModel {
 
     /// Back while recording stops and keeps the take; nothing recorded is thrown away.
     public func close() async {
+        if isCountingDown {
+            cancelCountdown()
+        }
         if isRecording {
             await stop()
             return

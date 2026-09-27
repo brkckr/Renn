@@ -58,21 +58,41 @@ Package tests: 121 passing on Linux (Swift 6.2.4), five consecutive runs stable 
 Not in M01 by plan: export jobs/outputs records (M02), poster cache (M05), debounced recipe
 autosave from preview (M02/M05). Projects can only be created once M02's capture/import exists.
 
-## M02 Media proof: in progress (2026-09-27)
+## M02 Media proof (2026-09-27)
 
-Done so far (package, tested on Linux, 164 tests):
-- Pure rules: `CadenceLimiter` (source timestamps kept, VFR tolerant), `WatermarkLayout`, `ImportGate`,
-  `ExportPlan`, `ExportProgress`; `OutputRecord` + Photos save state; `ProjectLibrary.commitOutput`.
-- ViewModels: `ImportFlowViewModel` (Free >30 s → Pro or another source, no trim), `ExportCoordinator`
-  (one job, cancel before commit, render ≠ Photos save, save-only retry, lease while exporting),
-  `ProjectPreviewViewModel` (500 ms intensity autosave, mute keeps Beat choice, export summary/Pro intent).
+Implemented (package logic tested on Linux; app code compiled by CI with Xcode 26.3):
+- Import: system picker (selected-media access only) → staging → `AVMediaInspector` (display size after
+  transform, rational cadence from minFrameDuration, HDR detection, audio) → Free 30 s gate → project.
+- Capture: `AVCaptureController`/`CaptureGraph` (1080p30 portrait, front mirrored, session/data queues,
+  interruption events) and `SourceRecorder` (clean AVAssetWriter source, shared origin, Free limit refusal,
+  converging stop). `CaptureFlowViewModel` with contextual permissions, silent capture, pre-record switch,
+  Off/3/10 s timer (countdown not recorded, not counted), take never discarded.
+- Preview: Metal preview through the shared `RenderEngine`, scrubber, before/after, mute, loop, intensity.
+- Export: `ExportCoordinator` (one job, summary, cancel before commit, render ≠ Photos save, save-only retry,
+  lease), `ExportWorker` (reader → Core Image → writer, per-track media queues, cadence limiter,
+  AAC re-encode, H.264/HEVC), `OutputValidator`, `PhotoLibrarySaver` (add-only).
+- Decisions: ADR 0003. Device checklist: `docs/DEVICE_TEST_PLAN_M02.md`.
 
-Written, not yet compiled (app target):
-- `AVMediaInspector` / `AVVideoImporter`, `RenderEngine` (diagnostic DEV Look, deterministic grain,
-  watermark), `WatermarkRenderer`, `ExportWorker` (AVAssetReader → Core Image → AVAssetWriter, AAC audio,
-  HEVC above 1080p/30), `OutputValidator`, `AVExportRenderer`, `PhotoLibrarySaver`, `PreviewPlayer`,
-  `MetalPreviewView`.
+Bugs found by the simulator integration tests and fixed:
+- Fixture generator wrote all video before audio (AVAssetWriter interleaving stall) → interleaved.
+- **ExportWorker deadlock** (also a device bug): both reader outputs were drained on one thread; with the
+  writer waiting to interleave, video decoding blocked forever. Fixed with per-track
+  `requestMediaDataWhenReady` queues (commit f16b891).
 
-Remaining for M02: preview/export/import screens and composition wiring, simulator media integration test
-with a synthesized fixture video, ordinary camera capture (`CaptureController` + `SourceRecorder`),
-ADR 0003 (codec/VFR/HDR decisions), then physical-device validation.
+Evidence status:
+- Simulator media integration (import inspection, Free 720p30 with audio and same duration, muted export
+  without audio, Pro 1080×1920 at 60 FPS, deterministic render, date indicator drawn, poster): pending the
+  CI run for the deadlock fix.
+- Physical device: nothing run yet (camera, HDR route, A/V sync, performance, Photos permission flow).
+
+## M03 Beat and render core: in progress (2026-09-27)
+
+- `BeatAnalyzer` v1 in pure Swift per 05 V05 (tested on Linux, chunking-invariant, finite/clamped outputs,
+  silence and steady-tone behavior). One added constant: 5% minimum relative flux rise.
+- `BeatModulation` bounded (+0.06 brightness, 1.5% zoom); intensity 0 / mute / no audio = off.
+- `AVBeatTimelineProvider`: decodes the source's own audio, cache keyed by fingerprint + constants.
+- `IndicatorLayout` resolver (all 16 combinations, watermark and four PiP corners) and `IndicatorRenderer`;
+  effects → OSD → watermark order; staged Indicators panel with Gregorian date-only stamp.
+- Posters: `PosterPolicy` + `PosterProvider` (project's own processed frame, cached per revision).
+- Remaining for M03: versioned LUT (.cube) loader and parser, the Look parameter mapping and the Metal/CI
+  artifact engine that the final twelve Looks will use (needs owner assets for final tuning).

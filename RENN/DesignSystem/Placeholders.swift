@@ -1,5 +1,7 @@
 import SwiftUI
+import UIKit
 import RENNDomain
+import RENNFeatures
 
 /// PLACEHOLDER poster for a Look until licensed comparison-scene posters exist (02 D05,
 /// 08 I02). Deterministic per Look ID; always carries the fixture badge when the Look
@@ -36,6 +38,8 @@ struct VHSCaseShell: View {
     let variant: Int
     /// Non-ready states are printed on the case, never hidden (05 V08).
     var status: LocalizedStringKey? = nil
+    /// The project's own processed frame; nil shows the empty print window.
+    var poster: UIImage? = nil
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -45,10 +49,19 @@ struct VHSCaseShell: View {
                 Rectangle()
                     .fill(RENNColor.brandSequence[variant % 4])
                     .frame(height: 10)
-                // Print window: the project's processed frame goes here (M05).
+                // Print window: the project's own processed frame, ratio preserved (02 D08).
                 Rectangle()
                     .fill(Color.black.opacity(0.35))
                     .aspectRatio(3 / 4, contentMode: .fit)
+                    .overlay {
+                        if let poster {
+                            Image(uiImage: poster)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .accessibilityHidden(true)
+                        }
+                    }
+                    .clipped()
                     .padding(8)
                 Text(verbatim: name)
                     .font(RENNFont.roboto(12, medium: true, relativeTo: .caption))
@@ -93,5 +106,26 @@ struct SectionHeader<Trailing: View>: View {
 extension SectionHeader where Trailing == EmptyView {
     init(title: LocalizedStringKey) {
         self.init(title: title) { EmptyView() }
+    }
+}
+
+/// Case shell that loads the project's poster through its ViewModel's poster hook.
+struct ProjectCaseView: View {
+    let project: ProjectSummary
+    let loadPoster: (ProjectID) async -> Data?
+    var status: LocalizedStringKey? = nil
+
+    @State private var poster: UIImage?
+
+    var body: some View {
+        VHSCaseShell(
+            name: project.name.value,
+            variant: ProjectsViewModel.caseVariant(for: project.id),
+            status: status,
+            poster: poster)
+            // Reload when the project changes (e.g. a new recipe revision).
+            .task(id: project.updatedAt) {
+                poster = await loadPoster(project.id).flatMap(UIImage.init(data:))
+            }
     }
 }

@@ -128,9 +128,7 @@ struct HomeView: View {
                         Button {
                             viewModel.open(project.id)
                         } label: {
-                            VHSCaseShell(
-                                name: project.name.value,
-                                variant: ProjectsViewModel.caseVariant(for: project.id))
+                            ProjectCaseView(project: project, loadPoster: { await viewModel.poster(for: $0) })
                         }
                         .buttonStyle(.plain)
                         .frame(maxWidth: .infinity)

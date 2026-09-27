@@ -111,9 +111,9 @@ struct ProjectsView: View {
         Button {
             viewModel.open(project.id)
         } label: {
-            VHSCaseShell(
-                name: project.name.value,
-                variant: ProjectsViewModel.caseVariant(for: project.id),
+            ProjectCaseView(
+                project: project,
+                loadPoster: { await viewModel.poster(for: $0) },
                 status: statusKey(project.readiness))
         }
         .buttonStyle(.plain)
