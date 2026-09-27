@@ -119,6 +119,12 @@ Evidence status:
   only the common interval; swap events are on the composition timeline.
 - Simulator test added: two synthesized sources (red rear with audio, green front 0.1 s later), swap at
   0.5 s; asserts duration 0.9 s, one audio track and main/inset colours before and after the swap.
-- `DeviceCaptureCapabilities` probes the real format pair. Remaining: `AVCaptureMultiCamSession` capture
-  (two clean writers, one mic, hardware-cost check, interruption/pressure handling), live swap UI,
-  dual preview, composite poster, and device evidence on supported hardware.
+- Evidence: CI run 36358943585 (commit f7fefe2) passed all 24 app tests on the iPhone simulator,
+  including `dualCamExportComposesBothSourcesAndReplaysTheSwap` and
+  `dualPreviewCompositionPacksBothSourcesOnOneClock`; 238 package tests pass on Linux and macOS.
+  Implemented since: `DualCaptureFlowViewModel` (Linux-tested with a fake), `AVDualCaptureController`
+  (AVCaptureMultiCamSession, explicit connections, one mic into the rear writer, hardware-cost check;
+  compiled only, device-only), `DualCameraView`, composite posters, and Dual-Cam project preview on one
+  composition clock. Device plan: `docs/DEVICE_TEST_PLAN_M04.md`.
+- `DeviceCaptureCapabilities` probes the real format pair. Remaining: device evidence on supported and
+  unsupported hardware (nothing Dual-Cam has run on a device yet).
