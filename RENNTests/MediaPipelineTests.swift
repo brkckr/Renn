@@ -420,13 +420,21 @@ struct MediaPipelineTests {
             rearURL: rear.url, frontURL: front.url, timing: timing, audioFromRear: true)
         #expect(dual.packedSize == CGSize(width: 2160, height: 1920))
         #expect(abs(dual.composition.duration.seconds - 0.9) < 0.01, "Common interval only")
-        #expect(try await dual.composition.loadTracks(withMediaType: .audio).count == 1, "One shared audio track")
+        let audioTracks = dual.composition.tracks(withMediaType: .audio).count
+        #expect(audioTracks == 1, "One shared audio track")
 
         let generator = AVAssetImageGenerator(asset: dual.composition)
         generator.videoComposition = dual.videoComposition
         generator.requestedTimeToleranceBefore = .zero
         generator.requestedTimeToleranceAfter = .zero
-        let (image, _) = try await generator.image(at: CMTime(value: 3, timescale: 10))
+        // Callback API: the generator stays on the main actor (no sending across isolation).
+        let image: CGImage = try await withCheckedThrowingContinuation { continuation in
+            generator.generateCGImageAsynchronously(for: CMTime(value: 3, timescale: 10)) { image, _, error in
+                if let image { continuation.resume(returning: image) } else {
+                    continuation.resume(throwing: error ?? CancellationError())
+                }
+            }
+        }
         let packed = CIImage(cgImage: image)
         let parts = DualPreviewComposition.split(packed, rearWidth: dual.rearWidth)
         #expect(parts.rear.extent.size == CGSize(width: 1080, height: 1920))
