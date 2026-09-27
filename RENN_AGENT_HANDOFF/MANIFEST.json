@@ -1,0 +1,117 @@
+{
+  "package": "RENN_AGENT_HANDOFF",
+  "version": "1.0",
+  "bundleIdentifier": "tzlapp.studio.renn",
+  "files": [
+    {
+      "path": "00_AGENT_START.md",
+      "bytes": 3838,
+      "sha256": "97b2c21f784477f309b0c09ef6bfe5016300cb3346a75dcb44b14aae38146998"
+    },
+    {
+      "path": "01_PRODUCT_CONTRACT.md",
+      "bytes": 10164,
+      "sha256": "98f67d37db896dd1c9145c2a80eaee83b63ce52b4718e2c704c27e3022bc07c6"
+    },
+    {
+      "path": "02_DESIGN_AND_SCREENS.md",
+      "bytes": 15450,
+      "sha256": "84e6528dd346060635d2cdd04b477cde8cd89adf4d66ebf49be8b4b7cc9c6455"
+    },
+    {
+      "path": "03_MOTION.md",
+      "bytes": 11003,
+      "sha256": "25d84a45065436da8269acee22768737e2b9a77f2fa9fd7813c534ab1a5061bd"
+    },
+    {
+      "path": "04_ARCHITECTURE.md",
+      "bytes": 7995,
+      "sha256": "23544203dc2100d3bf4455305aede641047460e8527713ee0ffab048c36bfcbf"
+    },
+    {
+      "path": "05_MEDIA_AND_DATA.md",
+      "bytes": 18027,
+      "sha256": "41b92979d63a081ca6442a0d7fc4a7f1c7f638e0bf058004877a20850c0cc934"
+    },
+    {
+      "path": "06_COMMERCE_AND_OPERATIONS.md",
+      "bytes": 10582,
+      "sha256": "02d2fa78f4f147faae8b0d162bfc4abc4a354c080efb22676fd3d13704fbe95a"
+    },
+    {
+      "path": "07_IMPLEMENTATION_AND_TESTS.md",
+      "bytes": 11118,
+      "sha256": "958e3ed2262a598d9530e390cda882a995183b2630f47ab77f51bdc4fa1dfb42"
+    },
+    {
+      "path": "08_ASSETS_AND_INPUTS.md",
+      "bytes": 7768,
+      "sha256": "05624c91a2a318bf5ecffb5243547d11b898620178ef2a887fe214a59073788a"
+    },
+    {
+      "path": "HANDOFF_VALIDATION.md",
+      "bytes": 1805,
+      "sha256": "eeed4275052055a7398c4b270ec17a136182b5de4cf3df1764445e5fff3bb28f"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4149,
+      "sha256": "f9e523bf3406ec68b05c4227174bfedafb22a409796255f92010f2c7667bb31d"
+    },
+    {
+      "path": "references/allscreen.png",
+      "bytes": 1774228,
+      "sha256": "c893b95671596718a25b558821277d846d5fb8cf9784cb2aac7de033d525f13a"
+    },
+    {
+      "path": "references/bottom bar.mp4",
+      "bytes": 420108,
+      "sha256": "944ac29323f5aff71d2b2a5c44e837862cd3756d7b2523ff0cf4b1fa07950582"
+    },
+    {
+      "path": "references/bottom-bar-contact-sheet.png",
+      "bytes": 562107,
+      "sha256": "1d3a30cb94edcc8667d9a9084776d4bc2c22f4a9dcf4ba9735b9312fe7f62ba4"
+    },
+    {
+      "path": "references/caset anim.mp4",
+      "bytes": 230353,
+      "sha256": "d11da3cf495ea99cc6fd43a38e39f02222c8604a8f666b181c99af74f6156128"
+    },
+    {
+      "path": "references/cassette-projects-contact-sheet.png",
+      "bytes": 770189,
+      "sha256": "2ff8812a8c59fb67188a2fce98514fde5df9cf66062fffc2a63195d0febc3cd5"
+    },
+    {
+      "path": "references/cassette-screen-reference.png",
+      "bytes": 163677,
+      "sha256": "445a738cd15582cf5867a955da959e90cddabb3aa7e484bf85147d3b90ae6c3c"
+    },
+    {
+      "path": "references/onboarding-contact-sheet.png",
+      "bytes": 405891,
+      "sha256": "bdc31dca523486b5b21ccdebe986cbf2f718fee79e979ab872d963453037a178"
+    },
+    {
+      "path": "references/onboarding.mp4",
+      "bytes": 202968,
+      "sha256": "a370679decd4e4af0681eff5988d2ba119a4fec9f44095a28212b77d47ba00fb"
+    },
+    {
+      "path": "references/paywall-contact-sheet.png",
+      "bytes": 1529727,
+      "sha256": "b82499f96ab36c1b8ab90e543e4e2a3ef0f4475a445e5334c2d5830b4f463cc9"
+    },
+    {
+      "path": "references/paywall.mp4",
+      "bytes": 1590927,
+      "sha256": "3c254e87b86f71962113307105a0297126582eb632507cba51fe9fc14cf5ac54"
+    },
+    {
+      "path": "references/splash.jpg",
+      "bytes": 28200,
+      "sha256": "3b0d7cabafffbc35a9bf4028387a3574e73e4e72df841eb76e85c7612c6beb8e"
+    }
+  ]
+}
