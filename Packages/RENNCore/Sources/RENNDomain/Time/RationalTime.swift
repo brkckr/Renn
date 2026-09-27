@@ -72,3 +72,43 @@ extension RationalTime: Comparable {
         return Swift.max(a, 1)
     }
 }
+
+extension RationalTime {
+    /// Exact sum on the least common timescale. If that timescale does not fit `Int32` (e.g.
+    /// host-clock nanoseconds mixed with 600), the larger timescale is used and the other
+    /// operand is rounded to it: at most half a tick of that clock.
+    public static func + (lhs: RationalTime, rhs: RationalTime) -> RationalTime {
+        let (scale, left, right) = common(lhs, rhs)
+        let sum = left.addingReportingOverflow(right)
+        precondition(!sum.overflow, "RationalTime addition overflow")
+        return try! RationalTime(value: sum.partialValue, timescale: scale)
+    }
+
+    public static func - (lhs: RationalTime, rhs: RationalTime) -> RationalTime {
+        let (scale, left, right) = common(lhs, rhs)
+        let difference = left.subtractingReportingOverflow(right)
+        precondition(!difference.overflow, "RationalTime subtraction overflow")
+        return try! RationalTime(value: difference.partialValue, timescale: scale)
+    }
+
+    /// The same instant expressed on `timescale`, rounded to the nearest tick (ties away from zero).
+    public func converted(to timescale: Int32) -> RationalTime {
+        precondition(timescale > 0)
+        if timescale == self.timescale { return self }
+        let product = value.multipliedFullWidth(by: Int64(timescale))
+        // Truncating division; |remainder| < divisor ≤ Int32.max, so doubling it cannot overflow.
+        let divisor = Int64(self.timescale)
+        let (truncated, remainder) = divisor.dividingFullWidth(product)
+        var quotient = truncated
+        if remainder * 2 >= divisor { quotient += 1 } else if remainder * 2 <= -divisor { quotient -= 1 }
+        return try! RationalTime(value: quotient, timescale: timescale)
+    }
+
+    private static func common(_ lhs: RationalTime, _ rhs: RationalTime) -> (Int32, Int64, Int64) {
+        if lhs.timescale == rhs.timescale { return (lhs.timescale, lhs.value, rhs.value) }
+        let a = Int64(lhs.timescale), b = Int64(rhs.timescale)
+        let lcm = a / gcd(a, b) * b
+        let scale = lcm <= Int64(Int32.max) ? Int32(lcm) : Swift.max(lhs.timescale, rhs.timescale)
+        return (scale, lhs.converted(to: scale).value, rhs.converted(to: scale).value)
+    }
+}

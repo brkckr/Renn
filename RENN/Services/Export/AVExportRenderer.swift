@@ -15,6 +15,8 @@ struct AVExportRenderer: ExportRendering {
         progress: @escaping @Sendable (Double) -> Void
     ) async throws(ExportFailure) -> RationalTime {
         guard FileManager.default.fileExists(atPath: sourceURL.path) else { throw .sourceUnavailable }
+        // Dual-Cam composition export lands with the M04 renderer; never export one camera instead.
+        guard plan.dual == nil else { throw .unsupportedSource }
         var watermark: CIImage?
         var aspect = 4.0
         if plan.policy.requiresWatermark {
