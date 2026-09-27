@@ -112,3 +112,41 @@ struct LookTests {
         #expect(throws: (any Error).self) { try JSONDecoder().decode(LookCatalog.self, from: Data(json.utf8)) }
     }
 }
+
+@Suite("Look parameters and snapshots (05 V04)")
+struct LookParameterTests {
+    private func look(_ parameters: [String: Double]) -> LookDefinition {
+        LookDefinition(
+            id: "l", version: 2, family: "f", nameKey: "n", descriptionKey: "d",
+            defaultIntensity: LookIntensity(0.5)!, renderVersion: 1, isDevelopmentFixture: false,
+            lut: "l_color", parameters: parameters)
+    }
+
+    @Test func recipeSnapshotsParametersAndIntensityScalesThem() throws {
+        let definition = look([LookParameter.grain: 0.2, LookParameter.saturation: -0.4])
+        var recipe = Recipe.initial(look: definition, creationStamp: try StampDate(year: 2026, month: 1, day: 1), seed: 1)
+        #expect(recipe.lookParameters == definition.parameters)
+        #expect(abs(recipe.effectiveParameter(LookParameter.grain) - 0.1) < 1e-12)
+        recipe.intensity = .off
+        #expect(recipe.effectiveParameter(LookParameter.saturation) == 0, "Intensity 0 disables the Look")
+        #expect(recipe.effectiveParameter(LookParameter.vignette) == 0, "Missing keys contribute nothing")
+    }
+
+    @Test func manifestParametersAreBoundedAndOptional() throws {
+        #expect(throws: LookCatalog.ValidationError.invalidParameter("l", LookParameter.grain)) {
+            try LookCatalog(catalogVersion: "1", isDevelopmentFixture: false, recommendedLookID: nil,
+                            looks: [look([LookParameter.grain: 5])])
+        }
+        #expect(throws: LookCatalog.ValidationError.invalidParameter("l", "sparkle")) {
+            try LookCatalog(catalogVersion: "1", isDevelopmentFixture: false, recommendedLookID: nil,
+                            looks: [look(["sparkle": 1])])
+        }
+        let json = """
+        {"schemaVersion": 1, "catalogVersion": "1", "isDevelopmentFixture": false, "looks": [
+          {"id": "a", "version": 1, "family": "f", "nameKey": "n", "descriptionKey": "d",
+           "defaultIntensity": 0.5, "renderVersion": 1, "isDevelopmentFixture": false}]}
+        """
+        let catalog = try JSONDecoder().decode(LookCatalog.self, from: Data(json.utf8))
+        #expect(catalog.looks[0].lut == nil && catalog.looks[0].parameters.isEmpty)
+    }
+}

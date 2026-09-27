@@ -8,7 +8,7 @@ public enum DualCameraAvailability: Sendable, Equatable {
 public enum DualCameraUnsupportedReason: String, Sendable, Equatable {
     /// The device/OS reports no multi-camera support (includes the Simulator).
     case hardwareNotSupported
-    /// Supported hardware but no validated front/rear format pair (M04).
+    /// Supported hardware but no front/rear multi-cam format pair at 1080p30 (`DualFormatSelection`).
     case noCompatibleFormats
 }
 

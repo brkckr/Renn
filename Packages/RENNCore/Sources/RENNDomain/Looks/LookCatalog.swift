@@ -12,6 +12,10 @@ public struct LookDefinition: Sendable, Hashable, Codable, Identifiable {
     public let renderVersion: Int
     /// True for development fixtures that must never be presented as final approved Looks.
     public let isDevelopmentFixture: Bool
+    /// Bundled `.cube` resource name (without extension), if the Look uses a LUT.
+    public let lut: String?
+    /// Effect strengths at intensity 1 (see `LookParameter`); intensity scales them linearly.
+    public let parameters: [String: Double]
 
     public init(
         id: LookID,
@@ -21,7 +25,9 @@ public struct LookDefinition: Sendable, Hashable, Codable, Identifiable {
         descriptionKey: String,
         defaultIntensity: LookIntensity,
         renderVersion: Int,
-        isDevelopmentFixture: Bool
+        isDevelopmentFixture: Bool,
+        lut: String? = nil,
+        parameters: [String: Double] = [:]
     ) {
         self.id = id
         self.version = version
@@ -31,7 +37,50 @@ public struct LookDefinition: Sendable, Hashable, Codable, Identifiable {
         self.defaultIntensity = defaultIntensity
         self.renderVersion = renderVersion
         self.isDevelopmentFixture = isDevelopmentFixture
+        self.lut = lut
+        self.parameters = parameters
     }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(LookID.self, forKey: .id)
+        version = try container.decode(Int.self, forKey: .version)
+        family = try container.decode(String.self, forKey: .family)
+        nameKey = try container.decode(String.self, forKey: .nameKey)
+        descriptionKey = try container.decode(String.self, forKey: .descriptionKey)
+        defaultIntensity = try container.decode(LookIntensity.self, forKey: .defaultIntensity)
+        renderVersion = try container.decode(Int.self, forKey: .renderVersion)
+        isDevelopmentFixture = try container.decode(Bool.self, forKey: .isDevelopmentFixture)
+        lut = try container.decodeIfPresent(String.self, forKey: .lut)
+        parameters = try container.decodeIfPresent([String: Double].self, forKey: .parameters) ?? [:]
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, version, family, nameKey, descriptionKey, defaultIntensity, renderVersion, isDevelopmentFixture
+        case lut, parameters
+    }
+}
+
+/// Parameter keys understood by render version 1. Values are strengths at intensity 1.
+public enum LookParameter {
+    /// 0...1 blend of the LUT result over the graded image.
+    public static let lutMix = "lutMix"
+    /// Saturation change, e.g. -0.35 desaturates by 35%.
+    public static let saturation = "saturation"
+    /// Contrast change, e.g. 0.08.
+    public static let contrast = "contrast"
+    /// Warmth in kelvin of neutral shift (positive = warmer).
+    public static let warmth = "warmth"
+    /// Vignette strength 0...2.
+    public static let vignette = "vignette"
+    /// Grain overlay strength 0...0.3.
+    public static let grain = "grain"
+
+    public static let all: Set<String> = [lutMix, saturation, contrast, warmth, vignette, grain]
+    /// Per-key limits so a malformed manifest cannot produce unbounded effects.
+    public static let limits: [String: ClosedRange<Double>] = [
+        lutMix: 0...1, saturation: -1...1, contrast: -0.5...0.5, warmth: -4000...4000, vignette: 0...2, grain: 0...0.3,
+    ]
 }
 
 /// Validated catalog manifest (08 I01). Decoded from the bundled JSON manifest.
@@ -52,6 +101,7 @@ public struct LookCatalog: Sendable, Equatable, Codable {
         case emptyIdentifier
         case invalidVersion(LookID)
         case unknownRecommendedLook(LookID)
+        case invalidParameter(LookID, String)
     }
 
     public init(
@@ -92,6 +142,11 @@ public struct LookCatalog: Sendable, Equatable, Codable {
             guard !look.id.rawValue.isEmpty else { throw .emptyIdentifier }
             guard look.version > 0, look.renderVersion > 0 else { throw .invalidVersion(look.id) }
             guard seen.insert(look.id).inserted else { throw .duplicateLookID(look.id) }
+            for (key, value) in look.parameters {
+                guard let range = LookParameter.limits[key], value.isFinite, range.contains(value) else {
+                    throw .invalidParameter(look.id, key)
+                }
+            }
         }
         if let recommendedLookID, !seen.contains(recommendedLookID) {
             throw .unknownRecommendedLook(recommendedLookID)

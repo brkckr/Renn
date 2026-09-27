@@ -411,6 +411,7 @@ private struct UnavailableProjectStore: ProjectStoring {
     }
     func releaseLease(_ lease: ProjectLease) async {}
     func makeJobFileURL(fileExtension: String) async throws(ProjectStoreError) -> URL { throw .metadataUnavailable }
+    func makeStagingFileURL(fileExtension: String) async throws(ProjectStoreError) -> URL { throw .metadataUnavailable }
     func commitOutput(_ output: FinishedOutput, to id: ProjectID) async throws(ProjectStoreError) -> OutputRecord {
         throw .metadataUnavailable
     }

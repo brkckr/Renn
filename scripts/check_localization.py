@@ -29,9 +29,14 @@ def normalize(key):
 catalog_by_shape = {normalize(k): k for k in catalog}
 
 # Dotted lowercase literals, optionally with SwiftUI interpolations.
-LITERAL = re.compile(r'"((?:[a-z][A-Za-z0-9]*)(?:\.[A-Za-z0-9]+)+)((?: \\\([^)]*\))*)"')
-# SF Symbol names are not localization keys.
-SYMBOL_LINE = re.compile(r"systemName:|systemImage:")
+# Dotted literals with optional interpolations (one level of nested parentheses allowed).
+LITERAL = re.compile(r'"((?:[a-z][A-Za-z0-9]*)(?:\.[A-Za-z0-9]+)+)((?: \\\((?:[^()]|\([^()]*\))*\))*)"')
+# Only these key namespaces are localization keys; other dotted literals (SF Symbols such as
+# "heart.fill", defaults keys) are ignored.
+NAMESPACES = {
+    "common", "tab", "creation", "dual", "fixture", "flow", "home", "looks", "look", "onboarding",
+    "projects", "project", "settings", "paywall", "export", "import", "preview", "camera", "indicators",
+}
 IGNORED_FILES = {"RENNIcon.swift"}
 IGNORED_PREFIXES = ("renn.",)
 
@@ -39,11 +44,10 @@ used = set()
 for path in glob.glob(f"{ROOT}/RENN/**/*.swift", recursive=True):
     if path.split("/")[-1] in IGNORED_FILES:
         continue
-    source = "\n".join(
-        line for line in open(path, encoding="utf-8").read().splitlines() if not SYMBOL_LINE.search(line))
+    source = open(path, encoding="utf-8").read()
     for match in LITERAL.finditer(source):
         key = match.group(1)
-        if key.startswith(IGNORED_PREFIXES):
+        if key.startswith(IGNORED_PREFIXES) or key.split(".")[0] not in NAMESPACES:
             continue
         shape = key + " {}" * match.group(2).count("\\(")
         used.add(shape)

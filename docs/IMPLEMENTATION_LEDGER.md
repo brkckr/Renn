@@ -57,3 +57,74 @@ Firebase/RevenueCat SDKs and `Package.resolved` (M06), final motion (M07).
 Package tests: 121 passing on Linux (Swift 6.2.4), five consecutive runs stable for storage tests.
 Not in M01 by plan: export jobs/outputs records (M02), poster cache (M05), debounced recipe
 autosave from preview (M02/M05). Projects can only be created once M02's capture/import exists.
+
+## M02 Media proof (2026-09-27)
+
+Implemented (package logic tested on Linux; app code compiled by CI with Xcode 26.3):
+- Import: system picker (selected-media access only) → staging → `AVMediaInspector` (display size after
+  transform, rational cadence from minFrameDuration, HDR detection, audio) → Free 30 s gate → project.
+- Capture: `AVCaptureController`/`CaptureGraph` (1080p30 portrait, front mirrored, session/data queues,
+  interruption events) and `SourceRecorder` (clean AVAssetWriter source, shared origin, Free limit refusal,
+  converging stop). `CaptureFlowViewModel` with contextual permissions, silent capture, pre-record switch,
+  Off/3/10 s timer (countdown not recorded, not counted), take never discarded.
+- Preview: Metal preview through the shared `RenderEngine`, scrubber, before/after, mute, loop, intensity.
+- Export: `ExportCoordinator` (one job, summary, cancel before commit, render ≠ Photos save, save-only retry,
+  lease), `ExportWorker` (reader → Core Image → writer, per-track media queues, cadence limiter,
+  AAC re-encode, H.264/HEVC), `OutputValidator`, `PhotoLibrarySaver` (add-only).
+- Decisions: ADR 0003. Device checklist: `docs/DEVICE_TEST_PLAN_M02.md`.
+
+Bugs found by the simulator integration tests and fixed:
+- Fixture generator wrote all video before audio (AVAssetWriter interleaving stall) → interleaved.
+- **ExportWorker deadlock** (also a device bug): both reader outputs were drained on one thread; with the
+  writer waiting to interleave, video decoding blocked forever. Fixed with per-track
+  `requestMediaDataWhenReady` queues (commit f16b891).
+
+Evidence status:
+- Simulator media integration: **passed** on CI run 36357990546 (commit 943f7c6, iPhone
+  simulator): import inspection, Free 720p30 with audio and same duration, muted export without audio,
+  Pro 1080×1920 keeping 60 FPS, deterministic render, date indicator drawn, processed poster cached; Look
+  LUT tests and SwiftData persistence also passed. Fixtures are short (CI simulators render on the CPU at
+  about a second per 1080×1920 frame), so these prove correctness, not speed.
+- Physical device: nothing run yet (camera, HDR route, A/V sync, performance, Photos permission flow).
+
+## M03 Beat and render core: in progress (2026-09-27)
+
+- `BeatAnalyzer` v1 in pure Swift per 05 V05 (tested on Linux, chunking-invariant, finite/clamped outputs,
+  silence and steady-tone behavior). One added constant: 5% minimum relative flux rise.
+- `BeatModulation` bounded (+0.06 brightness, 1.5% zoom); intensity 0 / mute / no audio = off.
+- `AVBeatTimelineProvider`: decodes the source's own audio, cache keyed by fingerprint + constants.
+- `IndicatorLayout` resolver (all 16 combinations, watermark and four PiP corners) and `IndicatorRenderer`;
+  effects → OSD → watermark order; staged Indicators panel with Gregorian date-only stamp.
+- Posters: `PosterPolicy` + `PosterProvider` (project's own processed frame, cached per revision).
+- Catalog-driven Look graph (render version 1): each Look declares an optional bundled `.cube` LUT and
+  bounded parameters (lutMix, saturation, contrast, warmth, vignette, grain). `Recipe.initial`
+  snapshots the parameters; intensity scales them linearly, 0 is a passthrough. `CubeLUT` parser
+  (validated, Linux-tested) + `LookLUTStore` (bundle loader, 0...1 domain, CIColorCubeWithColorSpace in
+  sRGB). The hard-coded diagnostic grade is gone; the DEV Look is now one parameter set plus the
+  generated `dev_warm.cube` fixture (`scripts/generate_dev_lut.py`).
+- Remaining for M03: scanline/chroma/tracking artifact stages (shader work) and final per-Look tuning,
+  both waiting on the owner's twelve Look briefs and assets (M08).
+
+## M04 Dual-Cam: in progress (2026-09-27)
+
+- Domain (Linux-tested): `DualInsetLayout` (rounded PiP, 30% width, four pre-record corners, watermark
+  reservation), `DualSourceTiming` (common playable interval + per-source offsets on the shared clock),
+  exact `RationalTime` +/- (bounded rounding when the common timescale exceeds Int32),
+  `DualFormatSelection` (largest multi-cam format up to 1080p30 per camera), `ExportPlan.dual` with a
+  single declared shared-audio owner; missing/duplicate/invalid inputs are refused, never exported as one
+  camera.
+- Export contract now takes `ExportSourceFiles` (URL per source role). `RenderEngine` composes main +
+  inset (normalize → same Look/Beat per source → rounded inset → OSD → watermark). `ExportWorker` drives
+  video from the rear file and reads the front file through a bounded frame cursor; both readers cover
+  only the common interval; swap events are on the composition timeline.
+- Simulator test added: two synthesized sources (red rear with audio, green front 0.1 s later), swap at
+  0.5 s; asserts duration 0.9 s, one audio track and main/inset colours before and after the swap.
+- Evidence: CI run 36358943585 (commit f7fefe2) passed all 24 app tests on the iPhone simulator,
+  including `dualCamExportComposesBothSourcesAndReplaysTheSwap` and
+  `dualPreviewCompositionPacksBothSourcesOnOneClock`; 238 package tests pass on Linux and macOS.
+  Implemented since: `DualCaptureFlowViewModel` (Linux-tested with a fake), `AVDualCaptureController`
+  (AVCaptureMultiCamSession, explicit connections, one mic into the rear writer, hardware-cost check;
+  compiled only, device-only), `DualCameraView`, composite posters, and Dual-Cam project preview on one
+  composition clock. Device plan: `docs/DEVICE_TEST_PLAN_M04.md`.
+- `DeviceCaptureCapabilities` probes the real format pair. Remaining: device evidence on supported and
+  unsupported hardware (nothing Dual-Cam has run on a device yet).

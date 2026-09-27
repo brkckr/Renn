@@ -1,3 +1,4 @@
+import Foundation
 import Observation
 import RENNDomain
 
@@ -26,6 +27,7 @@ public final class HomeViewModel {
     private let projectStore: any ProjectStoring
     private let lookCatalog: any LookCatalogProviding
     private let lookPreferencesStore: any LookPreferencesStoring
+    private let posters: (any PosterProviding)?
     private let onSeeAll: @MainActor () -> Void
     private let onInspectLook: @MainActor (LookID) -> Void
     private let onOpenProject: @MainActor (ProjectID) -> Void
@@ -34,6 +36,7 @@ public final class HomeViewModel {
         projectStore: any ProjectStoring,
         lookCatalog: any LookCatalogProviding,
         lookPreferencesStore: any LookPreferencesStoring,
+        posters: (any PosterProviding)? = nil,
         onSeeAll: @escaping @MainActor () -> Void,
         onInspectLook: @escaping @MainActor (LookID) -> Void,
         onOpenProject: @escaping @MainActor (ProjectID) -> Void
@@ -41,6 +44,7 @@ public final class HomeViewModel {
         self.projectStore = projectStore
         self.lookCatalog = lookCatalog
         self.lookPreferencesStore = lookPreferencesStore
+        self.posters = posters
         self.onSeeAll = onSeeAll
         self.onInspectLook = onInspectLook
         self.onOpenProject = onOpenProject
@@ -62,6 +66,11 @@ public final class HomeViewModel {
     public func seeAll() { onSeeAll() }
     public func inspect(_ lookID: LookID) { onInspectLook(lookID) }
     public func open(_ projectID: ProjectID) { onOpenProject(projectID) }
+
+    /// Same case/cover/name model as Projects (02 D08).
+    public func poster(for id: ProjectID) async -> Data? {
+        await posters?.posterJPEG(for: id)
+    }
 
     private func loadCatalog() async {
         do {

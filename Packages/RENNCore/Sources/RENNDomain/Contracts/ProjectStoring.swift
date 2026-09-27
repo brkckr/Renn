@@ -25,6 +25,8 @@ public protocol ProjectStoring: Sendable {
     func releaseLease(_ lease: ProjectLease) async
     /// New unique URL for an export job's partial file, in the current launch's job area.
     func makeJobFileURL(fileExtension: String) async throws(ProjectStoreError) -> URL
+    /// New unique URL in the current launch's staging area (import copies, capture takes).
+    func makeStagingFileURL(fileExtension: String) async throws(ProjectStoreError) -> URL
     /// Moves a validated output into the project and makes it the latest output. A failed
     /// render never replaces the previous good result (05 V08).
     func commitOutput(_ output: FinishedOutput, to id: ProjectID) async throws(ProjectStoreError) -> OutputRecord

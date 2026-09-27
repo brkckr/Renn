@@ -5,6 +5,8 @@ name: CI
 on:
   push:
     branches: ["main", "claude/**"]
+    # Documentation-only pushes do not rebuild (and do not cancel a running build).
+    paths-ignore: ["docs/**", "**/*.md", "RENN_AGENT_HANDOFF/**"]
   pull_request:
   workflow_dispatch:
 

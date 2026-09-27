@@ -12,6 +12,14 @@ final class AppComposition {
     let configuration: AppConfiguration
     let router: AppRouter
     let localization: LocalizationController
+    /// App-lifetime GPU/Core Image context shared by preview and export (04 A03).
+    let renderEngine: RenderEngine
+    /// App-lifetime export owner: jobs survive sheet dismissal (04 A03).
+    let exportCoordinator: ExportCoordinator
+    /// Canonical Beat timelines shared by preview and export (05 V05).
+    let beatTimelines: AVBeatTimelineProvider
+    /// Processed-frame posters for VHS cases (01 P03).
+    let posters: PosterProvider
 
     private let preferencesStore: any AppPreferencesStoring
     private let purchases: any Purchasing
@@ -39,11 +47,21 @@ final class AppComposition {
         router = AppRouter(captureCapabilities: captureCapabilities)
         localization = LocalizationController(language: preferencesStore.load().language)
         // Consent is read at send time, so turning diagnostics off stops the next event.
-        telemetry = ConsentGatedTelemetry(
+        let telemetry = ConsentGatedTelemetry(
             isCollectionAllowed: { [preferencesStore] in
                 await preferencesStore.load().diagnosticsConsent.allowsCollection
             },
             sink: telemetrySink)
+        self.telemetry = telemetry
+        let engine = RenderEngine()
+        renderEngine = engine
+        let timelines = AVBeatTimelineProvider()
+        beatTimelines = timelines
+        posters = PosterProvider(projects: projectStore, engine: engine)
+        exportCoordinator = ExportCoordinator(
+            projects: projectStore, access: purchases,
+            renderer: AVExportRenderer(engine: engine, beatTimelines: timelines),
+            photos: PhotoLibrarySaver(), lookPreferences: lookPreferencesStore, telemetry: telemetry)
     }
 
     /// Live composition for app launches.
@@ -113,6 +131,7 @@ final class AppComposition {
             projectStore: projectStore,
             lookCatalog: lookCatalog,
             lookPreferencesStore: lookPreferencesStore,
+            posters: posters,
             onSeeAll: { [router] in router.showAllProjects() },
             onInspectLook: { [router] in router.inspectLook($0) },
             onOpenProject: { [router] in router.openProject($0) })
@@ -137,6 +156,7 @@ final class AppComposition {
     func makeProjectsViewModel() -> ProjectsViewModel {
         ProjectsViewModel(
             projectStore: projectStore,
+            posters: posters,
             onOpenProject: { [router] in router.openProject($0) },
             onCreateFirst: { [router] in router.goHomeAndOpenCreation() })
     }
@@ -155,7 +175,101 @@ final class AppComposition {
             purchases: purchases,
             telemetry: telemetry,
             onClose: { [router] in router.dismissFlow() },
-            // Export upgrade intent resumes in M02/M06; from Settings the sheet just closes.
             onGranted: { [router] in router.dismissFlow() })
+    }
+
+    /// Paywall over a running flow: closing returns to that flow, which re-checks access
+    /// and continues the user's original request once (06 C03).
+    func makeNestedPaywallViewModel(reason: PaywallReason) -> PaywallViewModel {
+        PaywallViewModel(
+            reason: reason,
+            purchases: purchases,
+            telemetry: telemetry,
+            onClose: { [router] in router.nestedPaywall = nil },
+            onGranted: { [router] in router.nestedPaywall = nil })
+    }
+
+    func makeImportFlowViewModel(lookID: LookID?) -> ImportFlowViewModel {
+        ImportFlowViewModel(
+            lookID: lookID,
+            importer: AVVideoImporter(projects: projectStore),
+            projects: projectStore,
+            access: purchases,
+            lookCatalog: lookCatalog,
+            lookPreferences: lookPreferencesStore,
+            telemetry: telemetry,
+            makeName: { [localization] date in
+                ProjectNameGenerator(
+                    prefix: localization.string("project.defaultNamePrefix"),
+                    locale: localization.locale,
+                    timeZone: .current
+                ).defaultName(createdAt: date)
+            },
+            onShowPaywall: { [router] in router.showNestedPaywall(.freeDurationLimit) },
+            onFinished: { [router] in router.replaceFlow(with: .projectPreview($0)) },
+            onClose: { [router] in router.dismissFlow() })
+    }
+
+    /// One capture controller per camera flow (04 A03 camera-flow lifetime).
+    func makeCameraParts(lookID: LookID?) -> CameraView.Parts {
+        let controller = AVCaptureController()
+        let viewModel = CaptureFlowViewModel(
+            lookID: lookID,
+            capture: controller,
+            permissions: AVCapturePermissions(),
+            projects: projectStore,
+            access: purchases,
+            lookCatalog: lookCatalog,
+            lookPreferences: lookPreferencesStore,
+            telemetry: telemetry,
+            makeName: { [localization] date in
+                ProjectNameGenerator(
+                    prefix: localization.string("project.defaultNamePrefix"),
+                    locale: localization.locale,
+                    timeZone: .current
+                ).defaultName(createdAt: date)
+            },
+            onFinished: { [router] in router.replaceFlow(with: .projectPreview($0)) },
+            onImportInstead: { [router] in router.replaceFlow(with: .importVideo(lookID: lookID)) },
+            onClose: { [router] in router.dismissFlow() })
+        return CameraView.Parts(viewModel: viewModel, frames: controller.frames)
+    }
+
+    /// One multi-camera controller per Dual-Cam flow (04 A03 camera-flow lifetime).
+    func makeDualCameraParts(lookID: LookID?) -> DualCameraView.Parts {
+        let controller = AVDualCaptureController()
+        let viewModel = DualCaptureFlowViewModel(
+            lookID: lookID,
+            capture: controller,
+            permissions: AVCapturePermissions(),
+            projects: projectStore,
+            access: purchases,
+            lookCatalog: lookCatalog,
+            lookPreferences: lookPreferencesStore,
+            telemetry: telemetry,
+            makeName: { [localization] date in
+                ProjectNameGenerator(
+                    prefix: localization.string("project.defaultNamePrefix"),
+                    locale: localization.locale,
+                    timeZone: .current
+                ).defaultName(createdAt: date)
+            },
+            onFinished: { [router] in router.replaceFlow(with: .projectPreview($0)) },
+            onImportInstead: { [router] in router.replaceFlow(with: .importVideo(lookID: lookID)) },
+            onClose: { [router] in router.dismissFlow() })
+        return DualCameraView.Parts(
+            viewModel: viewModel, rearFrames: controller.rearFrames, frontFrames: controller.frontFrames)
+    }
+
+    func makeProjectPreviewViewModel(projectID: ProjectID) -> ProjectPreviewViewModel {
+        ProjectPreviewViewModel(
+            projectID: projectID,
+            projects: projectStore,
+            access: purchases,
+            exporter: exportCoordinator,
+            telemetry: telemetry,
+            beatTimelines: beatTimelines,
+            onClose: { [router] in router.dismissFlow() },
+            onShowPaywall: { [router] in router.showNestedPaywall(.exportUpgrade) })
     }
 }

@@ -12,7 +12,16 @@
       "descriptionKey": "look.dev.diagnostic.description",
       "defaultIntensity": 0.7,
       "renderVersion": 1,
-      "isDevelopmentFixture": true
+      "isDevelopmentFixture": true,
+      "lut": "dev_warm",
+      "parameters": {
+        "lutMix": 0.6,
+        "saturation": -0.35,
+        "contrast": 0.08,
+        "warmth": 1400,
+        "vignette": 0.7,
+        "grain": 0.1
+      }
     }
   ]
 }

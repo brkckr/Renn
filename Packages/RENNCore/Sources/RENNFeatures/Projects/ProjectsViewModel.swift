@@ -1,3 +1,4 @@
+import Foundation
 import Observation
 import RENNDomain
 
@@ -34,14 +35,17 @@ public final class ProjectsViewModel {
     public private(set) var actionError: ActionError?
 
     private let projectStore: any ProjectStoring
+    private let posters: (any PosterProviding)?
     private let onOpenProject: @MainActor (ProjectID) -> Void
     private let onCreateFirst: @MainActor () -> Void
 
     public init(
         projectStore: any ProjectStoring,
+        posters: (any PosterProviding)? = nil,
         onOpenProject: @escaping @MainActor (ProjectID) -> Void,
         onCreateFirst: @escaping @MainActor () -> Void
     ) {
+        self.posters = posters
         self.projectStore = projectStore
         self.onOpenProject = onOpenProject
         self.onCreateFirst = onCreateFirst
@@ -66,6 +70,11 @@ public final class ProjectsViewModel {
     }
 
     public func open(_ id: ProjectID) { onOpenProject(id) }
+
+    /// The project's own processed frame for its case print, or nil (empty shell).
+    public func poster(for id: ProjectID) async -> Data? {
+        await posters?.posterJPEG(for: id)
+    }
     public func createFirstTape() { onCreateFirst() }
 
     /// Validates and renames. Names are labels only; nothing is re-rendered (05 V07).

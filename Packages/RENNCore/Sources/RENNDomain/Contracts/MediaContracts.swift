@@ -9,47 +9,62 @@ public struct OutputID: Sendable, Hashable, Codable {
     public init(_ rawValue: UUID = UUID()) { self.rawValue = rawValue }
 }
 
-public struct ExportJobID: Sendable, Hashable, Codable {
-    public let rawValue: UUID
-    public init(_ rawValue: UUID = UUID()) { self.rawValue = rawValue }
-}
-
 public enum ExportFailure: Error, Sendable, Equatable {
     case unsupportedSource
+    case sourceUnavailable
     case insufficientStorage
     case renderFailed
     case writerFailed
     case validationFailed
+    case cancelled
 }
 
-public enum PhotosSaveFailure: Error, Sendable, Equatable {
+/// Renders and validates one export into `outputURL` (AVFoundation adapter in the app).
+/// Honors task cancellation and removes its partial file on any failure (05 V09).
+public protocol ExportRendering: Sendable {
+    func render(
+        plan: ExportPlan,
+        sources: ExportSourceFiles,
+        outputURL: URL,
+        progress: @escaping @Sendable (_ renderedSeconds: Double) -> Void
+    ) async throws(ExportFailure) -> RationalTime
+}
+
+extension ExportRendering {
+    /// Single-source convenience: `sourceURL` is the file of `plan.source`.
+    public func render(
+        plan: ExportPlan,
+        sourceURL: URL,
+        outputURL: URL,
+        progress: @escaping @Sendable (_ renderedSeconds: Double) -> Void
+    ) async throws(ExportFailure) -> RationalTime {
+        try await render(
+            plan: plan, sources: ExportSourceFiles([plan.source.role: sourceURL]), outputURL: outputURL, progress: progress)
+    }
+}
+
+/// Resolved file URLs for every source of an export plan, by role.
+public struct ExportSourceFiles: Sendable, Equatable {
+    public let urls: [SourceRole: URL]
+
+    public init(_ urls: [SourceRole: URL]) {
+        self.urls = urls
+    }
+
+    public func url(for source: SourceReference) -> URL? {
+        urls[source.role]
+    }
+}
+
+public enum PhotosSaveOutcome: Sendable, Equatable {
+    case saved(localIdentifier: String?)
     case permissionDenied
     case failed
-    /// Process ended after submission but before durable confirmation (05 V09).
-    case uncertain
 }
 
-/// Export lifecycle (04 A05, 05 V09). Render success and Photos save are separate states.
-public enum ExportJobState: Sendable, Equatable {
-    case validating
-    case preparing
-    /// Fraction of decoded/rendered media, 0...1, measured, never fabricated.
-    case rendering(progress: Double)
-    case finalizing
-    case savingToPhotos(OutputID)
-    case completed(OutputID)
-    case saveFailed(OutputID, PhotosSaveFailure)
-    case failed(ExportFailure)
-    case cancelled
-    case interrupted
-}
-
-public protocol Exporting: Sendable {
-    func startExport(projectID: ProjectID, policy: OutputPolicy) async throws(ExportFailure) -> ExportJobID
-    func updates(for job: ExportJobID) async -> AsyncStream<ExportJobState>
-    func cancel(_ job: ExportJobID) async
-    /// Retries only the Photos save of an already committed output; never re-renders.
-    func retryPhotosSave(_ output: OutputID) async
+/// Add-only Photos saving (05 V09). Never deletes or edits library content.
+public protocol PhotosSaving: Sendable {
+    func saveVideo(at url: URL) async -> PhotosSaveOutcome
 }
 
 public enum MediaPreparationFailure: Error, Sendable, Equatable {
@@ -60,18 +75,26 @@ public enum MediaPreparationFailure: Error, Sendable, Equatable {
     case cancelled
 }
 
-/// A source copied into app-owned staging and inspected (05 V06).
-public struct PreparedSource: Sendable, Equatable {
-    /// Path relative to the app's controlled storage root; never an absolute or picker URL.
-    public let relativePath: String
+/// A picked video copied into app-owned staging and inspected (05 V06). The picker's
+/// temporary URL is never persisted.
+public struct PreparedImport: Sendable, Equatable {
+    public let stagedFile: URL
+    public let fileExtension: String
     public let profile: SourceMediaProfile
+    /// HDR input converted through the SDR path; disclosed in the export summary (05 V01).
+    public let isHDR: Bool
 
-    public init(relativePath: String, profile: SourceMediaProfile) {
-        self.relativePath = relativePath
+    public init(stagedFile: URL, fileExtension: String, profile: SourceMediaProfile, isHDR: Bool) {
+        self.stagedFile = stagedFile
+        self.fileExtension = fileExtension
         self.profile = profile
+        self.isHDR = isHDR
     }
 }
 
-public protocol MediaPreparing: Sendable {
-    func prepareImport(fromTemporaryFile url: URL) async throws(MediaPreparationFailure) -> PreparedSource
+/// Copies a picker file into staging and inspects it (AVFoundation adapter in the app).
+public protocol VideoImporting: Sendable {
+    func prepare(pickedFile: URL) async throws(MediaPreparationFailure) -> PreparedImport
+    /// Removes a staged import that will not become a project (cancel / Free limit declined).
+    func discard(_ prepared: PreparedImport) async
 }

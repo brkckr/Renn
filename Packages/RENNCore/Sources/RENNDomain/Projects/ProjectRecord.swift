@@ -9,9 +9,13 @@ public struct SourceMetadata: Sendable, Equatable, Codable {
     public var displayDimensions: PixelDimensions
     public var frameRate: FrameRate
     public var hasUsableAudio: Bool
+    /// The file's pixels were mirrored at capture (front camera, same as its preview). Renderers
+    /// never mirror again; the flag documents the persisted mirror choice (05 V03).
     public var isMirrored: Bool
     /// Exactly one source owns the shared microphone track in Dual-Cam (05 V03).
     public var ownsSharedAudio: Bool
+    /// HLG/PQ input converted to SDR on export; disclosed in the summary (05 V01).
+    public var isHDR: Bool?
 
     public init(
         duration: RationalTime,
@@ -20,7 +24,8 @@ public struct SourceMetadata: Sendable, Equatable, Codable {
         frameRate: FrameRate,
         hasUsableAudio: Bool,
         isMirrored: Bool = false,
-        ownsSharedAudio: Bool
+        ownsSharedAudio: Bool,
+        isHDR: Bool? = nil
     ) {
         self.duration = duration
         self.startOffset = startOffset
@@ -29,6 +34,7 @@ public struct SourceMetadata: Sendable, Equatable, Codable {
         self.hasUsableAudio = hasUsableAudio
         self.isMirrored = isMirrored
         self.ownsSharedAudio = ownsSharedAudio
+        self.isHDR = isHDR
     }
 }
 

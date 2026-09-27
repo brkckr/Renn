@@ -9,14 +9,20 @@ struct BundledLookCatalogProvider: LookCatalogProviding {
         case missingManifest(String)
     }
 
+    static let defaultManifestName = "DevelopmentLookCatalog"
+
     let manifestName: String
 
-    init(manifestName: String = "DevelopmentLookCatalog") {
+    init(manifestName: String = Self.defaultManifestName) {
         self.manifestName = manifestName
     }
 
     func catalog() async throws -> LookCatalog {
-        guard let url = Bundle.main.url(forResource: manifestName, withExtension: "json") else {
+        try Self.load(bundle: .main, manifestName: manifestName)
+    }
+
+    static func load(bundle: Bundle, manifestName: String) throws -> LookCatalog {
+        guard let url = bundle.url(forResource: manifestName, withExtension: "json") else {
             throw LoadError.missingManifest(manifestName)
         }
         let data = try Data(contentsOf: url)

@@ -66,6 +66,11 @@ public struct StaticLookCatalogProvider: LookCatalogProviding {
                 descriptionKey: "look.dev.diagnostic.description",
                 defaultIntensity: LookIntensity(0.7)!,
                 renderVersion: 1,
-                isDevelopmentFixture: true)
+                isDevelopmentFixture: true,
+                lut: "dev_warm",
+                parameters: [
+                    LookParameter.lutMix: 0.6, LookParameter.saturation: -0.35, LookParameter.contrast: 0.08,
+                    LookParameter.warmth: 1400, LookParameter.vignette: 0.7, LookParameter.grain: 0.1,
+                ])
         ])
 }
