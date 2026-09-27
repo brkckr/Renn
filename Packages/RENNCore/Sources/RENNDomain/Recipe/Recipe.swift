@@ -62,6 +62,8 @@ public struct Recipe: Sendable, Equatable, Codable {
         Recipe(
             lookID: look?.id,
             lookVersion: look?.version,
+            // Snapshot: later catalog tuning never alters this project (05 V04).
+            lookParameters: look?.parameters ?? [:],
             intensity: look?.defaultIntensity ?? .off,
             seed: seed,
             indicators: IndicatorSettings(stampDate: creationStamp),
@@ -73,6 +75,11 @@ public struct Recipe: Sendable, Equatable, Codable {
         case nonFiniteParameter(String)
         case invalidVersionNumber
         case invalidSwapTimeline
+    }
+
+    /// Parameter value applied at the recipe's intensity (linear, 0 at intensity 0).
+    public func effectiveParameter(_ key: String) -> Double {
+        (lookParameters[key] ?? 0) * intensity.value
     }
 
     public func validate() throws(ValidationError) {

@@ -233,7 +233,8 @@ struct MediaPipelineTests {
         let recipe = Recipe.initial(
             look: LookDefinition(
                 id: "dev.diagnostic", version: 1, family: "diagnostic", nameKey: "n", descriptionKey: "d",
-                defaultIntensity: LookIntensity(1)!, renderVersion: 1, isDevelopmentFixture: true),
+                defaultIntensity: LookIntensity(1)!, renderVersion: 1, isDevelopmentFixture: true,
+                parameters: [LookParameter.saturation: -0.35, LookParameter.grain: 0.1]),
             creationStamp: try StampDate(year: 2026, month: 9, day: 27), seed: 99)
         func pixels(at time: RationalTime) -> [UInt8] {
             let image = engine.image(for: RenderEngine.FrameRequest(

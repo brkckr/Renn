@@ -10,9 +10,10 @@ import RENNDomain
 /// size. No wall-clock randomness: procedural effects derive from the project seed and a fixed
 /// 60-ticks-per-second media clock.
 ///
-/// M02 ships one clearly labelled DIAGNOSTIC Look (development fixture, not an approved RENN
-/// Look): mild desaturation/warmth, vignette and deterministic grain, scaled by intensity.
-/// M03 replaces this with the versioned LUT/shader engine for the catalog.
+/// Render version 1 Look graph: LUT (blended by `lutMix`) → saturation/contrast → warmth →
+/// vignette → deterministic grain. Every strength comes from the recipe's snapshotted Look
+/// parameters scaled by intensity, so intensity 0 is an exact passthrough and later catalog
+/// edits never change an existing project. The only bundled Look is a DEV fixture (08 I01).
 ///
 /// Thread safety: `CIContext` is documented as thread-safe and the engine holds no mutable
 /// state, so one instance is shared across preview and export queues.
@@ -23,8 +24,12 @@ final class RenderEngine: @unchecked Sendable {
     let outputColorSpace: CGColorSpace
     /// Shared GPU device for preview drawables (04 A03 app-lifetime GPU context).
     let device: MTLDevice?
+    let luts: LookLUTStore
+    /// Creative LUTs are authored for gamma-encoded sRGB, not the linear working space.
+    private let lutColorSpace = CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
 
-    init() {
+    init(luts: LookLUTStore = LookLUTStore()) {
+        self.luts = luts
         let rec709 = CGColorSpace(name: CGColorSpace.itur_709) ?? CGColorSpaceCreateDeviceRGB()
         outputColorSpace = rec709
         let options: [CIContextOption: Any] = [
@@ -65,9 +70,8 @@ final class RenderEngine: @unchecked Sendable {
         image = image.transformed(by: CGAffineTransform(translationX: -image.extent.minX, y: -image.extent.minY))
         image = scaled(image, to: request.outputSize)
 
-        let intensity = request.recipe.intensity.value
-        if !request.bypassCreative, intensity > 0, request.recipe.lookID != nil {
-            image = diagnosticLook(image, intensity: intensity, seed: request.recipe.seed, time: request.time)
+        if !request.bypassCreative, request.recipe.intensity.value > 0, request.recipe.lookID != nil {
+            image = lookGraph(image, recipe: request.recipe, time: request.time)
         }
         // Beat is an independent modulation layer (05 V04), applied even at Look intensity 0.
         if !request.bypassCreative, request.beat != .none {
@@ -143,28 +147,59 @@ final class RenderEngine: @unchecked Sendable {
         return result
     }
 
-    private func diagnosticLook(_ image: CIImage, intensity: Double, seed: UInt64, time: RationalTime) -> CIImage {
+    private func lookGraph(_ image: CIImage, recipe: Recipe, time: RationalTime) -> CIImage {
         let extent = image.extent
-        let amount = Float(intensity)
+        var result = image
 
-        let color = CIFilter.colorControls()
-        color.inputImage = image
-        color.saturation = 1 - 0.35 * amount
-        color.contrast = 1 + 0.08 * amount
-        color.brightness = 0
+        let lutMix = min(1, recipe.effectiveParameter(LookParameter.lutMix))
+        if lutMix > 0, let lookID = recipe.lookID, let lut = luts.lut(for: lookID) {
+            let cube = CIFilter.colorCubeWithColorSpace()
+            cube.inputImage = result
+            cube.cubeDimension = Float(lut.dimension)
+            cube.cubeData = lut.data
+            cube.colorSpace = lutColorSpace
+            if let graded = cube.outputImage {
+                let mix = CIFilter.dissolveTransition()
+                mix.inputImage = result
+                mix.targetImage = graded
+                mix.time = Float(lutMix)
+                result = mix.outputImage ?? graded
+            }
+        }
 
-        let warmth = CIFilter.temperatureAndTint()
-        warmth.inputImage = color.outputImage
-        warmth.neutral = CIVector(x: 6500, y: 0)
-        warmth.targetNeutral = CIVector(x: CGFloat(6500 - 1400 * intensity), y: CGFloat(12 * intensity))
+        let saturation = recipe.effectiveParameter(LookParameter.saturation)
+        let contrast = recipe.effectiveParameter(LookParameter.contrast)
+        if saturation != 0 || contrast != 0 {
+            let color = CIFilter.colorControls()
+            color.inputImage = result
+            color.saturation = Float(max(0, 1 + saturation))
+            color.contrast = Float(max(0, 1 + contrast))
+            color.brightness = 0
+            result = color.outputImage ?? result
+        }
 
-        let vignette = CIFilter.vignette()
-        vignette.inputImage = warmth.outputImage
-        vignette.intensity = 0.7 * amount
-        vignette.radius = Float(max(extent.width, extent.height) / 900)
+        let warmth = recipe.effectiveParameter(LookParameter.warmth)
+        if warmth != 0 {
+            let temperature = CIFilter.temperatureAndTint()
+            temperature.inputImage = result
+            temperature.neutral = CIVector(x: 6500, y: 0)
+            // Tint follows warmth slightly (≈12 at 1400 K) for a filmic magenta-warm cast.
+            temperature.targetNeutral = CIVector(x: CGFloat(6500 - warmth), y: CGFloat(warmth * 12 / 1400))
+            result = temperature.outputImage ?? result
+        }
 
-        guard let graded = vignette.outputImage else { return image }
-        return grain(over: graded, extent: extent, amount: 0.10 * amount, seed: seed, time: time)
+        let vignette = recipe.effectiveParameter(LookParameter.vignette)
+        if vignette > 0 {
+            let filter = CIFilter.vignette()
+            filter.inputImage = result
+            filter.intensity = Float(vignette)
+            filter.radius = Float(max(extent.width, extent.height) / 900)
+            result = filter.outputImage ?? result
+        }
+
+        return grain(
+            over: result.cropped(to: extent), extent: extent,
+            amount: Float(recipe.effectiveParameter(LookParameter.grain)), seed: recipe.seed, time: time)
     }
 
     /// Deterministic grain: the infinite random field is offset by (seed, media tick), so the

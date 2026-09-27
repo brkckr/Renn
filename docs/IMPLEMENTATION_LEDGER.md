@@ -94,5 +94,11 @@ Evidence status:
 - `IndicatorLayout` resolver (all 16 combinations, watermark and four PiP corners) and `IndicatorRenderer`;
   effects → OSD → watermark order; staged Indicators panel with Gregorian date-only stamp.
 - Posters: `PosterPolicy` + `PosterProvider` (project's own processed frame, cached per revision).
-- Remaining for M03: versioned LUT (.cube) loader and parser, the Look parameter mapping and the Metal/CI
-  artifact engine that the final twelve Looks will use (needs owner assets for final tuning).
+- Catalog-driven Look graph (render version 1): each Look declares an optional bundled `.cube` LUT and
+  bounded parameters (lutMix, saturation, contrast, warmth, vignette, grain). `Recipe.initial`
+  snapshots the parameters; intensity scales them linearly, 0 is a passthrough. `CubeLUT` parser
+  (validated, Linux-tested) + `LookLUTStore` (bundle loader, 0...1 domain, CIColorCubeWithColorSpace in
+  sRGB). The hard-coded diagnostic grade is gone; the DEV Look is now one parameter set plus the
+  generated `dev_warm.cube` fixture (`scripts/generate_dev_lut.py`).
+- Remaining for M03: scanline/chroma/tracking artifact stages (shader work) and final per-Look tuning,
+  both waiting on the owner's twelve Look briefs and assets (M08).
