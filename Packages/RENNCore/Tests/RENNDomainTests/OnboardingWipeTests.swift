@@ -42,6 +42,6 @@ struct OnboardingWipeTests {
         #expect(OnboardingWipe.ease(0) == 0)
         #expect(OnboardingWipe.ease(1) == 1)
         #expect(OnboardingWipe.ease(0.5) > 0.85, "(0.22,1,0.36,1) front-loads motion")
-        #expect(abs(OnboardingWipe.cubicBezier(0.3, 0.25, 0.25, 0.75, 0.75) - 0.3) < 1e-4, "Linear control points")
+        #expect(abs(Easing.cubicBezier(0.3, 0.25, 0.25, 0.75, 0.75) - 0.3) < 1e-4, "Linear control points")
     }
 }
