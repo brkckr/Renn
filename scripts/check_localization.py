@@ -35,7 +35,7 @@ LITERAL = re.compile(r'"((?:[a-z][A-Za-z0-9]*)(?:\.[A-Za-z0-9]+)+)((?: \\\((?:[^
 # "heart.fill", defaults keys) are ignored.
 NAMESPACES = {
     "common", "tab", "creation", "dual", "fixture", "flow", "home", "looks", "look", "onboarding",
-    "projects", "project", "settings", "paywall", "export", "import", "preview", "camera", "indicators",
+    "projects", "project", "settings", "paywall", "export", "import", "preview", "camera", "indicators", "lookSelector",
 }
 IGNORED_FILES = {"RENNIcon.swift"}
 IGNORED_PREFIXES = ("renn.",)

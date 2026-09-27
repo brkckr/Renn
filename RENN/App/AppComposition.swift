@@ -269,6 +269,7 @@ final class AppComposition {
             exporter: exportCoordinator,
             telemetry: telemetry,
             beatTimelines: beatTimelines,
+            lookCatalog: lookCatalog,
             onClose: { [router] in router.dismissFlow() },
             onShowPaywall: { [router] in router.showNestedPaywall(.exportUpgrade) })
     }

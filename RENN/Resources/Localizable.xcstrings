@@ -1871,6 +1871,23 @@
         }
       }
     },
+    "lookSelector.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look"
+          }
+        }
+      }
+    },
     "looks.card.hint": {
       "extractionState": "manual",
       "localizations": {

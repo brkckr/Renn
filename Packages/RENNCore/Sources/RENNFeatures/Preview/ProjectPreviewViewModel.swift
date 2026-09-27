@@ -55,6 +55,14 @@ public final class ProjectPreviewViewModel {
     public private(set) var beatAvailability: BeatAvailability = .analyzing
     public var showsOriginal = false
     public var isLooping = true
+    /// Look selector state while its sheet is open (02 D05): staged, applied as one revision.
+    public private(set) var lookSelection: LookSelection?
+    public private(set) var catalog: LookCatalog?
+
+    public struct LookSelection: Equatable, Sendable {
+        public var lookID: LookID?
+        public var intensity: Double
+    }
 
     private var pendingSave: Task<Void, Never>?
     private let projectID: ProjectID
@@ -63,6 +71,7 @@ public final class ProjectPreviewViewModel {
     private let exporter: ExportCoordinator
     private let telemetry: any TelemetryRecording
     private let beatTimelines: (any BeatTimelineProviding)?
+    private let lookCatalog: (any LookCatalogProviding)?
     private let onClose: @MainActor () -> Void
     private let onShowPaywall: @MainActor () -> Void
 
@@ -73,10 +82,12 @@ public final class ProjectPreviewViewModel {
         exporter: ExportCoordinator,
         telemetry: any TelemetryRecording,
         beatTimelines: (any BeatTimelineProviding)? = nil,
+        lookCatalog: (any LookCatalogProviding)? = nil,
         onClose: @escaping @MainActor () -> Void,
         onShowPaywall: @escaping @MainActor () -> Void
     ) {
         self.beatTimelines = beatTimelines
+        self.lookCatalog = lookCatalog
         self.projectID = projectID
         self.projects = projects
         self.access = access
@@ -158,6 +169,60 @@ public final class ProjectPreviewViewModel {
     /// The preview shows the effective watermark placement for the current access (02 D07).
     public func refreshWatermark() async {
         showsWatermark = await access.currentAccess().effectiveTier == .free
+    }
+
+    /// What the preview renders: the staged Look selection while the selector is open.
+    public var displayRecipe: Recipe? {
+        guard let recipe else { return nil }
+        guard let lookSelection else { return recipe }
+        return Self.staged(recipe, selection: lookSelection, catalog: catalog)
+    }
+
+    // MARK: Look selector (02 D05)
+
+    public func openLookSelector() async {
+        guard let recipe, lookSelection == nil else { return }
+        if catalog == nil { catalog = try? await lookCatalog?.catalog() }
+        lookSelection = LookSelection(lookID: recipe.lookID, intensity: recipe.intensity.value)
+    }
+
+    /// Selecting another Look stages its default intensity; re-selecting the project's own Look
+    /// restores the saved intensity.
+    public func stageLook(_ id: LookID) {
+        guard lookSelection != nil, let recipe else { return }
+        if id == recipe.lookID {
+            lookSelection = LookSelection(lookID: id, intensity: recipe.intensity.value)
+        } else if let look = catalog?.look(id) {
+            lookSelection = LookSelection(lookID: id, intensity: look.defaultIntensity.value)
+        }
+    }
+
+    public func stageIntensity(_ value: Double) {
+        guard lookSelection != nil, LookIntensity(value) != nil else { return }
+        lookSelection?.intensity = value
+    }
+
+    /// Apply: one recipe revision for the whole staged change (01 P07).
+    public func applyLookSelection() {
+        guard let lookSelection, let recipe else { return }
+        let updated = Self.staged(recipe, selection: lookSelection, catalog: catalog)
+        self.lookSelection = nil
+        guard updated != recipe else { return }
+        self.recipe = updated
+        scheduleSave(immediately: true)
+    }
+
+    public func cancelLookSelection() {
+        lookSelection = nil
+    }
+
+    static func staged(_ recipe: Recipe, selection: LookSelection, catalog: LookCatalog?) -> Recipe {
+        var result = recipe
+        if selection.lookID != recipe.lookID, let id = selection.lookID, let look = catalog?.look(id) {
+            result = recipe.switchingLook(to: look)
+        }
+        if let intensity = LookIntensity(selection.intensity) { result.intensity = intensity }
+        return result
     }
 
     // MARK: Adjustments
