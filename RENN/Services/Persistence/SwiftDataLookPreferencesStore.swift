@@ -10,7 +10,7 @@ actor SwiftDataLookPreferencesStore: LookPreferencesStoring {
 
     func load() -> LookPreferences {
         guard let row = try? row() else { return LookPreferences() }
-        return LookPreferences(favoriteIDs: Set(row.favoriteIDs.map(LookID.init)), recentIDs: row.recentIDs.map(LookID.init))
+        return LookPreferences(favoriteIDs: Set(row.favoriteIDs.map { LookID($0) }), recentIDs: row.recentIDs.map { LookID($0) })
     }
 
     func setFavorite(_ lookID: LookID, _ isFavorite: Bool) {

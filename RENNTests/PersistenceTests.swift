@@ -39,6 +39,14 @@ struct PersistenceTests {
         #expect(try await store.record(record.id) == record)
         await #expect(throws: (any Error).self) { try await store.insert(record) }
 
+        record.outputs = [OutputRecord(
+            id: OutputID(), relativePath: try ProjectFileLayout.file("o.mp4", in: .outputs, of: record.id),
+            fingerprint: FileFingerprint(byteCount: 9, sampleHash: 9), recipeRevision: 1,
+            policy: OutputPolicy(tier: .free, dimensions: try PixelDimensions(width: 720, height: 1280),
+                                 frameRate: .fps(30), requiresWatermark: true),
+            duration: .seconds(5), hasAudio: true, completedAt: Date(timeIntervalSince1970: 1_790_000_100),
+            photosSave: .saved, photosLocalIdentifier: "X/L0/001")]
+        record.lastOutputID = record.outputs.first?.id
         record.name = try ProjectName("Renamed · Şile")
         record.recipeRevision = 2
         record.readiness = .interrupted

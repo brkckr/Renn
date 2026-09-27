@@ -48,7 +48,12 @@ public struct FileSystemOwnedFileStore: OwnedFileStoring {
     }
 
     public func adoptStagedFile(_ stagedFile: URL, as path: OwnedRelativePath) async throws -> FileFingerprint {
-        let source = try requireInside(stagingURL, stagedFile)
+        let source: URL
+        if let staged = try? requireInside(stagingURL, stagedFile) {
+            source = staged
+        } else {
+            source = try requireInside(jobsURL, stagedFile)
+        }
         let destination = try resolve(path)
         let manager = FileManager.default
         guard manager.fileExists(atPath: source.path) else { throw StoreError.missingFile }
@@ -99,6 +104,21 @@ public struct FileSystemOwnedFileStore: OwnedFileStoring {
         else { throw StoreError.invalidFileExtension }
         try FileManager.default.createDirectory(at: stagingURL, withIntermediateDirectories: true)
         return stagingURL.appendingPathComponent("\(UUID().uuidString).\(fileExtension)", isDirectory: false)
+    }
+
+    public func makeJobURL(fileExtension: String) async throws -> URL {
+        guard !fileExtension.isEmpty, fileExtension.count <= 8,
+              fileExtension.unicodeScalars.allSatisfy({ ("a"..."z").contains($0) || ("0"..."9").contains($0) })
+        else { throw StoreError.invalidFileExtension }
+        try FileManager.default.createDirectory(at: jobsURL, withIntermediateDirectories: true)
+        return jobsURL.appendingPathComponent("\(UUID().uuidString).\(fileExtension)", isDirectory: false)
+    }
+
+    public func removeFile(_ path: OwnedRelativePath) async throws {
+        let url = try resolve(path)
+        if FileManager.default.fileExists(atPath: url.path) {
+            try FileManager.default.removeItem(at: url)
+        }
     }
 
     public func url(for path: OwnedRelativePath) async -> URL {

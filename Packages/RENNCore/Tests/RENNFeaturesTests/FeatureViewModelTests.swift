@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 import RENNDomain
 import RENNFakes
@@ -409,4 +410,12 @@ private struct UnavailableProjectStore: ProjectStoring {
         throw .metadataUnavailable
     }
     func releaseLease(_ lease: ProjectLease) async {}
+    func makeJobFileURL(fileExtension: String) async throws(ProjectStoreError) -> URL { throw .metadataUnavailable }
+    func commitOutput(_ output: FinishedOutput, to id: ProjectID) async throws(ProjectStoreError) -> OutputRecord {
+        throw .metadataUnavailable
+    }
+    func updatePhotosSave(
+        _ state: PhotosSaveState, localIdentifier: String?, output: OutputID, project id: ProjectID
+    ) async throws(ProjectStoreError) { throw .metadataUnavailable }
+    func fileURL(_ path: OwnedRelativePath) async -> URL { URL(fileURLWithPath: "/dev/null") }
 }

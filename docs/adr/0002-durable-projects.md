@@ -45,3 +45,7 @@ Status: accepted. Date: 2026-09-27.
 
 8. **Backup.** The `Projects` directory is excluded from device backup (baseline policy);
    Settings already explains projects are local to the iPhone.
+
+9. **Pre-release edit of V1 (M02).** `ProjectEntity.outputsJSON` was added to `RENNSchemaV1`
+   before any build was installed outside CI simulators. From the first TestFlight build on,
+   schema changes require a new `VersionedSchema` and a migration stage instead.

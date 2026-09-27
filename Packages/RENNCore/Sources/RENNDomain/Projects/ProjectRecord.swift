@@ -71,6 +71,8 @@ public struct ProjectRecord: Sendable, Equatable, Codable, Identifiable {
     public var recipeRevision: Int
     public var recipe: Recipe
     public var lastOutputID: OutputID?
+    /// Latest successful output, plus older ones only while a share/playback lease keeps them.
+    public var outputs: [OutputRecord]
 
     public init(
         id: ProjectID,
@@ -83,7 +85,8 @@ public struct ProjectRecord: Sendable, Equatable, Codable, Identifiable {
         sources: [SourceReference],
         recipeRevision: Int,
         recipe: Recipe,
-        lastOutputID: OutputID? = nil
+        lastOutputID: OutputID? = nil,
+        outputs: [OutputRecord] = []
     ) {
         self.id = id
         self.schemaVersion = schemaVersion
@@ -96,6 +99,11 @@ public struct ProjectRecord: Sendable, Equatable, Codable, Identifiable {
         self.recipeRevision = recipeRevision
         self.recipe = recipe
         self.lastOutputID = lastOutputID
+        self.outputs = outputs
+    }
+
+    public var latestOutput: OutputRecord? {
+        lastOutputID.flatMap { id in outputs.first { $0.id == id } }
     }
 
     public var summary: ProjectSummary {

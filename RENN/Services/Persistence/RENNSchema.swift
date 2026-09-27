@@ -25,12 +25,13 @@ enum RENNSchemaV1: VersionedSchema {
         var recipeRevision: Int
         var recipeJSON: Data
         var sourcesJSON: Data
+        var outputsJSON: Data
         var lastOutputID: UUID?
 
         init(
             id: UUID, schemaVersion: Int, createdAt: Date, updatedAt: Date, displayName: String,
             sourceMode: String, readiness: String, recipeRevision: Int, recipeJSON: Data,
-            sourcesJSON: Data, lastOutputID: UUID?
+            sourcesJSON: Data, outputsJSON: Data, lastOutputID: UUID?
         ) {
             self.id = id
             self.schemaVersion = schemaVersion
@@ -42,6 +43,7 @@ enum RENNSchemaV1: VersionedSchema {
             self.recipeRevision = recipeRevision
             self.recipeJSON = recipeJSON
             self.sourcesJSON = sourcesJSON
+            self.outputsJSON = outputsJSON
             self.lastOutputID = lastOutputID
         }
     }

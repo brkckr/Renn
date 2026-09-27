@@ -29,7 +29,8 @@ actor SwiftDataProjectMetadataStore: ProjectMetadataStoring {
             id: record.id.rawValue, schemaVersion: record.schemaVersion, createdAt: record.createdAt,
             updatedAt: record.updatedAt, displayName: record.name.value, sourceMode: record.sourceMode.rawValue,
             readiness: record.readiness.rawValue, recipeRevision: record.recipeRevision,
-            recipeJSON: encoded.recipe, sourcesJSON: encoded.sources, lastOutputID: record.lastOutputID?.rawValue))
+            recipeJSON: encoded.recipe, sourcesJSON: encoded.sources, outputsJSON: encoded.outputs,
+            lastOutputID: record.lastOutputID?.rawValue))
         try modelContext.save()
     }
 
@@ -44,6 +45,7 @@ actor SwiftDataProjectMetadataStore: ProjectMetadataStoring {
         entity.recipeRevision = record.recipeRevision
         entity.recipeJSON = encoded.recipe
         entity.sourcesJSON = encoded.sources
+        entity.outputsJSON = encoded.outputs
         entity.lastOutputID = record.lastOutputID?.rawValue
         try modelContext.save()
     }
@@ -61,10 +63,10 @@ actor SwiftDataProjectMetadataStore: ProjectMetadataStoring {
         return try modelContext.fetch(descriptor).first
     }
 
-    private static func encode(_ record: ProjectRecord) throws -> (recipe: Data, sources: Data) {
+    private static func encode(_ record: ProjectRecord) throws -> (recipe: Data, sources: Data, outputs: Data) {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .sortedKeys
-        return (try encoder.encode(record.recipe), try encoder.encode(record.sources))
+        return (try encoder.encode(record.recipe), try encoder.encode(record.sources), try encoder.encode(record.outputs))
     }
 
     private static func record(_ entity: ProjectEntity) throws -> ProjectRecord {
@@ -74,13 +76,15 @@ actor SwiftDataProjectMetadataStore: ProjectMetadataStoring {
               let sourceMode = ProjectSummary.SourceMode(rawValue: entity.sourceMode),
               let readiness = ProjectSummary.Readiness(rawValue: entity.readiness),
               let recipe = try? decoder.decode(Recipe.self, from: entity.recipeJSON),
-              let sources = try? decoder.decode([SourceReference].self, from: entity.sourcesJSON)
+              let sources = try? decoder.decode([SourceReference].self, from: entity.sourcesJSON),
+              let outputs = try? decoder.decode([OutputRecord].self, from: entity.outputsJSON)
         else { throw StoreError.corruptRecord }
         return ProjectRecord(
             id: ProjectID(entity.id), schemaVersion: entity.schemaVersion, createdAt: entity.createdAt,
             updatedAt: entity.updatedAt, name: name, sourceMode: sourceMode, readiness: readiness,
             sources: sources, recipeRevision: entity.recipeRevision, recipe: recipe,
-            lastOutputID: entity.lastOutputID.map(OutputID.init))
+            lastOutputID: entity.lastOutputID.map { OutputID($0) },
+            outputs: outputs)
     }
 }
 

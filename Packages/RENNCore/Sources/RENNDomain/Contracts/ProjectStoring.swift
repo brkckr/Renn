@@ -23,6 +23,16 @@ public protocol ProjectStoring: Sendable {
     /// Capture/export/share hold a lease; leased projects cannot be deleted (05 V08).
     func acquireLease(_ id: ProjectID, purpose: ProjectLease.Purpose) async throws(ProjectStoreError) -> ProjectLease
     func releaseLease(_ lease: ProjectLease) async
+    /// New unique URL for an export job's partial file, in the current launch's job area.
+    func makeJobFileURL(fileExtension: String) async throws(ProjectStoreError) -> URL
+    /// Moves a validated output into the project and makes it the latest output. A failed
+    /// render never replaces the previous good result (05 V08).
+    func commitOutput(_ output: FinishedOutput, to id: ProjectID) async throws(ProjectStoreError) -> OutputRecord
+    func updatePhotosSave(
+        _ state: PhotosSaveState, localIdentifier: String?, output: OutputID, project id: ProjectID
+    ) async throws(ProjectStoreError)
+    /// Absolute URL of an owned file, for playback/export/share.
+    func fileURL(_ path: OwnedRelativePath) async -> URL
 }
 
 public struct ProjectLease: Sendable, Hashable {
@@ -76,7 +86,7 @@ public protocol OwnedFileStoring: Sendable {
     /// Fingerprint of a file in the staging area, taken before adoption.
     func fingerprint(ofStagedFile stagedFile: URL) async throws -> FileFingerprint
     /// Atomically moves a staged file (same volume) into the store at `path`. Only files
-    /// inside the store's own staging area are accepted. Returns the adopted fingerprint.
+    /// inside the store's own staging or job area are accepted. Returns the adopted fingerprint.
     func adoptStagedFile(_ stagedFile: URL, as path: OwnedRelativePath) async throws -> FileFingerprint
     func fileExists(_ path: OwnedRelativePath) async -> Bool
     func fingerprint(of path: OwnedRelativePath) async throws -> FileFingerprint
@@ -89,6 +99,10 @@ public protocol OwnedFileStoring: Sendable {
     func cleanTemporaryArea() async throws
     /// New unique URL in the staging area, on the same volume as the store.
     func makeStagingURL(fileExtension: String) async throws -> URL
+    /// New unique URL in the job area for partial export files.
+    func makeJobURL(fileExtension: String) async throws -> URL
+    /// Removes one owned file. Idempotent.
+    func removeFile(_ path: OwnedRelativePath) async throws
     /// Absolute URL for playback/export of an owned file.
     func url(for path: OwnedRelativePath) async -> URL
 }

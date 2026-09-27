@@ -112,6 +112,8 @@ actor FaultyFileStore: OwnedFileStoring {
     func projectDirectoryIDs() async throws -> [ProjectID] { try await base.projectDirectoryIDs() }
     func cleanTemporaryArea() async throws { try await base.cleanTemporaryArea() }
     func makeStagingURL(fileExtension: String) async throws -> URL { try await base.makeStagingURL(fileExtension: fileExtension) }
+    func makeJobURL(fileExtension: String) async throws -> URL { try await base.makeJobURL(fileExtension: fileExtension) }
+    func removeFile(_ path: OwnedRelativePath) async throws { try await base.removeFile(path) }
     func url(for path: OwnedRelativePath) async -> URL { await base.url(for: path) }
 }
 

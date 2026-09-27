@@ -380,3 +380,93 @@ struct FileStoreTests {
         }
     }
 }
+
+@Suite("Project library: outputs and Photos save state (05 V08/V09)")
+struct OutputCommitTests {
+    private func readyProject(_ sandbox: Sandbox, _ library: ProjectLibrary) async throws -> ProjectRecord {
+        try await library.createProject(draft([
+            StagedSource(role: .primary, stagedFile: try await sandbox.stage(), fileName: "a.mov", metadata: sampleMetadata()),
+        ]))
+    }
+
+    private func finished(_ url: URL) -> FinishedOutput {
+        FinishedOutput(
+            file: url, fileName: "output.mp4", recipeRevision: 1,
+            policy: OutputPolicy(tier: .free, dimensions: try! PixelDimensions(width: 720, height: 1280),
+                                 frameRate: .fps(30), requiresWatermark: true),
+            duration: .seconds(12), hasAudio: true)
+    }
+
+    private func writeJob(_ library: ProjectLibrary, bytes: UInt8) async throws -> URL {
+        let url = try await library.makeJobFileURL(fileExtension: "mp4")
+        try Data(repeating: bytes, count: 2048).write(to: url)
+        return url
+    }
+
+    @Test func commitReplacesPreviousOutputAndRemovesItsFile() async throws {
+        let sandbox = try Sandbox(); defer { sandbox.remove() }
+        let library = ProjectLibrary(metadata: InMemoryProjectMetadataStore(), files: sandbox.store)
+        let project = try await readyProject(sandbox, library)
+
+        let first = try await library.commitOutput(finished(try await writeJob(library, bytes: 1)), to: project.id)
+        let firstURL = await library.fileURL(first.relativePath)
+        #expect(sandbox.exists(firstURL))
+        #expect(try await library.project(project.id).latestOutput == first)
+
+        let second = try await library.commitOutput(finished(try await writeJob(library, bytes: 2)), to: project.id)
+        let reloaded = try await library.project(project.id)
+        #expect(reloaded.latestOutput == second)
+        #expect(reloaded.outputs.count == 1)
+        #expect(!sandbox.exists(firstURL), "Obsolete output is cleaned when nothing uses it")
+        #expect(reloaded.sources == project.sources, "Sources are never touched by output commits")
+    }
+
+    @Test func leasedOlderOutputIsKept() async throws {
+        let sandbox = try Sandbox(); defer { sandbox.remove() }
+        let library = ProjectLibrary(metadata: InMemoryProjectMetadataStore(), files: sandbox.store)
+        let project = try await readyProject(sandbox, library)
+        let first = try await library.commitOutput(finished(try await writeJob(library, bytes: 1)), to: project.id)
+        let lease = try await library.acquireLease(project.id, purpose: .share)
+        _ = try await library.commitOutput(finished(try await writeJob(library, bytes: 2)), to: project.id)
+        #expect(sandbox.exists(await library.fileURL(first.relativePath)))
+        #expect(try await library.project(project.id).outputs.count == 2)
+        await library.releaseLease(lease)
+    }
+
+    @Test func externalFilesCannotBeCommittedAsOutputs() async throws {
+        let sandbox = try Sandbox(); defer { sandbox.remove() }
+        let library = ProjectLibrary(metadata: InMemoryProjectMetadataStore(), files: sandbox.store)
+        let project = try await readyProject(sandbox, library)
+        let external = try sandbox.externalFile("elsewhere.mp4")
+        await #expect(throws: ProjectStoreError.storageFailure) {
+            try await library.commitOutput(finished(external), to: project.id)
+        }
+        #expect(sandbox.exists(external))
+        #expect(try await library.project(project.id).latestOutput == nil)
+    }
+
+    @Test func inFlightSaveBecomesUncertainAfterRelaunch() async throws {
+        let sandbox = try Sandbox(); defer { sandbox.remove() }
+        let metadata = InMemoryProjectMetadataStore()
+        let library = ProjectLibrary(metadata: metadata, files: sandbox.store)
+        let project = try await readyProject(sandbox, library)
+        let output = try await library.commitOutput(finished(try await writeJob(library, bytes: 1)), to: project.id)
+        try await library.updatePhotosSave(.inFlight, localIdentifier: nil, output: output.id, project: project.id)
+
+        let relaunched = ProjectLibrary(metadata: metadata, files: sandbox.relaunchedStore())
+        let reloaded = try await relaunched.project(project.id)
+        #expect(reloaded.latestOutput?.photosSave == .uncertain)
+        #expect(reloaded.latestOutput?.allowsAutomaticSave == false, "Never blindly auto-saved again")
+    }
+
+    @Test func savedStateAndIdentifierPersist() async throws {
+        let sandbox = try Sandbox(); defer { sandbox.remove() }
+        let library = ProjectLibrary(metadata: InMemoryProjectMetadataStore(), files: sandbox.store)
+        let project = try await readyProject(sandbox, library)
+        let output = try await library.commitOutput(finished(try await writeJob(library, bytes: 1)), to: project.id)
+        try await library.updatePhotosSave(.saved, localIdentifier: "ABC/L0/001", output: output.id, project: project.id)
+        let latest = try await library.project(project.id).latestOutput
+        #expect(latest?.photosSave == .saved)
+        #expect(latest?.photosLocalIdentifier == "ABC/L0/001")
+    }
+}

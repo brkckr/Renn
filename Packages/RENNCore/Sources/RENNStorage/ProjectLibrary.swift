@@ -77,6 +77,13 @@ public actor ProjectLibrary: ProjectStoring {
         }
 
         for var record in records {
+            // A save that was in flight when the process died is uncertain, never re-sent (05 V09).
+            if record.outputs.contains(where: { $0.photosSave == .inFlight }) {
+                for index in record.outputs.indices where record.outputs[index].photosSave == .inFlight {
+                    record.outputs[index].photosSave = .uncertain
+                }
+                try? await metadata.update(record)
+            }
             switch record.readiness {
             case .deleting:
                 if (try? await files.removeProjectDirectory(record.id)) != nil,
@@ -267,6 +274,62 @@ public actor ProjectLibrary: ProjectStoring {
         if leases[lease.projectID]?.isEmpty == true {
             leases[lease.projectID] = nil
         }
+    }
+
+    public func makeJobFileURL(fileExtension: String) async throws(ProjectStoreError) -> URL {
+        do {
+            return try await files.makeJobURL(fileExtension: fileExtension)
+        } catch {
+            throw .storageFailure
+        }
+    }
+
+    public func commitOutput(_ output: FinishedOutput, to id: ProjectID) async throws(ProjectStoreError) -> OutputRecord {
+        await acquire()
+        defer { release() }
+        _ = await reconcileLocked()
+        var record = try await loadRecord(id)
+        guard record.readiness == .ready else { throw .unavailable(id) }
+        let outputID = OutputID()
+        guard let path = try? ProjectFileLayout.file(
+            "\(outputID.rawValue.uuidString)-\(output.fileName)", in: .outputs, of: id)
+        else { throw .storageFailure }
+        let fingerprint: FileFingerprint
+        do {
+            fingerprint = try await files.adoptStagedFile(output.file, as: path)
+        } catch {
+            throw .storageFailure
+        }
+        let committed = OutputRecord(
+            id: outputID, relativePath: path, fingerprint: fingerprint, recipeRevision: output.recipeRevision,
+            policy: output.policy, duration: output.duration, hasAudio: output.hasAudio, completedAt: now())
+        // Keep older outputs only while a share/playback lease may be using them (05 V08).
+        let obsolete = leases[id]?.isEmpty ?? true ? record.outputs : []
+        record.outputs = (leases[id]?.isEmpty ?? true ? [] : record.outputs) + [committed]
+        record.lastOutputID = outputID
+        record.updatedAt = now()
+        try await save(record)
+        for old in obsolete {
+            try? await files.removeFile(old.relativePath)
+        }
+        return committed
+    }
+
+    public func updatePhotosSave(
+        _ state: PhotosSaveState, localIdentifier: String?, output outputID: OutputID, project id: ProjectID
+    ) async throws(ProjectStoreError) {
+        await acquire()
+        defer { release() }
+        _ = await reconcileLocked()
+        var record = try await loadRecord(id)
+        guard let index = record.outputs.firstIndex(where: { $0.id == outputID }) else { throw .notFound(id) }
+        record.outputs[index].photosSave = state
+        if let localIdentifier { record.outputs[index].photosLocalIdentifier = localIdentifier }
+        try await save(record)
+    }
+
+    public func fileURL(_ path: OwnedRelativePath) async -> URL {
+        await files.url(for: path)
     }
 
     // MARK: Internals

@@ -88,6 +88,40 @@ public actor InMemoryProjectStore: ProjectStoring {
         leases[lease.projectID]?.remove(lease.id)
     }
 
+    public func makeJobFileURL(fileExtension: String) async throws(ProjectStoreError) -> URL {
+        FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).\(fileExtension)")
+    }
+
+    public func commitOutput(_ output: FinishedOutput, to id: ProjectID) async throws(ProjectStoreError) -> OutputRecord {
+        guard var record = records[id] else { throw .notFound(id) }
+        let outputID = OutputID()
+        guard let path = try? ProjectFileLayout.file(output.fileName, in: .outputs, of: id) else { throw .storageFailure }
+        let committed = OutputRecord(
+            id: outputID, relativePath: path, fingerprint: FileFingerprint(byteCount: 0, sampleHash: 0),
+            recipeRevision: output.recipeRevision, policy: output.policy, duration: output.duration,
+            hasAudio: output.hasAudio, completedAt: Date())
+        record.outputs = [committed]
+        record.lastOutputID = outputID
+        records[id] = record
+        publish()
+        return committed
+    }
+
+    public func updatePhotosSave(
+        _ state: PhotosSaveState, localIdentifier: String?, output: OutputID, project id: ProjectID
+    ) async throws(ProjectStoreError) {
+        guard var record = records[id], let index = record.outputs.firstIndex(where: { $0.id == output }) else {
+            throw .notFound(id)
+        }
+        record.outputs[index].photosSave = state
+        record.outputs[index].photosLocalIdentifier = localIdentifier ?? record.outputs[index].photosLocalIdentifier
+        records[id] = record
+    }
+
+    public func fileURL(_ path: OwnedRelativePath) async -> URL {
+        FileManager.default.temporaryDirectory.appendingPathComponent(path.string)
+    }
+
     // MARK: Test/development helpers
 
     public func insert(_ project: ProjectSummary) {
