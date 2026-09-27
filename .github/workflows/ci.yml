@@ -12,8 +12,7 @@ on:
 
 concurrency:
   group: ci-${{ github.ref }}
-  # Queue instead of cancelling, so a running simulator build always reports a result.
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   core-linux:

@@ -9,7 +9,7 @@ import RENNStorage
 /// Media integration on the Simulator (07 test level 3): a synthesized fixture goes through the
 /// real importer, project store, render engine, writer and validator, and the decoded output is
 /// inspected. Simulator results do not replace device validation (camera, GPU speed, HDR).
-@Suite("Media pipeline (Simulator integration)", .serialized)
+@Suite("Media pipeline (Simulator integration)", .serialized, .timeLimit(.minutes(2)))
 struct MediaPipelineTests {
     struct Fixture {
         let directory: URL
@@ -49,23 +49,10 @@ struct MediaPipelineTests {
         writer.startSession(atSourceTime: .zero)
         let context = CIContext()
         let frameCount = Int(seconds * Double(fps))
-        for index in 0..<frameCount {
-            while !videoInput.isReadyForMoreMediaData { try await Task.sleep(nanoseconds: 1_000_000) }
-            var buffer: CVPixelBuffer?
-            CVPixelBufferPoolCreatePixelBuffer(nil, adaptor.pixelBufferPool!, &buffer)
-            let shade = CGFloat(index % 60) / 60
-            let image = CIImage(color: CIColor(red: shade, green: 0.4, blue: 1 - shade))
-                .cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
-            context.render(image, to: buffer!)
-            #expect(adaptor.append(buffer!, withPresentationTime: CMTime(value: CMTimeValue(index), timescale: fps)))
-        }
-        videoInput.markAsFinished()
-
-        if let audioInput {
-            let totalFrames = Int(seconds * sampleRate)
-            let chunk = 1024
-            var written = 0
-            var format: CMAudioFormatDescription?
+        let totalAudioFrames = audioInput == nil ? 0 : Int(seconds * sampleRate)
+        let chunk = 1024
+        var format: CMAudioFormatDescription?
+        if audioInput != nil {
             var description = AudioStreamBasicDescription(
                 mSampleRate: sampleRate, mFormatID: kAudioFormatLinearPCM,
                 mFormatFlags: kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked,
@@ -74,11 +61,37 @@ struct MediaPipelineTests {
             CMAudioFormatDescriptionCreate(
                 allocator: nil, asbd: &description, layoutSize: 0, layout: nil, magicCookieSize: 0,
                 magicCookie: nil, extensions: nil, formatDescriptionOut: &format)
-            while written < totalFrames {
-                while !audioInput.isReadyForMoreMediaData { try await Task.sleep(nanoseconds: 1_000_000) }
-                let count = min(chunk, totalFrames - written)
+        }
+
+        // Interleave by media time: AVAssetWriter stalls one track while waiting for the other.
+        var videoIndex = 0
+        var audioWritten = 0
+        while videoIndex < frameCount || audioWritten < totalAudioFrames {
+            let videoTime = Double(videoIndex) / Double(fps)
+            let audioTime = Double(audioWritten) / sampleRate
+            let writeVideo = videoIndex < frameCount && (audioWritten >= totalAudioFrames || videoTime <= audioTime)
+            if writeVideo {
+                guard videoInput.isReadyForMoreMediaData else {
+                    try await Task.sleep(nanoseconds: 1_000_000)
+                    continue
+                }
+                var buffer: CVPixelBuffer?
+                CVPixelBufferPoolCreatePixelBuffer(nil, adaptor.pixelBufferPool!, &buffer)
+                let shade = CGFloat(videoIndex % 60) / 60
+                let image = CIImage(color: CIColor(red: shade, green: 0.4, blue: 1 - shade))
+                    .cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
+                context.render(image, to: buffer!)
+                #expect(adaptor.append(buffer!, withPresentationTime: CMTime(value: CMTimeValue(videoIndex), timescale: fps)))
+                videoIndex += 1
+                if videoIndex == frameCount { videoInput.markAsFinished() }
+            } else if let audioInput, let format {
+                guard audioInput.isReadyForMoreMediaData else {
+                    try await Task.sleep(nanoseconds: 1_000_000)
+                    continue
+                }
+                let count = min(chunk, totalAudioFrames - audioWritten)
                 var samples = (0..<count).map { offset -> Int16 in
-                    Int16(sin(2 * .pi * 1000 * Double(written + offset) / sampleRate) * 8000)
+                    Int16(sin(2 * .pi * 1000 * Double(audioWritten + offset) / sampleRate) * 8000)
                 }
                 var block: CMBlockBuffer?
                 CMBlockBufferCreateWithMemoryBlock(
@@ -90,13 +103,13 @@ struct MediaPipelineTests {
                 }
                 var sample: CMSampleBuffer?
                 CMAudioSampleBufferCreateReadyWithPacketDescriptions(
-                    allocator: nil, dataBuffer: block!, formatDescription: format!, sampleCount: count,
-                    presentationTimeStamp: CMTime(value: CMTimeValue(written), timescale: CMTimeScale(sampleRate)),
+                    allocator: nil, dataBuffer: block!, formatDescription: format, sampleCount: count,
+                    presentationTimeStamp: CMTime(value: CMTimeValue(audioWritten), timescale: CMTimeScale(sampleRate)),
                     packetDescriptions: nil, sampleBufferOut: &sample)
                 #expect(audioInput.append(sample!))
-                written += count
+                audioWritten += count
+                if audioWritten >= totalAudioFrames { audioInput.markAsFinished() }
             }
-            audioInput.markAsFinished()
         }
         await writer.finishWriting()
         #expect(writer.status == .completed)
