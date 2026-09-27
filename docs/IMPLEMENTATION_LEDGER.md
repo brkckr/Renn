@@ -142,3 +142,22 @@ Evidence status:
   only; projects are removed only by deleting projects). VM tested on Linux.
 - Export result cassette shows the project's own processed cover and its deterministic case variant.
 
+## M07 Visual and motion: in progress (2026-09-27)
+
+Motion timelines are pure functions of elapsed time in RENNDomain (frame-rate independent,
+Linux-tested); SwiftUI drives them with `TimelineView(.animation)` and one identified transition
+per motion so stale completions never act.
+- Onboarding curved wipe (03 M02): leading edge covers by 380 ms (incl. corners), swap while covered,
+  trailing edge reveals by 760 ms; copy fades per spec; Next serialized; inactivity settles; Reduce
+  Motion keeps the 120 ms dissolve. Deviation: the mask draws above the navigation row (controls are
+  disabled during the 760 ms) instead of below it.
+- VHS insertion (03 M05): lift / curved travel / slide behind the front plate / present once at 700 ms;
+  real occlusion by re-drawing the player's upper part above the travelling case; cancel on tab change,
+  background, inactivity. Player art is vector development art (owner layers pending, 08 I02).
+- Paywall selection stage (03 M04): passive pose → selected pose in 320 ms, halo 0.12 → 0.28 → 0.20,
+  billing data independent of motion. Stage objects are RENN's own simple cassette shapes, pending review.
+- Export completion (03 M06): 6 pt / opacity settle over 240 ms and one light haptic, once per output.
+- Already present since M00: splash ribbons (03 M01) and the glass bar morph (03 M03).
+- Not done: visual comparison against the reference videos, 60/120 Hz device recordings, final fonts and
+  artwork (owner inputs).
+
