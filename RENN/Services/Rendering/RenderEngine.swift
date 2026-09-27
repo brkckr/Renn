@@ -55,6 +55,8 @@ final class RenderEngine: @unchecked Sendable {
         var bypassCreative = false
         /// Bounded Beat modulation for this media time; `.none` when Beat is not effective.
         var beat: BeatModulation = .none
+        /// Decorative indicators, already placed by `IndicatorLayout` (drawn once per size).
+        var indicators: [IndicatorRenderer.Overlay] = []
     }
 
     /// Builds the frame graph. Lazy: no GPU work happens until `render`.
@@ -73,6 +75,10 @@ final class RenderEngine: @unchecked Sendable {
         }
 
         let bounds = CGRect(origin: .zero, size: request.outputSize)
+        // Order: effects → OSD → policy watermark (05 V03/V04). Neither is attenuated by intensity.
+        for overlay in request.indicators {
+            image = place(overlay.image, in: overlay.frame, outputHeight: request.outputSize.height).composited(over: image)
+        }
         if let watermark = request.watermark, let frame = request.watermarkFrame {
             // Layout uses a top-left origin; Core Image uses bottom-left.
             let ciY = Double(request.outputSize.height) - frame.y - frame.height
@@ -105,6 +111,15 @@ final class RenderEngine: @unchecked Sendable {
         filter.scale = Float(scale)
         filter.aspectRatio = Float((size.width / extent.width) / scale)
         return filter.outputImage ?? image
+    }
+
+    private func place(_ overlay: CIImage, in frame: WatermarkLayout.Rect, outputHeight: CGFloat) -> CIImage {
+        let ciY = Double(outputHeight) - frame.y - frame.height
+        return overlay
+            .transformed(by: CGAffineTransform(
+                scaleX: frame.width / max(1, overlay.extent.width),
+                y: frame.height / max(1, overlay.extent.height)))
+            .transformed(by: CGAffineTransform(translationX: frame.x, y: ciY))
     }
 
     private func beatModulated(_ image: CIImage, _ beat: BeatModulation) -> CIImage {

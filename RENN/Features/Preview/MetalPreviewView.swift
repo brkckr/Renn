@@ -71,6 +71,7 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
     private var lastSource: CIImage?
     private var lastTime = RationalTime.zero
     private var watermarkCache: (width: Double, image: CIImage, aspect: Double)?
+    private var indicatorCache: (key: String, overlays: [IndicatorRenderer.Overlay])?
 
     init(engine: RenderEngine) {
         self.engine = engine
@@ -101,11 +102,16 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
                 watermark = rendered?.image
                 watermarkFrame = rendered.map { WatermarkLayout(output: fitDimensions, aspectRatio: $0.aspect).frame }
             }
+            var indicators: [IndicatorRenderer.Overlay] = []
+            if let fitDimensions = try? PixelDimensions(width: Int(fit.width), height: Int(fit.height)) {
+                indicators = indicatorOverlays(recipe.indicators, output: fitDimensions, watermarkFrame: watermarkFrame)
+            }
             let image = engine.image(for: RenderEngine.FrameRequest(
                 source: sourceImage, orientation: source.frameOrientation, recipe: recipe, time: lastTime,
                 outputSize: CGSize(width: Int(fit.width), height: Int(fit.height)),
                 watermark: watermark, watermarkFrame: watermarkFrame, bypassCreative: bypassCreative,
-                beat: BeatModulation.at(lastTime, timeline: beatTimeline, beat: recipe.beat, audioMuted: recipe.audioMuted)))
+                beat: BeatModulation.at(lastTime, timeline: beatTimeline, beat: recipe.beat, audioMuted: recipe.audioMuted),
+                indicators: indicators))
             let offset = CGAffineTransform(
                 translationX: ((drawableSize.width - fit.width) / 2).rounded(),
                 y: ((drawableSize.height - fit.height) / 2).rounded())
@@ -116,6 +122,18 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
             colorSpace: engine.outputColorSpace)
         commandBuffer.present(drawable)
         commandBuffer.commit()
+    }
+
+    /// Preview shows the same effective indicator placement as export (02 D07).
+    private func indicatorOverlays(
+        _ settings: IndicatorSettings, output: PixelDimensions, watermarkFrame: WatermarkLayout.Rect?
+    ) -> [IndicatorRenderer.Overlay] {
+        let key = "\(output)-\(settings.showsRec)\(settings.showsPlay)\(settings.showsBattery)\(settings.showsDate)-\(settings.stampDate.text)-\(watermarkFrame != nil)"
+        if let cached = indicatorCache, cached.key == key { return cached.overlays }
+        let layout = IndicatorLayout.resolve(output: output, settings: settings, reserved: watermarkFrame.map { [$0] } ?? [])
+        let overlays = IndicatorRenderer.overlays(for: layout, settings: settings)
+        indicatorCache = (key, overlays)
+        return overlays
     }
 
     private func watermarkImage(forShortEdge shortEdge: Double) -> (image: CIImage, aspect: Double)? {

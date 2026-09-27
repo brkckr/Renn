@@ -225,6 +225,11 @@ final class ExportWorker: @unchecked Sendable {
         let watermarkFrame = job.watermark.map { _ in
             WatermarkLayout(output: job.plan.policy.dimensions, aspectRatio: job.watermarkAspect).frame
         }
+        // Indicators avoid the watermark reservation; laid out and drawn once per job.
+        let indicatorLayout = IndicatorLayout.resolve(
+            output: job.plan.policy.dimensions, settings: job.plan.recipe.indicators,
+            reserved: watermarkFrame.map { [$0] } ?? [])
+        let indicators = IndicatorRenderer.overlays(for: indicatorLayout, settings: job.plan.recipe.indicators)
         var limiter = CadenceLimiter(outputRate: job.plan.policy.frameRate)
         var videoDone = false
         var audioDone = pipeline.audioOutput == nil
@@ -255,7 +260,8 @@ final class ExportWorker: @unchecked Sendable {
                                 watermark: job.watermark, watermarkFrame: watermarkFrame,
                                 beat: BeatModulation.at(
                                     mediaTime, timeline: job.beatTimeline, beat: job.plan.recipe.beat,
-                                    audioMuted: job.plan.recipe.audioMuted)))
+                                    audioMuted: job.plan.recipe.audioMuted),
+                                indicators: indicators))
                             job.engine.render(image, to: outputBuffer)
                             // Source timestamps are kept; only frames above the cadence ceiling are skipped.
                             guard pipeline.adaptor.append(outputBuffer, withPresentationTime: relative) else {
