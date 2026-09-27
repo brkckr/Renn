@@ -127,6 +127,16 @@ public final class ProjectPreviewViewModel {
         scheduleSave()
     }
 
+    /// Apply from the indicators panel: one recipe revision for the whole staged change.
+    public func applyIndicators(_ draft: IndicatorsDraft) {
+        guard var recipe else { return }
+        let updated = draft.applied(to: recipe.indicators)
+        guard updated != recipe.indicators else { return }
+        recipe.indicators = updated
+        self.recipe = recipe
+        scheduleSave(immediately: true)
+    }
+
     public func setBeatEnabled(_ enabled: Bool) {
         guard var recipe, recipe.beat.isEnabled != enabled else { return }
         recipe.beat = BeatSettings(isEnabled: enabled, intensity: recipe.beat.intensity)

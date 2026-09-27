@@ -8,6 +8,7 @@ import RENNFeatures
 struct ProjectPreviewView: View {
     @State private var viewModel: ProjectPreviewViewModel
     @State private var player = PreviewPlayer()
+    @State private var showsIndicators = false
     let engine: RenderEngine
 
     init(viewModel: @autoclosure () -> ProjectPreviewViewModel, engine: RenderEngine) {
@@ -57,6 +58,18 @@ struct ProjectPreviewView: View {
         } message: {
             Text("export.requiresPro.message")
         }
+        .sheet(isPresented: $showsIndicators) {
+            if let recipe = viewModel.recipe {
+                IndicatorsPanelView(
+                    engine: engine, source: player, recipe: recipe, sourceDimensions: viewModel.displayDimensions,
+                    showsWatermark: viewModel.showsWatermark,
+                    onApply: { draft in
+                        viewModel.applyIndicators(draft)
+                        showsIndicators = false
+                    },
+                    onCancel: { showsIndicators = false })
+            }
+        }
         .fullScreenCover(isPresented: statusBinding) {
             ExportStatusView(viewModel: viewModel)
         }
@@ -101,6 +114,9 @@ struct ProjectPreviewView: View {
                     .disabled(!viewModel.hasAudio)
                 controlButton("repeat", label: "preview.loop", isOn: viewModel.isLooping) {
                     viewModel.isLooping.toggle()
+                }
+                controlButton("calendar.badge.clock", label: "indicators.title", isOn: indicatorsOn) {
+                    showsIndicators = true
                 }
             }
 
@@ -216,6 +232,11 @@ struct ProjectPreviewView: View {
             Spacer()
         }
         .padding(RENNMetrics.sideMargin)
+    }
+
+    private var indicatorsOn: Bool {
+        guard let indicators = viewModel.recipe?.indicators else { return false }
+        return indicators.showsRec || indicators.showsPlay || indicators.showsBattery || indicators.showsDate
     }
 
     private var isExportRunning: Bool {
