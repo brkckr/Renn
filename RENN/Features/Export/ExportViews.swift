@@ -89,7 +89,11 @@ struct ExportStatusView: View {
     @State private var outputURL: URL?
     @State private var cover: UIImage?
     @State private var watching = false
+    /// Completion settle (03 M06): 6 pt + opacity over 240 ms, once per verified output.
+    @State private var settled = true
+    @State private var hapticTrigger = 0
     @Environment(\.openURL) private var openURL
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
@@ -163,6 +167,8 @@ struct ExportStatusView: View {
             } label: {
                 VHSCaseShell(name: viewModel.name, variant: viewModel.caseVariant, poster: cover)
                     .frame(width: 140)
+                    .offset(y: settled || reduceMotion ? 0 : -6)
+                    .opacity(settled ? 1 : 0)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(Text("export.result.watch"))
@@ -181,7 +187,13 @@ struct ExportStatusView: View {
                 .buttonStyle(.rennSecondary)
                 .disabled(outputURL == nil)
         }
+        .sensoryFeedback(.impact(weight: .light), trigger: hapticTrigger)
         .task(id: output.id) {
+            if viewModel.beginCompletionPresentation(of: output.id) {
+                settled = false
+                withAnimation(.easeOut(duration: reduceMotion ? 0.12 : 0.24)) { settled = true }
+                hapticTrigger += 1
+            }
             outputURL = await viewModel.url(for: output)
             cover = await viewModel.poster().flatMap(UIImage.init(data:))
         }

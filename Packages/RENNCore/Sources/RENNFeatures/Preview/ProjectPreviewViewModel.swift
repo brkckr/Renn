@@ -104,6 +104,14 @@ public final class ProjectPreviewViewModel {
         (record?.sources.first { $0.role == .primary || $0.role == .rearCamera } ?? record?.sources.first)?.metadata.displayDimensions
     }
     public var name: String { record?.name.value ?? "" }
+
+    private var presentedCompletions: Set<OutputID> = []
+
+    /// True the first time a verified output's completion is shown: the settle motion and its one
+    /// haptic never replay when the result sheet is reopened (03 M06).
+    public func beginCompletionPresentation(of output: OutputID) -> Bool {
+        presentedCompletions.insert(output).inserted
+    }
     /// Same deterministic case as on the Projects shelf (01 P03).
     public var caseVariant: Int { ProjectsViewModel.caseVariant(for: projectID) }
 

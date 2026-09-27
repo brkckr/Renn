@@ -97,4 +97,12 @@ struct LookSelectorTests {
         await viewModel.flush()
         #expect(try await store.project(id).recipeRevision == before.recipeRevision)
     }
+
+    @Test func completionPresentationHappensOncePerOutput() async throws {
+        let (viewModel, _, _) = try await setup()
+        let output = OutputID()
+        #expect(viewModel.beginCompletionPresentation(of: output))
+        #expect(!viewModel.beginCompletionPresentation(of: output), "Reopening never replays the settle/haptic")
+        #expect(viewModel.beginCompletionPresentation(of: OutputID()))
+    }
 }
