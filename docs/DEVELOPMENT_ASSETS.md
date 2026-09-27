@@ -1,0 +1,20 @@
+# Development asset report
+
+Everything below is a development placeholder or fixture, not final or approved production
+content (08 I01–I04). Replace each item only with owner-supplied, licensed material.
+
+| Area | Current state in the app | Needed from the owner |
+|---|---|---|
+| Look catalog | `RENN/Resources/Looks/DevelopmentLookCatalog.json`: one `dev.diagnostic` fixture, flagged `isDevelopmentFixture`. The Looks tab shows a DEV banner; `LookCatalog.isLaunchReady` is false. | Twelve final Looks: names, briefs, LUT `.cube` / shader / grain assets, licenses |
+| Look posters | `LookPosterPlaceholder`: gradient with scanlines and DEV badge | Licensed comparison-scene posters |
+| Fonts | None bundled. Monoton, Press Start 2P and Roboto fall back to the system font. Settings > Developer shows "MISSING → system fallback". Drop licensed `.ttf/.otf` files anywhere under `RENN/Resources/`; they are registered at launch. | Font files with license notices; Turkish glyph check |
+| Icons | SF Symbols stand in via `RENNIcon` (house, recordingtape, rectangle.stack, gearshape, plus…) | Custom 24 pt, 2 pt-stroke icon family |
+| App icon | Empty `AppIcon` set (build warning expected) | 1024 px app icon |
+| Splash | Vector ribbons in brand colors; RENN glyphs per stripe with fallback font | Visual review of geometry and text color |
+| Onboarding scenes | Gradient placeholders with DEV badge | Owned/licensed demo clips for the four scenes |
+| Projects player / VHS cases | Simple vector shells with DEV badge | Player rear/front/slot layers, case front/side, cassette, shadow |
+| Paywall objects | Not built yet (M07) | Three plan objects |
+| Watermark | Not rendered yet (M03) | Legibility review at 720p |
+| Purchases | Unconfigured service (no products). Debug-only fake with `DEV` prices via `-RENNUseFakePurchases`. | RevenueCat app, products, `pro` entitlement, public SDK key |
+| Telemetry | Consent-gated, discarding sink | Firebase app registration and `GoogleService-Info.plist` |
+| Legal links | Disabled rows ("Not available yet") | Support, privacy and terms URLs |

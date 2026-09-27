@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "dev-0",
+  "isDevelopmentFixture": true,
+  "recommendedLookID": "dev.diagnostic",
+  "looks": [
+    {
+      "id": "dev.diagnostic",
+      "version": 1,
+      "family": "diagnostic",
+      "nameKey": "look.dev.diagnostic.name",
+      "descriptionKey": "look.dev.diagnostic.description",
+      "defaultIntensity": 0.7,
+      "renderVersion": 1,
+      "isDevelopmentFixture": true
+    }
+  ]
+}

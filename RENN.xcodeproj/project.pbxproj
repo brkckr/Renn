@@ -1,0 +1,446 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8CA02E9E5F3758FCD2BD0E90 /* RENNDomain in Frameworks */ = {isa = PBXBuildFile; productRef = F269A67C864335CC0D73F961 /* RENNDomain */; };
+		DF728900804122296C47C920 /* RENNFeatures in Frameworks */ = {isa = PBXBuildFile; productRef = B2C05826F15EFBBAC11F3C66 /* RENNFeatures */; };
+		21264E520EEF120AB505F10C /* RENNFakes in Frameworks */ = {isa = PBXBuildFile; productRef = 246A0595B590F18F9AD61991 /* RENNFakes */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1821858C4F842ABCC4D1F2EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 139793B3D38BD2FF05955B75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 240E89B38A85A7372B9B6393;
+			remoteInfo = RENN;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		B77B418FAF6BA8079A7C4FA4 /* RENN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RENN.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0F4A5BB87CD09091460A28B9 /* RENNTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RENNTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		60D598CF90ED524E04B7ADD4 /* RENN.shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RENN.shared.xcconfig; sourceTree = "<group>"; };
+		FDC72B93D488E47D2FAB0FD2 /* RENN.debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RENN.debug.xcconfig; sourceTree = "<group>"; };
+		BC6E4269E2965431380C12AF /* RENN.release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RENN.release.xcconfig; sourceTree = "<group>"; };
+		FCBF95F7505930FFB30C44B4 /* RENNTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RENNTests.xcconfig; sourceTree = "<group>"; };
+		3E92B86A414244657C96CED0 /* Secrets.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.example.xcconfig; sourceTree = "<group>"; };
+		DE6582B5E95589693248B5DF /* RENN-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RENN-Info.plist"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		7B16E9F4A4B58DC9248027EA /* RENN */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RENN;
+			sourceTree = "<group>";
+		};
+		7B72C455E28230BB83B43792 /* RENNTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RENNTests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5154ACB85AF8FE8B92CA1F63 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8CA02E9E5F3758FCD2BD0E90 /* RENNDomain in Frameworks */,
+				DF728900804122296C47C920 /* RENNFeatures in Frameworks */,
+				21264E520EEF120AB505F10C /* RENNFakes in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C247F6BF88BD197E85F9A59 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0B4DE15B6935E70EEE497966 = {
+			isa = PBXGroup;
+			children = (
+				7B16E9F4A4B58DC9248027EA /* RENN */,
+				7B72C455E28230BB83B43792 /* RENNTests */,
+				213D7AD75C1A638BDC023825 /* Config */,
+				A7D54A97D4041BF86F9228A3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		213D7AD75C1A638BDC023825 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				60D598CF90ED524E04B7ADD4 /* RENN.shared.xcconfig */,
+				FDC72B93D488E47D2FAB0FD2 /* RENN.debug.xcconfig */,
+				BC6E4269E2965431380C12AF /* RENN.release.xcconfig */,
+				FCBF95F7505930FFB30C44B4 /* RENNTests.xcconfig */,
+				3E92B86A414244657C96CED0 /* Secrets.example.xcconfig */,
+				DE6582B5E95589693248B5DF /* RENN-Info.plist */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		A7D54A97D4041BF86F9228A3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B77B418FAF6BA8079A7C4FA4 /* RENN.app */,
+				0F4A5BB87CD09091460A28B9 /* RENNTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		240E89B38A85A7372B9B6393 /* RENN */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B7CCA4DB6AB1B3C483377DD /* Build configuration list for PBXNativeTarget "RENN" */;
+			buildPhases = (
+				D76A9C26116E8F54C798B7AB /* Sources */,
+				5154ACB85AF8FE8B92CA1F63 /* Frameworks */,
+				D21DE8E4A00CC9AACCE90845 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				7B16E9F4A4B58DC9248027EA /* RENN */,
+			);
+			name = RENN;
+			packageProductDependencies = (
+				F269A67C864335CC0D73F961 /* RENNDomain */,
+				B2C05826F15EFBBAC11F3C66 /* RENNFeatures */,
+				246A0595B590F18F9AD61991 /* RENNFakes */,
+			);
+			productName = RENN;
+			productReference = B77B418FAF6BA8079A7C4FA4 /* RENN.app */;
+			productType = "com.apple.product-type.application";
+		};
+		39459CE05D44010C67DB6EA3 /* RENNTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B202A656F69061FA0C13FE4F /* Build configuration list for PBXNativeTarget "RENNTests" */;
+			buildPhases = (
+				323A0759A07A42647B27F342 /* Sources */,
+				2C247F6BF88BD197E85F9A59 /* Frameworks */,
+				167A51AFE53741DDBF1BBDAC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4B4B8009296CEB5045959EF7 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				7B72C455E28230BB83B43792 /* RENNTests */,
+			);
+			name = RENNTests;
+			packageProductDependencies = (
+			);
+			productName = RENNTests;
+			productReference = 0F4A5BB87CD09091460A28B9 /* RENNTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		139793B3D38BD2FF05955B75 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					240E89B38A85A7372B9B6393 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					39459CE05D44010C67DB6EA3 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 240E89B38A85A7372B9B6393;
+					};
+				};
+			};
+			buildConfigurationList = 5233FA5E8D2DB1B297C3227B /* Build configuration list for PBXProject "RENN" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				tr,
+				Base,
+			);
+			mainGroup = 0B4DE15B6935E70EEE497966;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AE6C9E1BE27A11721C5075EF /* XCLocalSwiftPackageReference "Packages/RENNCore" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = A7D54A97D4041BF86F9228A3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				240E89B38A85A7372B9B6393 /* RENN */,
+				39459CE05D44010C67DB6EA3 /* RENNTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D21DE8E4A00CC9AACCE90845 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		167A51AFE53741DDBF1BBDAC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D76A9C26116E8F54C798B7AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		323A0759A07A42647B27F342 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4B4B8009296CEB5045959EF7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 240E89B38A85A7372B9B6393 /* RENN */;
+			targetProxy = 1821858C4F842ABCC4D1F2EC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		211D3AF1EDACE9924271D873 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		D626B3B4227FE762936298DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 6.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2AA08FB4B70FB8FCC0C80261 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FDC72B93D488E47D2FAB0FD2 /* RENN.debug.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		9067DF830FB6D149F306BCCB /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BC6E4269E2965431380C12AF /* RENN.release.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		98E3DBB8426EEFE5A4DC7A0F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FCBF95F7505930FFB30C44B4 /* RENNTests.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		57D304B71A1C24DA33D01997 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FCBF95F7505930FFB30C44B4 /* RENNTests.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5233FA5E8D2DB1B297C3227B /* Build configuration list for PBXProject "RENN" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				211D3AF1EDACE9924271D873 /* Debug */,
+				D626B3B4227FE762936298DB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3B7CCA4DB6AB1B3C483377DD /* Build configuration list for PBXNativeTarget "RENN" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2AA08FB4B70FB8FCC0C80261 /* Debug */,
+				9067DF830FB6D149F306BCCB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B202A656F69061FA0C13FE4F /* Build configuration list for PBXNativeTarget "RENNTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				98E3DBB8426EEFE5A4DC7A0F /* Debug */,
+				57D304B71A1C24DA33D01997 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		AE6C9E1BE27A11721C5075EF /* XCLocalSwiftPackageReference "Packages/RENNCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/RENNCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F269A67C864335CC0D73F961 /* RENNDomain */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AE6C9E1BE27A11721C5075EF /* XCLocalSwiftPackageReference "Packages/RENNCore" */;
+			productName = RENNDomain;
+		};
+		B2C05826F15EFBBAC11F3C66 /* RENNFeatures */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AE6C9E1BE27A11721C5075EF /* XCLocalSwiftPackageReference "Packages/RENNCore" */;
+			productName = RENNFeatures;
+		};
+		246A0595B590F18F9AD61991 /* RENNFakes */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AE6C9E1BE27A11721C5075EF /* XCLocalSwiftPackageReference "Packages/RENNCore" */;
+			productName = RENNFakes;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 139793B3D38BD2FF05955B75 /* Project object */;
+}

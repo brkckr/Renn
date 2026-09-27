@@ -1,0 +1,50 @@
+// RENN app target settings shared by Debug and Release.
+// Identity is settled: display name RENN, bundle ID tzlapp.studio.renn (README, 06 C01).
+
+PRODUCT_NAME = RENN
+PRODUCT_BUNDLE_IDENTIFIER = tzlapp.studio.renn
+MARKETING_VERSION = 0.1.0
+CURRENT_PROJECT_VERSION = 1
+
+IPHONEOS_DEPLOYMENT_TARGET = 17.0
+SDKROOT = iphoneos
+SUPPORTED_PLATFORMS = iphoneos iphonesimulator
+TARGETED_DEVICE_FAMILY = 1
+SUPPORTS_MACCATALYST = NO
+SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO
+SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO
+
+SWIFT_VERSION = 6.0
+SWIFT_EMIT_LOC_STRINGS = YES
+LOCALIZATION_PREFERS_STRING_CATALOGS = YES
+ENABLE_PREVIEWS = YES
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks
+ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
+ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor
+
+CODE_SIGN_STYLE = Automatic
+DEVELOPMENT_TEAM = $(RENN_DEVELOPMENT_TEAM)
+
+GENERATE_INFOPLIST_FILE = YES
+INFOPLIST_FILE = Config/RENN-Info.plist
+INFOPLIST_KEY_CFBundleDisplayName = RENN
+INFOPLIST_KEY_LSApplicationCategoryType = public.app-category.photography
+INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES
+INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES
+INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait
+INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait
+// English source text; Turkish lives in RENN/Resources/InfoPlist.xcstrings.
+INFOPLIST_KEY_NSCameraUsageDescription = RENN uses the camera to record videos that you turn into retro tapes.
+INFOPLIST_KEY_NSMicrophoneUsageDescription = RENN records sound with your videos. The recorded sound can drive Beat effects.
+INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = RENN saves your finished videos to Photos.
+
+// ---------------------------------------------------------------------------
+// Owner configuration placeholders. Empty means "not configured"; the app then uses
+// the truthful unconfigured behavior (no purchases, no telemetry, links disabled).
+// Set real values in Config/Secrets.xcconfig (git-ignored), see Secrets.example.xcconfig.
+// ---------------------------------------------------------------------------
+RENN_DEVELOPMENT_TEAM =
+RENN_REVENUECAT_API_KEY =
+RENN_SUPPORT_URL =
+RENN_PRIVACY_URL =
+RENN_TERMS_URL =
