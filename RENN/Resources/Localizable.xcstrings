@@ -528,6 +528,108 @@
         }
       }
     },
+    "dual.corner": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inset corner"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Küçük görüntü köşesi"
+          }
+        }
+      }
+    },
+    "dual.corner.bottomLeft": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bottom left"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sol alt"
+          }
+        }
+      }
+    },
+    "dual.corner.bottomRight": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bottom right"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sağ alt"
+          }
+        }
+      }
+    },
+    "dual.corner.topLeft": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Top left"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sol üst"
+          }
+        }
+      }
+    },
+    "dual.corner.topRight": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Top right"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sağ üst"
+          }
+        }
+      }
+    },
+    "dual.swap": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swap cameras"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kameraların yerini değiştir"
+          }
+        }
+      }
+    },
     "dual.unavailable.formats": {
       "extractionState": "manual",
       "localizations": {
@@ -1170,57 +1272,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Geliştirme yer tutucusu"
-          }
-        }
-      }
-    },
-    "flow.dualCamera.title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dual camera"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Çift kamera"
-          }
-        }
-      }
-    },
-    "flow.placeholder.body %@": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This screen is a development placeholder. It is implemented in milestone %@."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bu ekran bir geliştirme yer tutucusudur. %@ aşamasında uygulanacak."
-          }
-        }
-      }
-    },
-    "flow.placeholder.look %@": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Selected Look: %@"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seçilen Look: %@"
           }
         }
       }

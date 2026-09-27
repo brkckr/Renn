@@ -32,6 +32,13 @@ final class SourceRecorder: @unchecked Sendable {
         let frameRate: FrameRate
         let hasAudio: Bool
         let droppedFrames: Int
+        /// Capture-clock time of the first accepted video sample (file time 0).
+        let origin: CMTime
+    }
+
+    /// Capture-clock times of the first and the newest written video sample, once started.
+    var writtenRange: (origin: CMTime, latest: CMTime)? {
+        origin.map { ($0, lastVideoTime) }
     }
 
     let file: URL
@@ -122,7 +129,7 @@ final class SourceRecorder: @unchecked Sendable {
         let duration = CMTimeSubtract(lastVideoTime, origin)
         let result = Take(
             file: file, duration: duration, width: width, height: height,
-            frameRate: frameRate, hasAudio: audioInput != nil, droppedFrames: droppedFrames)
+            frameRate: frameRate, hasAudio: audioInput != nil, droppedFrames: droppedFrames, origin: origin)
         let writerRef = WriterRef(writer)
         writer.finishWriting {
             if writerRef.writer.status == .completed {

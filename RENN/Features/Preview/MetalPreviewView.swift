@@ -12,6 +12,13 @@ protocol PreviewFrameSource: AnyObject {
     var frameOrientation: CGImagePropertyOrientation { get }
 }
 
+/// A live Dual-Cam source: `nextFrame` delivers the main camera, `insetFrame` the other one.
+@MainActor
+protocol DualPreviewFrameSource: PreviewFrameSource {
+    func insetFrame() -> CIImage?
+    var insetCorner: DualCameraLayout.Corner { get }
+}
+
 /// Draws the live preview through the same RenderEngine graph as export (05 V04), aspect-fit
 /// and letterboxed in the UI only; the output itself never inherits the bars (02 D05).
 struct MetalPreviewView: UIViewRepresentable {
@@ -106,12 +113,19 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
             if let fitDimensions = try? PixelDimensions(width: Int(fit.width), height: Int(fit.height)) {
                 indicators = indicatorOverlays(recipe.indicators, output: fitDimensions, watermarkFrame: watermarkFrame)
             }
-            let image = engine.image(for: RenderEngine.FrameRequest(
+            var request = RenderEngine.FrameRequest(
                 source: sourceImage, orientation: source.frameOrientation, recipe: recipe, time: lastTime,
                 outputSize: CGSize(width: Int(fit.width), height: Int(fit.height)),
                 watermark: watermark, watermarkFrame: watermarkFrame, bypassCreative: bypassCreative,
                 beat: BeatModulation.at(lastTime, timeline: beatTimeline, beat: recipe.beat, audioMuted: recipe.audioMuted),
-                indicators: indicators))
+                indicators: indicators)
+            if let dual = source as? any DualPreviewFrameSource, let insetImage = dual.insetFrame(),
+               let fitDimensions = try? PixelDimensions(width: Int(fit.width), height: Int(fit.height)) {
+                request.inset = RenderEngine.Inset(
+                    source: insetImage, orientation: dual.frameOrientation, mirrored: false,
+                    layout: DualInsetLayout(canvas: fitDimensions, corner: dual.insetCorner))
+            }
+            let image = engine.image(for: request)
             let offset = CGAffineTransform(
                 translationX: ((drawableSize.width - fit.width) / 2).rounded(),
                 y: ((drawableSize.height - fit.height) / 2).rounded())

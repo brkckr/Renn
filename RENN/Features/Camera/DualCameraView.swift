@@ -5,26 +5,26 @@ import UIKit
 import RENNDomain
 import RENNFeatures
 
-/// Ordinary camera (02 D06): large portrait viewfinder with the Look applied live, real REC
-/// status/timer, pre-record front/rear switch, record/stop. Look/intensity are locked while
-/// recording; timer and Look/Beat/Indicators panels arrive with M05.
-struct CameraView: View {
-    @State private var viewModel: CaptureFlowViewModel
-    @State private var source: CameraFrameSource
+/// Dual-Cam (01 P05, 02 D06): composed live preview (main + rounded inset through the export
+/// graph), inset corner chosen before recording, one-tap swap during recording, real REC timer.
+/// No PiP dragging/resizing and no post-capture layout editor.
+struct DualCameraView: View {
+    @State private var viewModel: DualCaptureFlowViewModel
+    @State private var source: DualCameraFrameSource
     let engine: RenderEngine
 
     @Environment(\.openURL) private var openURL
 
-    /// The view model and frame box come from the same capture controller.
     struct Parts {
-        let viewModel: CaptureFlowViewModel
-        let frames: CaptureFrameBox
+        let viewModel: DualCaptureFlowViewModel
+        let rearFrames: CaptureFrameBox
+        let frontFrames: CaptureFrameBox
     }
 
     init(parts: @autoclosure () -> Parts, engine: RenderEngine) {
         let made = parts()
         _viewModel = State(initialValue: made.viewModel)
-        _source = State(initialValue: CameraFrameSource(box: made.frames))
+        _source = State(initialValue: DualCameraFrameSource(rear: made.rearFrames, front: made.frontFrames))
         self.engine = engine
     }
 
@@ -40,11 +40,11 @@ struct CameraView: View {
             VStack {
                 topBar
                 Spacer()
+                if viewModel.state == .ready { cornerPicker }
                 bottomBar
             }
             .padding(RENNMetrics.sideMargin)
             if case .countdown(let remaining) = viewModel.state {
-                // UI only: the countdown never enters the recorded pixels (01 P05).
                 Text(verbatim: "\(remaining)")
                     .font(RENNFont.roboto(96, medium: true, relativeTo: .largeTitle))
                     .foregroundStyle(RENNColor.textPrimary)
@@ -57,6 +57,8 @@ struct CameraView: View {
         }
         .task { await viewModel.start() }
         .task { await viewModel.observeEvents() }
+        .onChange(of: viewModel.mainCamera, initial: true) { _, main in source.mainCamera = main }
+        .onChange(of: viewModel.layout.insetCorner, initial: true) { _, corner in source.insetCorner = corner }
     }
 
     private var topBar: some View {
@@ -91,39 +93,63 @@ struct CameraView: View {
         }
     }
 
-    private var bottomBar: some View {
-        VStack(spacing: 12) {
-            HStack {
+    /// Pre-record inset corner (fixed for the take).
+    private var cornerPicker: some View {
+        HStack(spacing: 8) {
+            ForEach(DualCameraLayout.Corner.allCases, id: \.self) { corner in
                 Button {
-                    Task { await viewModel.switchCamera() }
+                    viewModel.chooseCorner(corner)
                 } label: {
-                    Image(systemName: "arrow.triangle.2.circlepath.camera")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(RENNColor.textPrimary)
-                        .frame(width: 52, height: 52)
-                        .glassBackground(Circle())
+                    Image(systemName: Self.symbol(for: corner))
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(viewModel.layout.insetCorner == corner ? RENNColor.onPrimary : RENNColor.textPrimary)
+                        .frame(width: 44, height: 44)
+                        .background(Circle().fill(
+                            viewModel.layout.insetCorner == corner ? RENNColor.brandYellow : Color.white.opacity(0.12)))
                 }
-                .disabled(viewModel.state != .ready)
-                .opacity(viewModel.isRecording ? 0 : 1)
-                .accessibilityLabel(Text("camera.switch"))
-
-                Spacer()
-                recordButton
-                Spacer()
-                Button {
-                    viewModel.timer = Self.next(viewModel.timer)
-                } label: {
-                    Text(Self.timerLabel(viewModel.timer))
-                        .font(RENNFont.roboto(13, medium: true, relativeTo: .footnote))
-                        .foregroundStyle(viewModel.timer == .off ? RENNColor.textPrimary : RENNColor.onPrimary)
-                        .frame(width: 52, height: 52)
-                        .background(Circle().fill(viewModel.timer == .off ? Color.white.opacity(0.12) : RENNColor.brandYellow))
-                }
-                .disabled(viewModel.state != .ready)
-                .opacity(viewModel.isRecording ? 0 : 1)
-                .accessibilityLabel(Text("camera.timer"))
-                .accessibilityValue(Text(Self.timerLabel(viewModel.timer)))
+                .accessibilityLabel(Text(Self.label(for: corner)))
+                .accessibilityAddTraits(viewModel.layout.insetCorner == corner ? .isSelected : [])
             }
+        }
+        .padding(8)
+        .glassBackground(Capsule())
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(Text("dual.corner"))
+        .padding(.bottom, 12)
+    }
+
+    private var bottomBar: some View {
+        HStack {
+            // Swap: during recording only, an immediate media-timed cut (01 P05).
+            Button {
+                Task { await viewModel.swap() }
+            } label: {
+                Image(systemName: "rectangle.2.swap")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(RENNColor.textPrimary)
+                    .frame(width: 52, height: 52)
+                    .glassBackground(Circle())
+            }
+            .disabled(!viewModel.isRecording)
+            .opacity(viewModel.isRecording ? 1 : 0)
+            .accessibilityLabel(Text("dual.swap"))
+
+            Spacer()
+            recordButton
+            Spacer()
+            Button {
+                viewModel.timer = CameraView.next(viewModel.timer)
+            } label: {
+                Text(CameraView.timerLabel(viewModel.timer))
+                    .font(RENNFont.roboto(13, medium: true, relativeTo: .footnote))
+                    .foregroundStyle(viewModel.timer == .off ? RENNColor.textPrimary : RENNColor.onPrimary)
+                    .frame(width: 52, height: 52)
+                    .background(Circle().fill(viewModel.timer == .off ? Color.white.opacity(0.12) : RENNColor.brandYellow))
+            }
+            .disabled(viewModel.state != .ready)
+            .opacity(viewModel.isRecording ? 0 : 1)
+            .accessibilityLabel(Text("camera.timer"))
+            .accessibilityValue(Text(CameraView.timerLabel(viewModel.timer)))
         }
         .padding(.bottom, 8)
     }
@@ -156,26 +182,10 @@ struct CameraView: View {
         .accessibilityLabel(Text(viewModel.isRecording ? LocalizedStringKey("camera.stop") : LocalizedStringKey("camera.record")))
     }
 
-    static func next(_ timer: CaptureFlowViewModel.Timer) -> CaptureFlowViewModel.Timer {
-        switch timer {
-        case .off: .three
-        case .three: .ten
-        case .ten: .off
-        }
-    }
-
-    static func timerLabel(_ timer: CaptureFlowViewModel.Timer) -> LocalizedStringKey {
-        switch timer {
-        case .off: "camera.timer.off"
-        case .three: "camera.timer.three"
-        case .ten: "camera.timer.ten"
-        }
-    }
-
     private func failureOverlay(_ failure: CaptureFlowViewModel.Failure) -> some View {
         VStack(spacing: 16) {
             Spacer()
-            Text(Self.message(for: failure))
+            Text(CameraView.message(for: failure))
                 .font(RENNFont.body)
                 .foregroundStyle(RENNColor.textPrimary)
                 .multilineTextAlignment(.center)
@@ -193,36 +203,53 @@ struct CameraView: View {
         .background(RENNColor.backgroundBase.opacity(0.94).ignoresSafeArea())
     }
 
-    static func message(for failure: CaptureFlowViewModel.Failure) -> LocalizedStringKey {
-        switch failure {
-        case .cameraDenied: "camera.failed.denied"
-        case .cameraUnavailable: "camera.failed.unavailable"
-        case .recordingFailed: "camera.failed.recording"
-        case .insufficientStorage: "camera.failed.storage"
-        case .couldNotSave: "camera.failed.save"
+    static func symbol(for corner: DualCameraLayout.Corner) -> String {
+        switch corner {
+        case .topLeft: "arrow.up.left.square"
+        case .topRight: "arrow.up.right.square"
+        case .bottomLeft: "arrow.down.left.square"
+        case .bottomRight: "arrow.down.right.square"
+        }
+    }
+
+    static func label(for corner: DualCameraLayout.Corner) -> LocalizedStringKey {
+        switch corner {
+        case .topLeft: "dual.corner.topLeft"
+        case .topRight: "dual.corner.topRight"
+        case .bottomLeft: "dual.corner.bottomLeft"
+        case .bottomRight: "dual.corner.bottomRight"
         }
     }
 }
 
-/// Live camera frames for the Metal preview. Buffers already arrive portrait and mirrored.
+/// Live Dual-Cam frames: the main camera through `nextFrame`, the other as the inset. Buffers
+/// arrive portrait, with the front mirror already applied, exactly as they are recorded.
 @MainActor
-final class CameraFrameSource: PreviewFrameSource {
-    private let box: CaptureFrameBox
+final class DualCameraFrameSource: DualPreviewFrameSource {
+    private let rear: CaptureFrameBox
+    private let front: CaptureFrameBox
     private var lastTime: CMTime?
     private var firstTime: CMTime?
+    var mainCamera: DualCameraLayout.Camera = .rear
+    var insetCorner: DualCameraLayout.Corner = .topRight
 
-    init(box: CaptureFrameBox) {
-        self.box = box
+    init(rear: CaptureFrameBox, front: CaptureFrameBox) {
+        self.rear = rear
+        self.front = front
     }
 
     var frameOrientation: CGImagePropertyOrientation { .up }
 
     func nextFrame() -> (image: CIImage, time: RationalTime)? {
-        guard let (image, time) = box.latest(), time != lastTime else { return nil }
+        guard let (image, time) = (mainCamera == .rear ? rear : front).latest(), time != lastTime else { return nil }
         lastTime = time
         let first = firstTime ?? time
         firstTime = first
         let relative = CMTimeSubtract(time, first)
         return (image, (try? RationalTime(value: relative.value, timescale: relative.timescale)) ?? .zero)
+    }
+
+    func insetFrame() -> CIImage? {
+        (mainCamera == .rear ? front : rear).latest()?.0
     }
 }

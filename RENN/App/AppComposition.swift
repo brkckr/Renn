@@ -235,6 +235,32 @@ final class AppComposition {
         return CameraView.Parts(viewModel: viewModel, frames: controller.frames)
     }
 
+    /// One multi-camera controller per Dual-Cam flow (04 A03 camera-flow lifetime).
+    func makeDualCameraParts(lookID: LookID?) -> DualCameraView.Parts {
+        let controller = AVDualCaptureController()
+        let viewModel = DualCaptureFlowViewModel(
+            lookID: lookID,
+            capture: controller,
+            permissions: AVCapturePermissions(),
+            projects: projectStore,
+            access: purchases,
+            lookCatalog: lookCatalog,
+            lookPreferences: lookPreferencesStore,
+            telemetry: telemetry,
+            makeName: { [localization] date in
+                ProjectNameGenerator(
+                    prefix: localization.string("project.defaultNamePrefix"),
+                    locale: localization.locale,
+                    timeZone: .current
+                ).defaultName(createdAt: date)
+            },
+            onFinished: { [router] in router.replaceFlow(with: .projectPreview($0)) },
+            onImportInstead: { [router] in router.replaceFlow(with: .importVideo(lookID: lookID)) },
+            onClose: { [router] in router.dismissFlow() })
+        return DualCameraView.Parts(
+            viewModel: viewModel, rearFrames: controller.rearFrames, frontFrames: controller.frontFrames)
+    }
+
     func makeProjectPreviewViewModel(projectID: ProjectID) -> ProjectPreviewViewModel {
         ProjectPreviewViewModel(
             projectID: projectID,

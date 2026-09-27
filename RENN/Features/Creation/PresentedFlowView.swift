@@ -26,9 +26,7 @@ struct PresentedFlowView: View {
         case .camera(let lookID):
             CameraView(parts: composition.makeCameraParts(lookID: lookID), engine: composition.renderEngine)
         case .dualCamera(let lookID):
-            MilestonePlaceholderView(
-                title: "flow.dualCamera.title", milestone: "M04", lookID: lookID,
-                onClose: { composition.router.dismissFlow() })
+            DualCameraView(parts: composition.makeDualCameraParts(lookID: lookID), engine: composition.renderEngine)
         case .dualCameraUnavailable(let reason, let lookID):
             DualCameraUnavailableView(
                 reason: reason,
@@ -46,43 +44,6 @@ struct PresentedFlowView: View {
                 viewModel: composition.makePaywallViewModel(reason: reason),
                 termsURL: composition.configuration.termsURL,
                 privacyURL: composition.configuration.privacyURL)
-        }
-    }
-}
-
-/// Clearly labelled development placeholder for a flow scheduled in a later milestone.
-struct MilestonePlaceholderView: View {
-    let title: LocalizedStringKey
-    let milestone: String
-    let lookID: LookID?
-    let onClose: () -> Void
-
-    var body: some View {
-        ZStack {
-            RENNColor.backgroundBase.ignoresSafeArea()
-            VStack(spacing: 16) {
-                HStack {
-                    Spacer()
-                    CloseButton(action: onClose)
-                }
-                Spacer()
-                DevelopmentFixtureBadge()
-                Text(title)
-                    .font(RENNFont.heading)
-                    .foregroundStyle(RENNColor.textPrimary)
-                    .accessibilityAddTraits(.isHeader)
-                Text("flow.placeholder.body \(milestone)")
-                    .font(RENNFont.body)
-                    .foregroundStyle(RENNColor.textSecondary)
-                    .multilineTextAlignment(.center)
-                if let lookID {
-                    Text("flow.placeholder.look \(lookID.rawValue)")
-                        .font(RENNFont.secondary)
-                        .foregroundStyle(RENNColor.textSecondary)
-                }
-                Spacer()
-            }
-            .padding(RENNMetrics.sideMargin)
         }
     }
 }
