@@ -128,3 +128,14 @@ Evidence status:
   composition clock. Device plan: `docs/DEVICE_TEST_PLAN_M04.md`.
 - `DeviceCaptureCapabilities` probes the real format pair. Remaining: device evidence on supported and
   unsupported hardware (nothing Dual-Cam has run on a device yet).
+
+## M05 App flows: in progress (2026-09-27)
+
+- Preview Look selector (02 D05 S10): catalog grid with yellow outline + check, one intensity slider,
+  staged Apply/Cancel (swipe-down = Cancel); the preview renders the staged choice. `Recipe.switchingLook`
+  loads the new Look's version, parameter snapshot and default intensity and keeps Beat, mute,
+  indicators, seed and Dual-Cam layout; Apply writes one revision (Linux-tested).
+- Camera (02 D06): Look / Beat / Indicators before recording through `RecipeDraftEditor`, locked from
+  countdown until the take is finalized; the draft seeds the project for single and Dual-Cam capture.
+- Look history: already recorded on successful creation and successful export only (tested).
+
