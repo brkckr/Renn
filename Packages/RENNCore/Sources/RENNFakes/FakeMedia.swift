@@ -13,11 +13,11 @@ public actor FakeExportRenderer: ExportRendering {
     }
 
     public func render(
-        plan: ExportPlan, sourceURL: URL, outputURL: URL,
+        plan: ExportPlan, sources: ExportSourceFiles, outputURL: URL,
         progress: @escaping @Sendable (Double) -> Void
     ) async throws(ExportFailure) -> RationalTime {
         renderCount += 1
-        progress(plan.source.metadata.duration.approximateSeconds / 2)
+        progress(plan.duration.approximateSeconds / 2)
         if holdUntilCancelled {
             while !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: 1_000_000)

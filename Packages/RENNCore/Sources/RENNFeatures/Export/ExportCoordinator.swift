@@ -84,7 +84,7 @@ public final class ExportCoordinator {
         do {
             let plan = try ExportPlan.make(record: record, access: await access.currentAccess())
             return .ready(ExportSummary(
-                projectID: projectID, policy: plan.policy, duration: plan.source.metadata.duration,
+                projectID: projectID, policy: plan.policy, duration: plan.duration,
                 includesAudio: plan.includesAudio, isHDRSource: plan.source.metadata.isHDR ?? false))
         } catch .requiresPro {
             return .requiresPro
@@ -133,7 +133,7 @@ public final class ExportCoordinator {
     private func run(_ projectID: ProjectID, token: UUID) async {
         let lease: ProjectLease
         let plan: ExportPlan
-        let sourceURL: URL
+        var sourceFiles: [SourceRole: URL] = [:]
         let jobURL: URL
         do {
             lease = try await projects.acquireLease(projectID, purpose: .export)
@@ -147,20 +147,22 @@ public final class ExportCoordinator {
             let record = try await projects.project(projectID)
             // Snapshot access and recipe at job start (05 V09).
             plan = try ExportPlan.make(record: record, access: await access.currentAccess())
-            sourceURL = await projects.fileURL(plan.source.relativePath)
+            for source in plan.sources {
+                sourceFiles[source.role] = await projects.fileURL(source.relativePath)
+            }
             jobURL = try await projects.makeJobFileURL(fileExtension: "mp4")
         } catch {
             finish(token, .failed(projectID, .sourceUnavailable))
             return
         }
         await telemetry.record(.exportStarted(
-            tier: plan.policy.tier, quality: .init(plan.policy.dimensions), duration: .bucket(plan.source.metadata.duration)))
+            tier: plan.policy.tier, quality: .init(plan.policy.dimensions), duration: .bucket(plan.duration)))
 
-        let total = plan.source.metadata.duration.approximateSeconds
+        let total = plan.duration.approximateSeconds
         update(token, stage: .rendering, seconds: 0, total: total, projectID: projectID)
         let rendered: RationalTime
         do {
-            rendered = try await renderer.render(plan: plan, sourceURL: sourceURL, outputURL: jobURL) { seconds in
+            rendered = try await renderer.render(plan: plan, sources: ExportSourceFiles(sourceFiles), outputURL: jobURL) { seconds in
                 Task { @MainActor [weak self] in
                     self?.update(token, stage: .rendering, seconds: seconds, total: total, projectID: projectID)
                 }

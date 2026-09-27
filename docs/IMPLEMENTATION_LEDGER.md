@@ -102,3 +102,21 @@ Evidence status:
   generated `dev_warm.cube` fixture (`scripts/generate_dev_lut.py`).
 - Remaining for M03: scanline/chroma/tracking artifact stages (shader work) and final per-Look tuning,
   both waiting on the owner's twelve Look briefs and assets (M08).
+
+## M04 Dual-Cam: in progress (2026-09-27)
+
+- Domain (Linux-tested): `DualInsetLayout` (rounded PiP, 30% width, four pre-record corners, watermark
+  reservation), `DualSourceTiming` (common playable interval + per-source offsets on the shared clock),
+  exact `RationalTime` +/- (bounded rounding when the common timescale exceeds Int32),
+  `DualFormatSelection` (largest multi-cam format up to 1080p30 per camera), `ExportPlan.dual` with a
+  single declared shared-audio owner; missing/duplicate/invalid inputs are refused, never exported as one
+  camera.
+- Export contract now takes `ExportSourceFiles` (URL per source role). `RenderEngine` composes main +
+  inset (normalize → same Look/Beat per source → rounded inset → OSD → watermark). `ExportWorker` drives
+  video from the rear file and reads the front file through a bounded frame cursor; both readers cover
+  only the common interval; swap events are on the composition timeline.
+- Simulator test added: two synthesized sources (red rear with audio, green front 0.1 s later), swap at
+  0.5 s; asserts duration 0.9 s, one audio track and main/inset colours before and after the swap.
+- `DeviceCaptureCapabilities` probes the real format pair. Remaining: `AVCaptureMultiCamSession` capture
+  (two clean writers, one mic, hardware-cost check, interruption/pressure handling), live swap UI,
+  dual preview, composite poster, and device evidence on supported hardware.

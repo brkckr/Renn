@@ -10,13 +10,17 @@ struct AVExportRenderer: ExportRendering {
 
     func render(
         plan: ExportPlan,
-        sourceURL: URL,
+        sources: ExportSourceFiles,
         outputURL: URL,
         progress: @escaping @Sendable (Double) -> Void
     ) async throws(ExportFailure) -> RationalTime {
-        guard FileManager.default.fileExists(atPath: sourceURL.path) else { throw .sourceUnavailable }
-        // Dual-Cam composition export lands with the M04 renderer; never export one camera instead.
-        guard plan.dual == nil else { throw .unsupportedSource }
+        // Every source must be present; a Dual-Cam project never falls back to one camera (05 V03).
+        for source in plan.sources {
+            guard let url = sources.url(for: source), FileManager.default.fileExists(atPath: url.path) else {
+                throw .sourceUnavailable
+            }
+        }
+        guard let sourceURL = sources.url(for: plan.source) else { throw .sourceUnavailable }
         var watermark: CIImage?
         var aspect = 4.0
         if plan.policy.requiresWatermark {
@@ -31,7 +35,7 @@ struct AVExportRenderer: ExportRendering {
             timeline = try? await beatTimelines?.timeline(for: plan.source, fileURL: sourceURL)
         }
         let worker = ExportWorker(job: ExportWorker.Job(
-            plan: plan, sourceURL: sourceURL, outputURL: outputURL, engine: engine,
+            plan: plan, sources: sources, outputURL: outputURL, engine: engine,
             watermark: watermark, watermarkAspect: aspect, isHDRSource: plan.source.metadata.isHDR ?? false,
             beatTimeline: timeline))
         do {

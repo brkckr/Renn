@@ -24,10 +24,36 @@ public enum ExportFailure: Error, Sendable, Equatable {
 public protocol ExportRendering: Sendable {
     func render(
         plan: ExportPlan,
-        sourceURL: URL,
+        sources: ExportSourceFiles,
         outputURL: URL,
         progress: @escaping @Sendable (_ renderedSeconds: Double) -> Void
     ) async throws(ExportFailure) -> RationalTime
+}
+
+extension ExportRendering {
+    /// Single-source convenience: `sourceURL` is the file of `plan.source`.
+    public func render(
+        plan: ExportPlan,
+        sourceURL: URL,
+        outputURL: URL,
+        progress: @escaping @Sendable (_ renderedSeconds: Double) -> Void
+    ) async throws(ExportFailure) -> RationalTime {
+        try await render(
+            plan: plan, sources: ExportSourceFiles([plan.source.role: sourceURL]), outputURL: outputURL, progress: progress)
+    }
+}
+
+/// Resolved file URLs for every source of an export plan, by role.
+public struct ExportSourceFiles: Sendable, Equatable {
+    public let urls: [SourceRole: URL]
+
+    public init(_ urls: [SourceRole: URL]) {
+        self.urls = urls
+    }
+
+    public func url(for source: SourceReference) -> URL? {
+        urls[source.role]
+    }
 }
 
 public enum PhotosSaveOutcome: Sendable, Equatable {

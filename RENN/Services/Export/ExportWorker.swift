@@ -21,7 +21,7 @@ enum ExportWorkerError: Error, Equatable {
 final class ExportWorker: @unchecked Sendable {
     struct Job {
         var plan: ExportPlan
-        var sourceURL: URL
+        var sources: ExportSourceFiles
         var outputURL: URL
         var engine: RenderEngine
         var watermark: CIImage?
@@ -47,35 +47,65 @@ final class ExportWorker: @unchecked Sendable {
 
     /// Runs the render; `progress` receives measured rendered seconds.
     func run(progress: @escaping @Sendable (Double) -> Void) async throws -> RationalTime {
-        let asset = AVURLAsset(url: job.sourceURL)
+        let plan = job.plan
+        // Video is driven by the single source, or by the rear camera in Dual-Cam.
+        let driver = plan.dual?.rear ?? plan.source
+        guard let driverURL = job.sources.url(for: driver) else { throw ExportWorkerError.cannotRead }
+        let driverAsset = AVURLAsset(url: driverURL)
+        var companion: Companion?
         let videoTrack: AVAssetTrack
         let audioTrack: AVAssetTrack?
+        let audioAsset: AVAsset
         let transform: CGAffineTransform
         let duration: CMTime
         let origin: CMTime
+        let audioOrigin: CMTime
         let audioFormat: CMFormatDescription?
         do {
-            guard let video = try await asset.loadTracks(withMediaType: .video).first else { throw ExportWorkerError.cannotRead }
+            guard let video = try await driverAsset.loadTracks(withMediaType: .video).first else { throw ExportWorkerError.cannotRead }
             videoTrack = video
-            audioTrack = job.plan.includesAudio ? try await asset.loadTracks(withMediaType: .audio).first : nil
             transform = try await video.load(.preferredTransform)
-            // One shared origin for both tracks keeps the source A/V offset (05 V02).
-            origin = try await video.load(.timeRange).start
-            duration = try await asset.load(.duration)
+            // One shared origin per file keeps its A/V offset (05 V02); Dual-Cam adds the
+            // source's offset to the common interval (05 V03).
+            origin = CMTimeAdd(try await video.load(.timeRange).start, Self.cmTime(plan.dual?.timing.rearOffset ?? .zero))
+            duration = plan.dual == nil ? try await driverAsset.load(.duration) : Self.cmTime(plan.duration)
+
+            if let dual = plan.dual {
+                guard let frontURL = job.sources.url(for: dual.front) else { throw ExportWorkerError.cannotRead }
+                let frontAsset = AVURLAsset(url: frontURL)
+                guard let frontVideo = try await frontAsset.loadTracks(withMediaType: .video).first else { throw ExportWorkerError.cannotRead }
+                companion = Companion(
+                    asset: frontAsset, track: frontVideo, source: dual.front,
+                    origin: CMTimeAdd(try await frontVideo.load(.timeRange).start, Self.cmTime(dual.timing.frontOffset)),
+                    orientation: RenderEngine.orientation(for: try await frontVideo.load(.preferredTransform)))
+            }
+            // Audio comes from `plan.source`: the only source, or the declared Dual-Cam owner.
+            if plan.source.role == driver.role {
+                audioAsset = driverAsset
+                audioOrigin = origin
+            } else if let companion {
+                audioAsset = companion.asset
+                audioOrigin = companion.origin
+            } else {
+                throw ExportWorkerError.cannotRead
+            }
+            audioTrack = plan.includesAudio ? try await audioAsset.loadTracks(withMediaType: .audio).first : nil
             audioFormat = try await audioTrack?.load(.formatDescriptions).first
         } catch {
             throw ExportWorkerError.cannotRead
         }
         let pipeline = try makePipeline(
-            asset: asset, videoTrack: videoTrack, audioTrack: audioTrack, audioFormat: audioFormat)
+            asset: driverAsset, videoTrack: videoTrack, audioAsset: audioAsset, audioTrack: audioTrack,
+            audioFormat: audioFormat, companion: companion,
+            commonRange: plan.dual == nil ? nil : (origin, duration))
 
         let totalSeconds = duration.seconds
         let orientation = RenderEngine.orientation(for: transform)
         return try await withCheckedThrowingContinuation { continuation in
             queue.async { [self] in
                 self.start(
-                    pipeline, origin: origin, orientation: orientation, totalSeconds: totalSeconds,
-                    progress: progress
+                    pipeline, origin: origin, audioOrigin: audioOrigin, orientation: orientation,
+                    companion: companion, totalSeconds: totalSeconds, progress: progress
                 ) { result in
                     if case .failure = result {
                         try? FileManager.default.removeItem(at: self.job.outputURL)
@@ -84,6 +114,20 @@ final class ExportWorker: @unchecked Sendable {
                 }
             }
         }
+    }
+
+    static func cmTime(_ time: RationalTime) -> CMTime {
+        CMTime(value: time.value, timescale: time.timescale)
+    }
+
+    /// The Dual-Cam front source, read as a frame cursor alongside the rear driver.
+    struct Companion: @unchecked Sendable {
+        let asset: AVAsset
+        let track: AVAssetTrack
+        let source: SourceReference
+        /// File time of composition time 0.
+        let origin: CMTime
+        let orientation: CGImagePropertyOrientation
     }
 
     // MARK: Pipeline
@@ -97,12 +141,18 @@ final class ExportWorker: @unchecked Sendable {
         let videoInput: AVAssetWriterInput
         let audioInput: AVAssetWriterInput?
         let adaptor: AVAssetWriterInputPixelBufferAdaptor
+        /// Dual-Cam: the front source's reader and video output (may also carry the audio output).
+        let companionReader: AVAssetReader?
+        let companionOutput: AVAssetReaderTrackOutput?
 
         init(
             reader: AVAssetReader, writer: AVAssetWriter, videoOutput: AVAssetReaderTrackOutput,
             audioOutput: AVAssetReaderTrackOutput?, videoInput: AVAssetWriterInput,
-            audioInput: AVAssetWriterInput?, adaptor: AVAssetWriterInputPixelBufferAdaptor
+            audioInput: AVAssetWriterInput?, adaptor: AVAssetWriterInputPixelBufferAdaptor,
+            companionReader: AVAssetReader? = nil, companionOutput: AVAssetReaderTrackOutput? = nil
         ) {
+            self.companionReader = companionReader
+            self.companionOutput = companionOutput
             self.reader = reader
             self.writer = writer
             self.videoOutput = videoOutput
@@ -114,7 +164,8 @@ final class ExportWorker: @unchecked Sendable {
     }
 
     private func makePipeline(
-        asset: AVAsset, videoTrack: AVAssetTrack, audioTrack: AVAssetTrack?, audioFormat: CMFormatDescription?
+        asset: AVAsset, videoTrack: AVAssetTrack, audioAsset: AVAsset, audioTrack: AVAssetTrack?,
+        audioFormat: CMFormatDescription?, companion: Companion?, commonRange: (start: CMTime, duration: CMTime)?
     ) throws -> Pipeline {
         let policy = job.plan.policy
         let width = policy.dimensions.width
@@ -122,8 +173,12 @@ final class ExportWorker: @unchecked Sendable {
 
         let reader: AVAssetReader
         let writer: AVAssetWriter
+        var companionReader: AVAssetReader?
         do {
             reader = try AVAssetReader(asset: asset)
+            if let companion {
+                companionReader = try AVAssetReader(asset: companion.asset)
+            }
             try? FileManager.default.removeItem(at: job.outputURL)
             writer = try AVAssetWriter(outputURL: job.outputURL, fileType: .mp4)
         } catch {
@@ -143,6 +198,20 @@ final class ExportWorker: @unchecked Sendable {
         videoOutput.alwaysCopiesSampleData = false
         guard reader.canAdd(videoOutput) else { throw ExportWorkerError.cannotRead }
         reader.add(videoOutput)
+
+        var companionOutput: AVAssetReaderTrackOutput?
+        if let companion, let companionReader, let commonRange {
+            let output = AVAssetReaderTrackOutput(track: companion.track, outputSettings: videoSettings)
+            output.alwaysCopiesSampleData = false
+            guard companionReader.canAdd(output) else { throw ExportWorkerError.cannotRead }
+            companionReader.add(output)
+            companionOutput = output
+            // Both readers cover only the common interval, each on its own file clock.
+            reader.timeRange = CMTimeRange(start: commonRange.start, duration: commonRange.duration)
+            companionReader.timeRange = CMTimeRange(start: companion.origin, duration: commonRange.duration)
+        }
+        // The audio output lives on the reader of the file that owns the audio.
+        let audioReader = (companion != nil && audioAsset === companion?.asset) ? companionReader ?? reader : reader
 
         var audioOutput: AVAssetReaderTrackOutput?
         var audioInput: AVAssetWriterInput?
@@ -167,8 +236,8 @@ final class ExportWorker: @unchecked Sendable {
                 AVEncoderBitRateKey: channels == 1 ? 96_000 : 192_000,
             ])
             input.expectsMediaDataInRealTime = false
-            if reader.canAdd(output), writer.canAdd(input) {
-                reader.add(output)
+            if audioReader.canAdd(output), writer.canAdd(input) {
+                audioReader.add(output)
                 writer.add(input)
                 audioOutput = output
                 audioInput = input
@@ -202,19 +271,24 @@ final class ExportWorker: @unchecked Sendable {
             ])
         return Pipeline(
             reader: reader, writer: writer, videoOutput: videoOutput, audioOutput: audioOutput,
-            videoInput: videoInput, audioInput: audioInput, adaptor: adaptor)
+            videoInput: videoInput, audioInput: audioInput, adaptor: adaptor,
+            companionReader: companionReader, companionOutput: companionOutput)
     }
 
     /// Starts reading/writing. Video and audio drain on their own queues through
     /// `requestMediaDataWhenReady`, so a full audio buffer can never block video decoding (and
     /// vice versa) while the writer waits to interleave. Completion is called exactly once.
     private func start(
-        _ pipeline: Pipeline, origin: CMTime, orientation: CGImagePropertyOrientation, totalSeconds: Double,
+        _ pipeline: Pipeline, origin: CMTime, audioOrigin: CMTime, orientation: CGImagePropertyOrientation,
+        companion: Companion?, totalSeconds: Double,
         progress: @escaping @Sendable (Double) -> Void,
         completion: @escaping @Sendable (Result<RationalTime, any Error>) -> Void
     ) {
-        guard pipeline.reader.startReading(), pipeline.writer.startWriting() else {
+        guard pipeline.reader.startReading(), pipeline.companionReader?.startReading() ?? true,
+              pipeline.writer.startWriting()
+        else {
             pipeline.reader.cancelReading()
+            pipeline.companionReader?.cancelReading()
             completion(.failure(ExportWorkerError.cannotRead))
             return
         }
@@ -223,16 +297,23 @@ final class ExportWorker: @unchecked Sendable {
         let state = PumpState()
         let group = DispatchGroup()
         let outputSize = CGSize(width: job.plan.policy.dimensions.width, height: job.plan.policy.dimensions.height)
+        let canvas = job.plan.policy.dimensions
+        let insetLayout = job.plan.dual.map { DualInsetLayout(canvas: canvas, corner: $0.layout.insetCorner) }
         let watermarkFrame = job.watermark.map { _ in
-            WatermarkLayout(output: job.plan.policy.dimensions, aspectRatio: job.watermarkAspect).frame
+            WatermarkLayout(
+                output: canvas, aspectRatio: job.watermarkAspect,
+                reservedBottomRight: insetLayout?.reservedBottomRight(canvas: canvas) ?? 0).frame
         }
-        // Indicators avoid the watermark reservation; laid out and drawn once per job.
+        // Indicators avoid the watermark and inset reservations; laid out and drawn once per job.
         let indicatorLayout = IndicatorLayout.resolve(
-            output: job.plan.policy.dimensions, settings: job.plan.recipe.indicators,
-            reserved: watermarkFrame.map { [$0] } ?? [])
+            output: canvas, settings: job.plan.recipe.indicators,
+            reserved: [watermarkFrame, insetLayout?.frame].compactMap { $0 })
         let inputs = RenderInputs(
             outputSize: outputSize, watermarkFrame: watermarkFrame,
             indicators: IndicatorRenderer.overlays(for: indicatorLayout, settings: job.plan.recipe.indicators))
+        let cursor = pipeline.companionOutput.map { FrameCursor(output: $0, origin: companion?.origin ?? .zero) }
+        // Beat timeline times are file times of the audio owner.
+        let beatOffset = job.plan.dual.map { job.plan.source.role == .rearCamera ? $0.timing.rearOffset : $0.timing.frontOffset } ?? .zero
 
         let videoQueue = DispatchQueue(label: "renn.export.video", qos: .userInitiated)
         let audioQueue = DispatchQueue(label: "renn.export.audio", qos: .userInitiated)
@@ -253,23 +334,47 @@ final class ExportWorker: @unchecked Sendable {
                 }
                 let pts = CMSampleBufferGetPresentationTimeStamp(sample)
                 let relative = CMTimeSubtract(pts, origin)
-                guard let buffer = CMSampleBufferGetImageBuffer(sample),
+                guard relative >= .zero,
+                      let buffer = CMSampleBufferGetImageBuffer(sample),
                       let mediaTime = try? RationalTime(value: relative.value, timescale: relative.timescale),
                       videoTrack.limiter.shouldKeep(presentationTime: mediaTime)
                 else { continue }
+                // Dual-Cam: the front frame shown at this composition time (latest at or before it).
+                var frontBuffer: CVPixelBuffer?
+                if let cursor {
+                    frontBuffer = cursor.frame(at: relative)
+                    if frontBuffer == nil {
+                        state.fail(ExportWorkerError.cannotRead)
+                        videoTrack.finish(pipeline.videoInput, group)
+                        return
+                    }
+                }
                 let appended: Bool = autoreleasepool {
                     guard let pool = pipeline.adaptor.pixelBufferPool else { return false }
                     var outputBuffer: CVPixelBuffer?
                     CVPixelBufferPoolCreatePixelBuffer(nil, pool, &outputBuffer)
                     guard let outputBuffer else { return false }
-                    let image = job.engine.image(for: RenderEngine.FrameRequest(
+                    var request = RenderEngine.FrameRequest(
                         source: CIImage(cvPixelBuffer: buffer), orientation: orientation,
                         recipe: job.plan.recipe, time: mediaTime, outputSize: inputs.outputSize,
                         watermark: job.watermark, watermarkFrame: inputs.watermarkFrame,
                         beat: BeatModulation.at(
-                            mediaTime, timeline: job.beatTimeline, beat: job.plan.recipe.beat,
+                            mediaTime + beatOffset, timeline: job.beatTimeline, beat: job.plan.recipe.beat,
                             audioMuted: job.plan.recipe.audioMuted),
-                        indicators: inputs.indicators))
+                        indicators: inputs.indicators)
+                    if let dual = job.plan.dual, let frontBuffer, let insetLayout, let companion {
+                        let rear = (image: request.source, orientation: orientation, mirrored: dual.rear.metadata.isMirrored)
+                        let front = (image: CIImage(cvPixelBuffer: frontBuffer), orientation: companion.orientation,
+                                     mirrored: dual.front.metadata.isMirrored)
+                        // Swap events are on the composition timeline (05 V03).
+                        let (main, inset) = dual.layout.mainCamera(at: mediaTime) == .rear ? (rear, front) : (front, rear)
+                        request.source = main.image
+                        request.orientation = main.orientation
+                        request.mirrored = main.mirrored
+                        request.inset = RenderEngine.Inset(
+                            source: inset.image, orientation: inset.orientation, mirrored: inset.mirrored, layout: insetLayout)
+                    }
+                    let image = job.engine.image(for: request)
                     job.engine.render(image, to: outputBuffer)
                     // Source timestamps are kept; only frames above the cadence ceiling are skipped.
                     return pipeline.adaptor.append(outputBuffer, withPresentationTime: relative)
@@ -301,7 +406,7 @@ final class ExportWorker: @unchecked Sendable {
                         audioTrack.finish(audioInput, group)
                         return
                     }
-                    let adjusted = Self.shifted(sample, by: origin) ?? sample
+                    let adjusted = Self.shifted(sample, by: audioOrigin) ?? sample
                     if !audioInput.append(adjusted) {
                         state.fail(ExportWorkerError.cannotWrite)
                         audioTrack.finish(audioInput, group)
@@ -312,6 +417,7 @@ final class ExportWorker: @unchecked Sendable {
         }
 
         group.notify(queue: queue) {
+            pipeline.companionReader?.cancelReading()
             if let error = state.error {
                 pipeline.reader.cancelReading()
                 pipeline.writer.cancelWriting()
@@ -348,6 +454,37 @@ final class ExportWorker: @unchecked Sendable {
             allocator: nil, sampleBuffer: sample, sampleTimingEntryCount: count,
             sampleTimingArray: &timing, sampleBufferOut: &result)
         return result
+    }
+
+    /// Dual-Cam front frames, pulled on the video queue: holds the latest frame at or before the
+    /// requested composition time, plus one look-ahead sample. Bounded to two buffers.
+    private final class FrameCursor: @unchecked Sendable {
+        private let output: AVAssetReaderTrackOutput
+        private let origin: CMTime
+        private var current: CMSampleBuffer?
+        private var next: CMSampleBuffer?
+        private var exhausted = false
+
+        init(output: AVAssetReaderTrackOutput, origin: CMTime) {
+            self.output = output
+            self.origin = origin
+        }
+
+        func frame(at time: CMTime) -> CVPixelBuffer? {
+            while true {
+                if next == nil, !exhausted {
+                    next = output.copyNextSampleBuffer()
+                    if next == nil { exhausted = true }
+                }
+                guard let candidate = next,
+                      CMTimeSubtract(CMSampleBufferGetPresentationTimeStamp(candidate), origin) <= time
+                else { break }
+                current = candidate
+                next = nil
+            }
+            // Before the first front frame (sub-frame start skew), show the first one.
+            return (current ?? next).flatMap(CMSampleBufferGetImageBuffer)
+        }
     }
 
     /// Per-job render inputs, created once and only read on the video queue.
@@ -424,7 +561,7 @@ enum OutputValidator {
                 throw ExportWorkerError.validationFailed("audio presence")
             }
             let duration = try await asset.load(.duration)
-            let expected = plan.source.metadata.duration.approximateSeconds
+            let expected = plan.duration.approximateSeconds
             let tolerance = 1 / plan.policy.frameRate.approximateFPS + 1 / plan.source.metadata.frameRate.approximateFPS + 0.05
             guard abs(duration.seconds - expected) <= tolerance else {
                 throw ExportWorkerError.validationFailed("duration \(duration.seconds) vs \(expected)")

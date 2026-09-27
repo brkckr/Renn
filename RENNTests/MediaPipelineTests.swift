@@ -10,15 +10,19 @@ import RENNStorage
 /// Media integration on the Simulator (07 test level 3): a synthesized fixture goes through the
 /// real importer, project store, render engine, writer and validator, and the decoded output is
 /// inspected. Simulator results do not replace device validation (camera, GPU speed, HDR).
-@Suite("Media pipeline (Simulator integration)", .serialized, .timeLimit(.minutes(2)))
+// CI simulators render on the CPU (about a second per 1080×1920 frame), so fixtures stay short.
+@Suite("Media pipeline (Simulator integration)", .serialized, .timeLimit(.minutes(5)))
 struct MediaPipelineTests {
     struct Fixture {
         let directory: URL
         let url: URL
     }
 
-    /// 1080×1920, 60 FPS, H.264, with a 1 kHz mono AAC tone when `audio` is true.
-    static func makeFixture(seconds: Double = 2, fps: Int32 = 60, audio: Bool = true) async throws -> Fixture {
+    /// 1080×1920, 60 FPS, H.264, with a 1 kHz mono AAC tone when `audio` is true. Frames are a
+    /// flat `color` (8-bit RGB), or a shade that changes every frame when nil.
+    static func makeFixture(
+        seconds: Double = 1, fps: Int32 = 60, audio: Bool = true, color: (UInt8, UInt8, UInt8)? = nil
+    ) async throws -> Fixture {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("renn-media-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let url = directory.appendingPathComponent("fixture.mov")
@@ -48,7 +52,6 @@ struct MediaPipelineTests {
 
         #expect(writer.startWriting())
         writer.startSession(atSourceTime: .zero)
-        let context = CIContext()
         let frameCount = Int(seconds * Double(fps))
         let totalAudioFrames = audioInput == nil ? 0 : Int(seconds * sampleRate)
         let chunk = 1024
@@ -78,10 +81,8 @@ struct MediaPipelineTests {
                 }
                 var buffer: CVPixelBuffer?
                 CVPixelBufferPoolCreatePixelBuffer(nil, adaptor.pixelBufferPool!, &buffer)
-                let shade = CGFloat(videoIndex % 60) / 60
-                let image = CIImage(color: CIColor(red: shade, green: 0.4, blue: 1 - shade))
-                    .cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
-                context.render(image, to: buffer!)
+                let shade = UInt8((videoIndex % 60) * 255 / 60)
+                Self.fill(buffer!, rgb: color ?? (shade, 102, 255 - shade))
                 #expect(adaptor.append(buffer!, withPresentationTime: CMTime(value: CMTimeValue(videoIndex), timescale: fps)))
                 videoIndex += 1
                 if videoIndex == frameCount { videoInput.markAsFinished() }
@@ -115,6 +116,24 @@ struct MediaPipelineTests {
         await writer.finishWriting()
         #expect(writer.status == .completed)
         return Fixture(directory: directory, url: url)
+    }
+
+    /// Fills a BGRA buffer with one colour directly in memory (no GPU/Core Image on the Simulator).
+    static func fill(_ buffer: CVPixelBuffer, rgb: (UInt8, UInt8, UInt8)) {
+        CVPixelBufferLockBaseAddress(buffer, [])
+        defer { CVPixelBufferUnlockBaseAddress(buffer, []) }
+        guard let base = CVPixelBufferGetBaseAddress(buffer)?.assumingMemoryBound(to: UInt8.self) else { return }
+        let width = CVPixelBufferGetWidth(buffer), height = CVPixelBufferGetHeight(buffer)
+        let rowBytes = CVPixelBufferGetBytesPerRow(buffer)
+        for x in 0..<width {
+            base[x * 4] = rgb.2
+            base[x * 4 + 1] = rgb.1
+            base[x * 4 + 2] = rgb.0
+            base[x * 4 + 3] = 255
+        }
+        for y in 1..<height {
+            (base + y * rowBytes).update(from: base, count: width * 4)
+        }
     }
 
     /// Counts decoded video frames of a file.
@@ -166,7 +185,7 @@ struct MediaPipelineTests {
         let metadata = try #require(record.sources.first?.metadata)
         #expect(metadata.displayDimensions == (try PixelDimensions(width: 1080, height: 1920)))
         #expect(abs(metadata.frameRate.approximateFPS - 60) < 0.5)
-        #expect(abs(metadata.duration.approximateSeconds - 2) < 0.05)
+        #expect(abs(metadata.duration.approximateSeconds - 1) < 0.05)
         #expect(metadata.hasUsableAudio)
         #expect(metadata.isHDR == false)
         #expect(record.readiness == .ready)
@@ -190,9 +209,9 @@ struct MediaPipelineTests {
         let size = try await video.load(.naturalSize)
         #expect(Int(size.width) == 720 && Int(size.height) == 1280)
         #expect(!(try await asset.loadTracks(withMediaType: .audio)).isEmpty, "Source audio is kept")
-        #expect(abs(duration.approximateSeconds - 2) < 0.1, "Duration within one or two frames")
+        #expect(abs(duration.approximateSeconds - 1) < 0.1, "Duration within one or two frames")
         let frames = try await Self.frameCount(output)
-        #expect(abs(frames - 60) <= 1, "60 FPS input becomes 30 FPS without retiming (got \(frames))")
+        #expect(abs(frames - 30) <= 1, "60 FPS input becomes 30 FPS without retiming (got \(frames))")
     }
 
     @Test func mutedProjectExportsWithoutAudioTrack() async throws {
@@ -212,7 +231,7 @@ struct MediaPipelineTests {
     }
 
     @Test func proExportKeepsSourceDimensionsAndCadence() async throws {
-        let fixture = try await Self.makeFixture(seconds: 1)
+        let fixture = try await Self.makeFixture(seconds: 0.5)
         defer { try? FileManager.default.removeItem(at: fixture.directory) }
         let library = try makeLibrary(fixture.directory)
         let record = try await importAndCreate(fixture, library: library)
@@ -224,7 +243,7 @@ struct MediaPipelineTests {
         let size = try await #require(try await AVURLAsset(url: output).loadTracks(withMediaType: .video).first).load(.naturalSize)
         #expect(Int(size.width) == 1080 && Int(size.height) == 1920)
         let frames = try await Self.frameCount(output)
-        #expect(abs(frames - 60) <= 1, "Pro keeps 60 FPS (got \(frames))")
+        #expect(abs(frames - 30) <= 1, "Pro keeps 60 FPS: 0.5 s → 30 frames (got \(frames))")
     }
 
     @Test func renderIsDeterministicForTheSameRecipeAndTime() throws {
@@ -271,14 +290,15 @@ struct MediaPipelineTests {
     }
 
     @Test func dateIndicatorIsDrawnIntoTheExport() async throws {
-        let fixture = try await Self.makeFixture(seconds: 1, audio: false)
+        let fixture = try await Self.makeFixture(seconds: 0.5, audio: false)
         defer { try? FileManager.default.removeItem(at: fixture.directory) }
         let library = try makeLibrary(fixture.directory)
         var record = try await importAndCreate(fixture, library: library)
-        let pro = AccessState(level: .pro, provenance: .developmentFake)
+        // Free 720p keeps the two renders cheap; the watermark sits clear of the date (IndicatorLayout).
+        let access = AccessState.notConfigured
 
         let plain = try await library.makeJobFileURL(fileExtension: "mp4")
-        let plainPlan = try ExportPlan.make(record: record, access: pro)
+        let plainPlan = try ExportPlan.make(record: record, access: access)
         _ = try await AVExportRenderer(engine: RenderEngine()).render(
             plan: plainPlan, sourceURL: await library.fileURL(plainPlan.source.relativePath), outputURL: plain) { _ in }
 
@@ -286,21 +306,26 @@ struct MediaPipelineTests {
         recipe.indicators.showsDate = true
         record = try await library.updateRecipe(record.id, expectedRevision: record.recipeRevision, recipe: recipe)
         let dated = try await library.makeJobFileURL(fileExtension: "mp4")
-        let datedPlan = try ExportPlan.make(record: record, access: pro)
+        let datedPlan = try ExportPlan.make(record: record, access: access)
         _ = try await AVExportRenderer(engine: RenderEngine()).render(
             plan: datedPlan, sourceURL: await library.fileURL(datedPlan.source.relativePath), outputURL: dated) { _ in }
 
-        let layout = IndicatorLayout.resolve(output: datedPlan.policy.dimensions, settings: recipe.indicators)
+        // Same reservation as the export: the date moves above the Free watermark.
+        let dimensions = datedPlan.policy.dimensions
+        let watermark = try #require(WatermarkRenderer.render(
+            width: Double(dimensions.shortEdge) * WatermarkLayout.maximumWidthFraction))
+        let watermarkFrame = WatermarkLayout(output: dimensions, aspectRatio: watermark.aspectRatio).frame
+        let layout = IndicatorLayout.resolve(output: dimensions, settings: recipe.indicators, reserved: [watermarkFrame])
         let frame = try #require(layout.indicators.first?.frame)
         let region = CGRect(x: frame.x, y: frame.y, width: frame.width, height: frame.height)
-        let before = try await Self.regionBytes(plain, at: 0.5, region: region)
-        let after = try await Self.regionBytes(dated, at: 0.5, region: region)
+        let before = try await Self.regionBytes(plain, at: 0.25, region: region)
+        let after = try await Self.regionBytes(dated, at: 0.25, region: region)
         let changed = zip(before, after).filter { abs(Int($0) - Int($1)) > 24 }.count
         #expect(changed > before.count / 50, "Date glyphs change the bottom-right region (changed bytes: \(changed))")
     }
 
     @Test func posterIsTheProjectsOwnProcessedFrameAndIsCached() async throws {
-        let fixture = try await Self.makeFixture(seconds: 2, audio: false)
+        let fixture = try await Self.makeFixture(seconds: 1, audio: false)
         defer { try? FileManager.default.removeItem(at: fixture.directory) }
         let library = try makeLibrary(fixture.directory)
         let record = try await importAndCreate(fixture, library: library)
@@ -314,5 +339,70 @@ struct MediaPipelineTests {
         #expect(await provider.posterJPEG(for: record.id) == data, "Second call is served from the cache")
         #expect(await provider.posterJPEG(for: ProjectID()) == nil, "Unknown project: no substitute image")
     }
-}
 
+    /// Mean RGB of a small region at `seconds`.
+    static func meanColor(_ url: URL, at seconds: Double, centre: (x: Double, y: Double)) async throws -> (r: Int, g: Int, b: Int) {
+        let bytes = try await regionBytes(url, at: seconds, region: CGRect(x: centre.x - 4, y: centre.y - 4, width: 8, height: 8))
+        var sums = (0, 0, 0)
+        for index in stride(from: 0, to: bytes.count, by: 4) {
+            sums.0 += Int(bytes[index]); sums.1 += Int(bytes[index + 1]); sums.2 += Int(bytes[index + 2])
+        }
+        let count = bytes.count / 4
+        return (sums.0 / count, sums.1 / count, sums.2 / count)
+    }
+
+    @Test func dualCamExportComposesBothSourcesAndReplaysTheSwap() async throws {
+        // Rear = red with the shared audio, front = green starting 0.1 s later on the shared clock.
+        let rearFixture = try await Self.makeFixture(seconds: 1, fps: 30, audio: true, color: (220, 40, 40))
+        let frontFixture = try await Self.makeFixture(seconds: 1, fps: 30, audio: false, color: (40, 200, 60))
+        defer {
+            try? FileManager.default.removeItem(at: rearFixture.directory)
+            try? FileManager.default.removeItem(at: frontFixture.directory)
+        }
+        let library = try makeLibrary(rearFixture.directory)
+        func staged(_ fixture: Fixture, role: SourceRole, start: RationalTime, audio: Bool) async throws -> StagedSource {
+            let url = try await library.makeStagingFileURL(fileExtension: "mov")
+            try FileManager.default.copyItem(at: fixture.url, to: url)
+            return StagedSource(
+                role: role, stagedFile: url, fileName: "\(role.rawValue).mov",
+                metadata: SourceMetadata(
+                    duration: .seconds(1), startOffset: start,
+                    displayDimensions: try PixelDimensions(width: 1080, height: 1920), frameRate: .fps(30),
+                    hasUsableAudio: audio, isMirrored: role == .frontCamera, ownsSharedAudio: audio))
+        }
+        var recipe = Recipe.initial(look: nil, creationStamp: try StampDate(year: 2026, month: 9, day: 27), seed: 3)
+        var layout = DualCameraLayout()
+        #expect(layout.recordSwap(at: try RationalTime(value: 1, timescale: 2)))
+        recipe.dualLayout = layout
+        let record = try await library.createProject(NewProjectDraft(
+            createdAt: Date(), name: try ProjectName("Dual"), sourceMode: .dualCamera,
+            sources: [
+                try await staged(rearFixture, role: .rearCamera, start: .zero, audio: true),
+                try await staged(frontFixture, role: .frontCamera, start: try RationalTime(value: 1, timescale: 10), audio: false),
+            ],
+            recipe: recipe))
+
+        let plan = try ExportPlan.make(record: record, access: .notConfigured)
+        let dual = try #require(plan.dual)
+        #expect(dual.timing.duration == (try RationalTime(value: 9, timescale: 10)))
+        var files: [SourceRole: URL] = [:]
+        for source in plan.sources { files[source.role] = await library.fileURL(source.relativePath) }
+        let output = try await library.makeJobFileURL(fileExtension: "mp4")
+        let duration = try await AVExportRenderer(engine: RenderEngine()).render(
+            plan: plan, sources: ExportSourceFiles(files), outputURL: output) { _ in }
+        #expect(abs(duration.approximateSeconds - 0.9) < 0.1, "Common interval, not either file (got \(duration))")
+        #expect(!(try await AVURLAsset(url: output).loadTracks(withMediaType: .audio)).isEmpty, "One shared audio track")
+
+        let inset = DualInsetLayout(canvas: plan.policy.dimensions, corner: .topRight).frame
+        let insetCentre = (x: inset.x + inset.width / 2, y: inset.y + inset.height / 2)
+        let canvasCentre = (x: Double(plan.policy.dimensions.width) / 2, y: Double(plan.policy.dimensions.height) / 2)
+        func isRed(_ c: (r: Int, g: Int, b: Int)) -> Bool { c.r > c.g + 60 }
+        func isGreen(_ c: (r: Int, g: Int, b: Int)) -> Bool { c.g > c.r + 60 }
+        let beforeMain = try await Self.meanColor(output, at: 0.2, centre: canvasCentre)
+        let beforeInset = try await Self.meanColor(output, at: 0.2, centre: insetCentre)
+        let afterMain = try await Self.meanColor(output, at: 0.75, centre: canvasCentre)
+        let afterInset = try await Self.meanColor(output, at: 0.75, centre: insetCentre)
+        #expect(isRed(beforeMain) && isGreen(beforeInset), "Rear main, front inset before the swap: \(beforeMain) \(beforeInset)")
+        #expect(isGreen(afterMain) && isRed(afterInset), "Swap at 0.5 s replayed: \(afterMain) \(afterInset)")
+    }
+}

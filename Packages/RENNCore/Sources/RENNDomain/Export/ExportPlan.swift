@@ -11,6 +11,12 @@ public struct ExportPlan: Sendable, Equatable {
     /// Present for Dual-Cam projects: both clean sources and their common interval.
     public let dual: DualSources?
 
+    /// Output media duration: the source duration, or the Dual-Cam common interval.
+    public var duration: RationalTime { dual?.timing.duration ?? source.metadata.duration }
+
+    /// Every file the render reads.
+    public var sources: [SourceReference] { dual.map { [$0.rear, $0.front] } ?? [source] }
+
     public struct DualSources: Sendable, Equatable {
         public let rear: SourceReference
         public let front: SourceReference
