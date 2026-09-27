@@ -16,24 +16,34 @@ final class LookLUTStore: @unchecked Sendable {
 
     private static let logger = Logger(subsystem: AppIdentity.bundleIdentifier, category: "looks")
 
+    private enum Source {
+        case bundled(Bundle, manifestName: String)
+        case fixed([LookID: Prepared])
+    }
+
     private let lock = NSLock()
+    /// Guarded by `lock`; `source` is immutable.
     private var table: [LookID: Prepared]?
-    private let load: @Sendable () -> [LookID: Prepared]
+    private let source: Source
 
     init(bundle: Bundle = .main, manifestName: String = BundledLookCatalogProvider.defaultManifestName) {
-        load = { Self.loadBundled(bundle: bundle, manifestName: manifestName) }
+        source = .bundled(bundle, manifestName: manifestName)
     }
 
     /// For tests: a fixed table.
     init(preloaded: [LookID: Prepared]) {
-        let fixed = preloaded
-        load = { fixed }
+        source = .fixed(preloaded)
     }
 
     func lut(for id: LookID) -> Prepared? {
         lock.lock()
         defer { lock.unlock() }
-        if table == nil { table = load() }
+        if table == nil {
+            switch source {
+            case let .bundled(bundle, manifestName): table = Self.loadBundled(bundle: bundle, manifestName: manifestName)
+            case let .fixed(fixed): table = fixed
+            }
+        }
         return table?[id]
     }
 
