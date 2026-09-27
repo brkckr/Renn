@@ -1,0 +1,72 @@
+# Build and test checks. Hosted runners are free for public repositories; if this
+# repository becomes private, macOS minutes count against the account's Actions quota.
+name: CI
+
+on:
+  push:
+    branches: ["main", "claude/**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core-linux:
+    name: RENNCore tests (Linux, Swift 6.2)
+    runs-on: ubuntu-latest
+    container: swift:6.2-noble
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test pure domain, features and fakes
+        run: swift test --package-path Packages/RENNCore
+
+  localization:
+    name: String Catalog check (en + tr)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/check_localization.py
+
+  ios:
+    name: iOS app build and simulator tests
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select newest stable Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_*.app | grep -vi beta | grep -vi rc | sort -V | tail -1)
+          sudo xcode-select -s "$XCODE/Contents/Developer"
+          xcodebuild -version
+          swift --version
+      - name: RENNCore tests (macOS host)
+        run: swift test --package-path Packages/RENNCore
+      - name: Build app for iOS Simulator
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project RENN.xcodeproj -scheme RENN -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO | tee build.log
+      - name: Run app tests on an iPhone simulator
+        run: |
+          set -o pipefail
+          UDID=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          runtimes = sorted((r for r in devices if ".iOS-" in r), key=lambda r: [int(p) for p in r.split(".iOS-")[1].split("-")], reverse=True)
+          print(next(d["udid"] for r in runtimes for d in devices[r] if d["name"].startswith("iPhone")))')
+          echo "Simulator: $UDID"
+          xcodebuild test \
+            -project RENN.xcodeproj -scheme RENN \
+            -destination "id=$UDID" \
+            CODE_SIGNING_ALLOWED=NO | tee test.log
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-logs
+          path: "*.log"
+          if-no-files-found: ignore

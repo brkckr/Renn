@@ -1,0 +1,4 @@
+#include "RENN.shared.xcconfig"
+#include? "Secrets.xcconfig"
+
+RENN_ENVIRONMENT = development
