@@ -1,13 +1,37 @@
 import Observation
 import RENNDomain
 
-/// Projects tab: the VHS shelf collection (01 P03, 02 D08). Rename/delete with explicit
-/// confirmation and the insertion motion arrive with M01/M05.
+/// Projects tab: the VHS shelf collection (01 P03, 02 D08) with rename and confirmed delete.
+/// The insertion motion arrives with M05/M07.
 @MainActor
 @Observable
 public final class ProjectsViewModel {
+    public enum LoadState: Equatable, Sendable {
+        case loading
+        case loaded
+        /// The metadata store could not be opened (e.g. created by a newer app version).
+        case unavailable
+    }
+
+    public enum RenameError: Error, Equatable, Sendable {
+        case empty
+        case tooLong(maximum: Int)
+        case multiline
+        case failed
+    }
+
+    public enum ActionError: Equatable, Sendable {
+        /// Capture/export/share is using the project; deletion must wait (05 V08).
+        case projectInUse
+        case deleteFailed
+    }
+
     public private(set) var projects: [ProjectSummary] = []
-    public private(set) var hasLoaded = false
+    public private(set) var loadState: LoadState = .loading
+    /// Project awaiting explicit deletion confirmation (01 P03).
+    public private(set) var pendingDeletion: ProjectSummary?
+    public private(set) var isDeleting = false
+    public private(set) var actionError: ActionError?
 
     private let projectStore: any ProjectStoring
     private let onOpenProject: @MainActor (ProjectID) -> Void
@@ -23,17 +47,87 @@ public final class ProjectsViewModel {
         self.onCreateFirst = onCreateFirst
     }
 
+    public var hasLoaded: Bool { loadState == .loaded }
     public var isEmpty: Bool { hasLoaded && projects.isEmpty }
 
     public func observe() async {
+        do {
+            _ = try await projectStore.projects()
+        } catch .metadataUnavailable {
+            loadState = .unavailable
+            return
+        } catch {
+            // Other errors: the update stream below still reflects what is readable.
+        }
         for await updated in await projectStore.projectUpdates() {
             projects = updated
-            hasLoaded = true
+            loadState = .loaded
         }
     }
 
     public func open(_ id: ProjectID) { onOpenProject(id) }
     public func createFirstTape() { onCreateFirst() }
+
+    /// Validates and renames. Names are labels only; nothing is re-rendered (05 V07).
+    public func rename(_ id: ProjectID, to text: String) async throws(RenameError) {
+        let name: ProjectName
+        do {
+            name = try ProjectName(text)
+        } catch {
+            switch error {
+            case .empty: throw .empty
+            case .multiline: throw .multiline
+            case .tooLong(let maximum): throw .tooLong(maximum: maximum)
+            }
+        }
+        do {
+            try await projectStore.rename(id, to: name)
+        } catch {
+            throw .failed
+        }
+    }
+
+    /// Non-throwing variant for views: returns the validation/storage error, or nil on success.
+    public func renameResult(_ id: ProjectID, to text: String) async -> RenameError? {
+        do {
+            try await rename(id, to: text)
+            return nil
+        } catch {
+            return error
+        }
+    }
+
+    public func requestDelete(_ id: ProjectID) {
+        guard !isDeleting else { return }
+        actionError = nil
+        pendingDeletion = projects.first { $0.id == id }
+    }
+
+    public func cancelDelete() {
+        guard !isDeleting else { return }
+        pendingDeletion = nil
+    }
+
+    /// Deletes the confirmed project once, even if confirmation is tapped repeatedly.
+    public func confirmDelete() async {
+        guard let project = pendingDeletion, !isDeleting else { return }
+        isDeleting = true
+        defer {
+            isDeleting = false
+            pendingDeletion = nil
+        }
+        do {
+            try await projectStore.delete(project.id)
+        } catch .leased {
+            actionError = .projectInUse
+        } catch {
+            actionError = .deleteFailed
+        }
+    }
+
+    public func dismissError() {
+        actionError = nil
+    }
 
     /// Deterministic case-print color index by project ID, never random per redraw or tier.
     public static func caseVariant(for id: ProjectID, variantCount: Int = 4) -> Int {

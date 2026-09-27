@@ -1,6 +1,23 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "common.cancel": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vazgeç"
+          }
+        }
+      }
+    },
     "common.close": {
       "extractionState": "manual",
       "localizations": {
@@ -18,6 +35,23 @@
         }
       }
     },
+    "common.ok": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tamam"
+          }
+        }
+      }
+    },
     "common.retry": {
       "extractionState": "manual",
       "localizations": {
@@ -31,6 +65,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tekrar dene"
+          }
+        }
+      }
+    },
+    "common.save": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaydet"
           }
         }
       }
@@ -1276,6 +1327,23 @@
         }
       }
     },
+    "projects.action.more": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More actions"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diğer işlemler"
+          }
+        }
+      }
+    },
     "projects.case.hint": {
       "extractionState": "manual",
       "localizations": {
@@ -1289,6 +1357,74 @@
           "stringUnit": {
             "state": "translated",
             "value": "Projeyi açar"
+          }
+        }
+      }
+    },
+    "projects.delete": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sil"
+          }
+        }
+      }
+    },
+    "projects.delete.confirm": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete tape"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaseti sil"
+          }
+        }
+      }
+    },
+    "projects.delete.message": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It will be removed from RENN on this iPhone. Videos already saved to Photos stay in Photos."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset bu iPhone'daki RENN'den kaldırılır. Fotoğraflar'a kaydedilmiş videolar orada kalır."
+          }
+        }
+      }
+    },
+    "projects.delete.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this tape?"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu kaset silinsin mi?"
           }
         }
       }
@@ -1340,6 +1476,227 @@
           "stringUnit": {
             "state": "translated",
             "value": "Henüz kaset yok"
+          }
+        }
+      }
+    },
+    "projects.error.deleteFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The tape couldn't be deleted. Please try again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset silinemedi. Lütfen tekrar dene."
+          }
+        }
+      }
+    },
+    "projects.error.inUse": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This tape is in use. Try again when recording, export or sharing has finished."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu kaset şu anda kullanımda. Kayıt, dışa aktarma veya paylaşım bitince tekrar dene."
+          }
+        }
+      }
+    },
+    "projects.rename": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeniden adlandır"
+          }
+        }
+      }
+    },
+    "projects.rename.error.empty": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a name."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir ad gir."
+          }
+        }
+      }
+    },
+    "projects.rename.error.failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The tape couldn't be renamed. Please try again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset yeniden adlandırılamadı. Lütfen tekrar dene."
+          }
+        }
+      }
+    },
+    "projects.rename.error.multiline": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use a single line."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tek satır kullan."
+          }
+        }
+      }
+    },
+    "projects.rename.error.tooLong %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use at most %lld characters."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En fazla %lld karakter kullan."
+          }
+        }
+      }
+    },
+    "projects.rename.placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tape name"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset adı"
+          }
+        }
+      }
+    },
+    "projects.rename.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename tape"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaseti yeniden adlandır"
+          }
+        }
+      }
+    },
+    "projects.status.interrupted": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interrupted"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yarıda kaldı"
+          }
+        }
+      }
+    },
+    "projects.status.preparing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preparing"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hazırlanıyor"
+          }
+        }
+      }
+    },
+    "projects.status.sourceMissing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video missing"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video eksik"
+          }
+        }
+      }
+    },
+    "projects.unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your projects can't be opened by this version of RENN. Update the app to open them; nothing has been deleted."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projelerin RENN'in bu sürümüyle açılamıyor. Açmak için uygulamayı güncelle; hiçbir şey silinmedi."
           }
         }
       }

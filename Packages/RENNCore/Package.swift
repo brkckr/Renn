@@ -6,6 +6,9 @@ import PackageDescription
 //                SwiftUI, SwiftData, AVFoundation or provider SDKs (04_ARCHITECTURE A02).
 //   RENNFeatures - @MainActor @Observable ViewModels and the app router. Presentation
 //                logic only: no SwiftUI views, no frame processing, no SDKs.
+//   RENNStorage - ProjectLibrary (commit/delete/reconcile ordering, leases) and the
+//                FileManager-backed owned file store. The SwiftData metadata adapter lives
+//                in the app target and plugs in through ProjectMetadataStoring.
 //   RENNFakes  - in-memory development/test implementations of the contracts. They are
 //                never production adapters (see docs/adr/0001-project-foundation.md).
 // Keeping these in a package lets the pure rules compile and run on any Swift toolchain,
@@ -16,14 +19,17 @@ let package = Package(
     products: [
         .library(name: "RENNDomain", targets: ["RENNDomain"]),
         .library(name: "RENNFeatures", targets: ["RENNFeatures"]),
+        .library(name: "RENNStorage", targets: ["RENNStorage"]),
         .library(name: "RENNFakes", targets: ["RENNFakes"]),
     ],
     targets: [
         .target(name: "RENNDomain"),
         .target(name: "RENNFeatures", dependencies: ["RENNDomain"]),
+        .target(name: "RENNStorage", dependencies: ["RENNDomain"]),
         .target(name: "RENNFakes", dependencies: ["RENNDomain"]),
         .testTarget(name: "RENNDomainTests", dependencies: ["RENNDomain"]),
         .testTarget(name: "RENNFakesTests", dependencies: ["RENNFakes", "RENNDomain"]),
+        .testTarget(name: "RENNStorageTests", dependencies: ["RENNStorage", "RENNFakes", "RENNDomain"]),
         .testTarget(name: "RENNFeaturesTests", dependencies: ["RENNFeatures", "RENNFakes", "RENNDomain"]),
     ],
     swiftLanguageModes: [.v6]

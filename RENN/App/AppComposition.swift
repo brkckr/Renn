@@ -2,6 +2,7 @@ import Foundation
 import RENNDomain
 import RENNFakes
 import RENNFeatures
+import RENNStorage
 
 /// The single composition root (04 A03). It constructs app-lifetime services once and
 /// hands each ViewModel only the dependencies it needs. No feature code reaches back
@@ -61,18 +62,40 @@ final class AppComposition {
         purchases = UnconfiguredPurchaseService()
         #endif
 
+        let storage = makeStorage()
         return AppComposition(
             configuration: configuration,
             preferencesStore: UserDefaultsAppPreferencesStore(),
             purchases: purchases,
             // M06: Firebase sink once GoogleService-Info.plist exists. Consent gate stays in front.
             telemetrySink: DiscardingTelemetrySink(),
-            // M00-TEMPORARY: in-memory until the SwiftData project store lands in M01.
-            projectStore: InMemoryProjectStore(),
+            projectStore: storage.projects,
             lookCatalog: BundledLookCatalogProvider(),
-            // M00-TEMPORARY: in-memory until the SwiftData LookPreferences record lands in M01.
-            lookPreferencesStore: InMemoryLookPreferencesStore(),
+            lookPreferencesStore: storage.lookPreferences,
             captureCapabilities: DeviceCaptureCapabilities())
+    }
+
+    /// SwiftData metadata + owned files under Application Support/RENN (05 V07).
+    /// If the store cannot be opened (e.g. written by a newer version), projects report
+    /// "unavailable" and nothing is deleted; the database is never wiped (05 V08).
+    private static func makeStorage() -> (projects: ProjectLibrary, lookPreferences: any LookPreferencesStoring) {
+        let files = FileSystemOwnedFileStore(
+            rootURL: URL.applicationSupportDirectory.appendingPathComponent("RENN", isDirectory: true),
+            temporaryURL: URL.temporaryDirectory.appendingPathComponent("RENN", isDirectory: true))
+        let library: ProjectLibrary
+        let lookPreferences: any LookPreferencesStoring
+        do {
+            let container = try PersistenceController.makeContainer(storeURL: try PersistenceController.defaultStoreURL())
+            library = ProjectLibrary(metadata: SwiftDataProjectMetadataStore(modelContainer: container), files: files)
+            lookPreferences = SwiftDataLookPreferencesStore(modelContainer: container)
+        } catch {
+            library = ProjectLibrary(metadata: UnavailableProjectMetadataStore(), files: files)
+            // Favorites still work for this session, but are not saved.
+            lookPreferences = InMemoryLookPreferencesStore()
+        }
+        // Reconcile interrupted commits/deletions at launch, before any feature asks.
+        Task { await library.reconcile() }
+        return (library, lookPreferences)
     }
 
     var hasCompletedOnboarding: Bool { preferencesStore.load().hasCompletedOnboarding }

@@ -36,9 +36,11 @@ struct InMemoryProjectStoreTests {
     @Test func leasedProjectCannotBeDeleted() async throws {
         let item = project("Tape", minutesAgo: 1)
         let store = InMemoryProjectStore(projects: [item])
-        await store.setLeased(item.id, true)
+        let lease = try await store.acquireLease(item.id, purpose: .share)
         await #expect(throws: ProjectStoreError.leased(item.id)) { try await store.delete(item.id) }
         #expect(try await store.projects().count == 1)
+        await store.releaseLease(lease)
+        try await store.delete(item.id)
     }
 
     @Test func missingProjectErrors() async {

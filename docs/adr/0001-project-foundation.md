@@ -38,8 +38,8 @@ environment has no Mac: only a Linux container with a Swift 6.2.4 toolchain (Doc
      unavailable, restore reports "not configured"). The fake purchase service is only used in
      Debug with an explicit launch argument, and its prices are labelled `DEV`.
    - Telemetry goes through `ConsentGatedTelemetry` into a discarding sink; consent defaults off.
-   - Projects and Look preferences use the in-memory fakes, marked `M00-TEMPORARY`. They are
-     replaced by the SwiftData stores in M01.
+   - Projects and Look preferences used in-memory fakes in M00; M01 replaced them with the
+     SwiftData-backed stores (see ADR 0002).
 
 5. **Third-party SDKs are not added in M00.** Firebase and RevenueCat packages (and their
    `Package.resolved`) are added in M06, when their configuration exists and resolution can be

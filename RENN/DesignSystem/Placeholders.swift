@@ -34,6 +34,8 @@ struct LookPosterPlaceholder: View {
 struct VHSCaseShell: View {
     let name: String
     let variant: Int
+    /// Non-ready states are printed on the case, never hidden (05 V08).
+    var status: LocalizedStringKey? = nil
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -53,7 +55,15 @@ struct VHSCaseShell: View {
                     .foregroundStyle(RENNColor.textPrimary)
                     .lineLimit(2)
                     .padding(.horizontal, 8)
-                    .padding(.bottom, 8)
+                    .padding(.bottom, status == nil ? 8 : 2)
+                if let status {
+                    Label(status, systemImage: "exclamationmark.triangle.fill")
+                        .font(RENNFont.roboto(10, medium: true, relativeTo: .caption2))
+                        .foregroundStyle(RENNColor.brandAmber)
+                        .lineLimit(1)
+                        .padding(.horizontal, 8)
+                        .padding(.bottom, 8)
+                }
                 Spacer(minLength: 0)
             }
         }

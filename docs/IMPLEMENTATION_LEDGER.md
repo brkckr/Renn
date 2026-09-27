@@ -41,3 +41,19 @@ Dual-Cam and preview (M02/M04). See `docs/DEVELOPMENT_ASSETS.md`.
 
 Not done in M00 (by plan): SwiftData persistence (M01), any media capture/render/export (M02+),
 Firebase/RevenueCat SDKs and `Package.resolved` (M06), final motion (M07).
+
+## M01 Durable projects (2026-09-27)
+
+| Requirement | Implementation | Evidence |
+|---|---|---|
+| V07 data model | `ProjectRecord`, `Recipe`, `IndicatorSettings`, `DualCameraLayout`, `SourceReference`, `OwnedRelativePath` (RENNDomain); `RENNSchemaV1` (`ProjectEntity`, `LookPreferencesEntity`), `RENNMigrationPlan`, CloudKit off | Domain tested (Linux); SwiftData pending CI |
+| V07 layout | `Application Support/RENN/Projects/<UUID>/sources|outputs`, metadata at `Application Support/RENN/Metadata/RENN.store`, per-launch `tmp/RENN/Staging|Jobs/<launch>` | Tested (Linux) with real directories |
+| V08 commit / recovery | `ProjectLibrary`: `.preparing` → adopt → verify → `.ready`; reconciliation completes/interrupts, finishes deletions, flags missing sources, removes orphans only when metadata is readable | 14 crash-window and boundary tests (Linux) |
+| V08 delete / leases / no external deletion | Delete refuses while leased; removes only the project directory; external files and other projects untouched; traversal paths rejected on creation and decode | Tested (Linux) |
+| P03 rename / delete UI | `ProjectsViewModel.rename/requestDelete/confirmDelete`; Projects case action menu (and VoiceOver actions), rename sheet with validation, destructive confirmation, in-use error, status labels | VM tested (Linux); UI written, pending CI compile |
+| P04 favorites / recents persistence | `SwiftDataLookPreferencesStore` | App test written, pending CI simulator |
+| Revisions | `updateRecipe(expectedRevision:)` rejects stale and invalid recipes; concurrent writers commit once | Tested (Linux) |
+
+Package tests: 121 passing on Linux (Swift 6.2.4), five consecutive runs stable for storage tests.
+Not in M01 by plan: export jobs/outputs records (M02), poster cache (M05), debounced recipe
+autosave from preview (M02/M05). Projects can only be created once M02's capture/import exists.
