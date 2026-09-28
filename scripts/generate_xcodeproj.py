@@ -120,7 +120,7 @@ out = f"""// !$*UTF8*$!
 		{I['bfFakes']} /* RENNFakes in Frameworks */ = {{isa = PBXBuildFile; productRef = {I['prodFakes']} /* RENNFakes */; }};
 		{I['bfStorage']} /* RENNStorage in Frameworks */ = {{isa = PBXBuildFile; productRef = {I['prodStorage']} /* RENNStorage */; }};
 		{I['bfRevenueCat']} /* RevenueCat in Frameworks */ = {{isa = PBXBuildFile; productRef = {I['prodRevenueCat']} /* RevenueCat */; }};
-		{I['bfAnalytics']} /* FirebaseAnalytics in Frameworks */ = {{isa = PBXBuildFile; productRef = {I['prodAnalytics']} /* FirebaseAnalytics */; }};
+		{I['bfAnalytics']} /* FirebaseAnalyticsCore in Frameworks */ = {{isa = PBXBuildFile; productRef = {I['prodAnalytics']} /* FirebaseAnalyticsCore */; }};
 		{I['bfCrashlytics']} /* FirebaseCrashlytics in Frameworks */ = {{isa = PBXBuildFile; productRef = {I['prodCrashlytics']} /* FirebaseCrashlytics */; }};
 /* End PBXBuildFile section */
 
@@ -168,7 +168,7 @@ out = f"""// !$*UTF8*$!
 				{I['bfFakes']} /* RENNFakes in Frameworks */,
 				{I['bfStorage']} /* RENNStorage in Frameworks */,
 				{I['bfRevenueCat']} /* RevenueCat in Frameworks */,
-				{I['bfAnalytics']} /* FirebaseAnalytics in Frameworks */,
+				{I['bfAnalytics']} /* FirebaseAnalyticsCore in Frameworks */,
 				{I['bfCrashlytics']} /* FirebaseCrashlytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -240,7 +240,7 @@ out = f"""// !$*UTF8*$!
 				{I['prodFakes']} /* RENNFakes */,
 				{I['prodStorage']} /* RENNStorage */,
 				{I['prodRevenueCat']} /* RevenueCat */,
-				{I['prodAnalytics']} /* FirebaseAnalytics */,
+				{I['prodAnalytics']} /* FirebaseAnalyticsCore */,
 				{I['prodCrashlytics']} /* FirebaseCrashlytics */,
 			);
 			productName = RENN;
@@ -442,10 +442,10 @@ out = f"""// !$*UTF8*$!
 			package = {I['rcPkg']} /* XCRemoteSwiftPackageReference "purchases-ios" */;
 			productName = RevenueCat;
 		}};
-		{I['prodAnalytics']} /* FirebaseAnalytics */ = {{
+		{I['prodAnalytics']} /* FirebaseAnalyticsCore */ = {{
 			isa = XCSwiftPackageProductDependency;
 			package = {I['fbPkg']} /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
+			productName = FirebaseAnalyticsCore;
 		}};
 		{I['prodCrashlytics']} /* FirebaseCrashlytics */ = {{
 			isa = XCSwiftPackageProductDependency;

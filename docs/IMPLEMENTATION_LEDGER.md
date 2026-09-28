@@ -163,9 +163,12 @@ per motion so stale completions never act.
 
 ## M06 Commerce/telemetry: adapters in place, owner configuration pending (2026-09-28)
 
-- SPM: RevenueCat `purchases-ios` from 5.91.0 and `firebase-ios-sdk` from 12.19.2 (FirebaseAnalytics +
-  FirebaseCrashlytics; no FirebaseAnalyticsIdentitySupport, so no IDFA). Package.resolved pending the
-  first CI resolution.
+- SPM: RevenueCat `purchases-ios` from 5.91.0 and `firebase-ios-sdk` from 12.19.2: **FirebaseAnalyticsCore**
+  + FirebaseCrashlytics. Correction: the plain `FirebaseAnalytics` product (first used) links
+  GoogleAppMeasurement with IdentitySupport (IDFA) and Google Ads on-device conversion; `…Core` links
+  GoogleAppMeasurementCore without them, matching "no advertising/cross-app tracking". Package.resolved
+  committed from CI run 36361408000 (14 pins; the ads package may stay listed as a declared dependency but
+  is no longer linked).
 - `PurchaseMapping` (RENNDomain, Linux-tested): offering packages → monthly/annual/lifetime in display
   order (first per type, others ignored, none invented), `pro` entitlement → access with cache/verified
   provenance, transaction and restore outcomes (Pro only from the active entitlement).
@@ -179,4 +182,16 @@ per motion so stale completions never act.
   share_sheet_opened / share_sheet_finished from the system share sheet.
 - Owner steps: `docs/OWNER_SETUP_M06.md`. Not done: sandbox purchase evidence, Crashlytics dSYM upload
   phase, privacy manifest review of the pinned SDKs.
+
+## M09 Hardening: started (2026-09-28)
+
+- Privacy manifest `RENN/Resources/PrivacyInfo.xcprivacy`: no tracking; required-reason APIs used by app
+  code (UserDefaults CA92.1, disk space E174.1). SDK collection is declared by the SDK manifests; the App
+  Store privacy details are an owner task from Xcode's privacy report. Simulator tests assert the manifest
+  and default-off Firebase/ad-signal keys.
+- Capture quality per tier (`CaptureFormatSelection`, Linux-tested): Free up to 1080p30, Pro the largest
+  device format up to 4K60, chosen before recording and never switched mid-take. Dual-Cam stays at the
+  validated 1080p30 pair and discloses it before recording.
+- Test robustness: main-actor polling budget raised to 10 s after five timeouts on a loaded macOS runner
+  (returns immediately when the condition holds).
 

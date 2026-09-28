@@ -7,7 +7,8 @@ import RENNDomain
 /// Firebase Analytics + Crashlytics (06 C05), configured only when the owner's
 /// GoogleService-Info.plist is bundled. Collection is off by Info.plist default and follows the
 /// Settings diagnostics consent: nothing (automatic events or crash reports) is collected before
-/// the user opts in, and declining never changes features. No IDFA product is linked.
+/// the user opts in, and declining never changes features. The app links FirebaseAnalyticsCore
+/// (GoogleAppMeasurementCore): no advertising identifier and no ads conversion SDK.
 enum FirebaseDiagnostics {
     /// Configures Firebase and applies the stored consent. Returns false when not configured.
     @MainActor
