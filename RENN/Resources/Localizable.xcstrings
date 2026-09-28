@@ -630,6 +630,23 @@
         }
       }
     },
+    "dual.quality.disclosure": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Both cameras record at up to 1080p, 30 FPS."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İki kamera da en fazla 1080p, 30 FPS kaydeder."
+          }
+        }
+      }
+    },
     "dual.swap": {
       "extractionState": "manual",
       "localizations": {
