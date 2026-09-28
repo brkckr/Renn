@@ -16,7 +16,7 @@ struct LookSelectorTests {
         catalogVersion: "test", isDevelopmentFixture: true, recommendedLookID: "dev.diagnostic",
         looks: StaticLookCatalogProvider.developmentCatalog.looks + [cool])
 
-    private func setup() async throws -> (ProjectPreviewViewModel, InMemoryProjectStore, ProjectID) {
+    private func setup(telemetry: RecordingTelemetry = RecordingTelemetry()) async throws -> (ProjectPreviewViewModel, InMemoryProjectStore, ProjectID) {
         let store = InMemoryProjectStore()
         var recipe = Recipe.initial(
             look: StaticLookCatalogProvider.developmentCatalog.looks.first,
@@ -37,7 +37,7 @@ struct LookSelectorTests {
             exporter: ExportCoordinator(
                 projects: store, access: purchases, renderer: FakeExportRenderer(), photos: FakePhotosSaver(),
                 lookPreferences: InMemoryLookPreferencesStore(), telemetry: RecordingTelemetry()),
-            telemetry: RecordingTelemetry(), lookCatalog: StaticLookCatalogProvider(Self.catalog),
+            telemetry: telemetry, lookCatalog: StaticLookCatalogProvider(Self.catalog),
             onClose: {}, onShowPaywall: {})
         await viewModel.load()
         return (viewModel, store, record.id)
@@ -104,5 +104,34 @@ struct LookSelectorTests {
         #expect(viewModel.beginCompletionPresentation(of: output))
         #expect(!viewModel.beginCompletionPresentation(of: output), "Reopening never replays the settle/haptic")
         #expect(viewModel.beginCompletionPresentation(of: OutputID()))
+    }
+
+    @Test func committedLookAndBeatChangesAreReportedOnceNotPerSliderFrame() async throws {
+        let telemetry = RecordingTelemetry()
+        let (viewModel, _, _) = try await setup(telemetry: telemetry)
+        await viewModel.openLookSelector()
+        viewModel.stageLook("test.cool")
+        for value in stride(from: 0.1, through: 0.9, by: 0.1) { viewModel.stageIntensity(value) }
+        viewModel.applyLookSelection()
+        viewModel.setBeatEnabled(false)
+        viewModel.setBeatIntensity(0.3)
+        viewModel.shareSheetOpened()
+        viewModel.shareSheetFinished(completed: false)
+        await viewModel.flush()
+        var events: [TelemetryEvent] = []
+        for _ in 0..<200 {
+            events = await telemetry.events.filter { event in
+                switch event {
+                case .lookSelected, .beatChanged, .shareSheetOpened, .shareSheetFinished: true
+                default: false
+                }
+            }
+            if events.count >= 4 { break }
+            await Task.yield()
+        }
+        #expect(events.count == 4)
+        #expect(events.contains(.lookSelected(lookID: "test.cool")))
+        #expect(events.contains(.beatChanged(enabled: false)))
+        #expect(events.contains(.shareSheetFinished(completed: false)))
     }
 }

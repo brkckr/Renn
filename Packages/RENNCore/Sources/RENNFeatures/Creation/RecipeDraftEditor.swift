@@ -42,12 +42,15 @@ public final class RecipeDraftEditor {
     public private(set) var catalog: LookCatalog?
     public private(set) var lookSelection: LookSelection?
     public var isLocked = false
+    private var onCommit: (@MainActor (TelemetryEvent) -> Void)?
 
     public init() {}
 
-    func begin(_ recipe: Recipe, catalog: LookCatalog?) {
+    /// `onCommit` receives committed Look/Beat changes for telemetry (06 C05).
+    func begin(_ recipe: Recipe, catalog: LookCatalog?, onCommit: (@MainActor (TelemetryEvent) -> Void)? = nil) {
         self.recipe = recipe
         self.catalog = catalog
+        self.onCommit = onCommit
     }
 
     /// The staged Look while the selector is open, else the draft.
@@ -77,7 +80,11 @@ public final class RecipeDraftEditor {
         guard let selection = lookSelection, let recipe else { return }
         lookSelection = nil
         guard !isLocked else { return }
-        self.recipe = selection.applied(to: recipe, catalog: catalog)
+        let updated = selection.applied(to: recipe, catalog: catalog)
+        self.recipe = updated
+        if updated.lookID != recipe.lookID, let lookID = updated.lookID {
+            onCommit?(.lookSelected(lookID: lookID))
+        }
     }
 
     public func cancelLookSelection() {
@@ -85,9 +92,10 @@ public final class RecipeDraftEditor {
     }
 
     public func setBeatEnabled(_ enabled: Bool) {
-        guard !isLocked, var recipe else { return }
+        guard !isLocked, var recipe, recipe.beat.isEnabled != enabled else { return }
         recipe.beat = BeatSettings(isEnabled: enabled, intensity: recipe.beat.intensity)
         self.recipe = recipe
+        onCommit?(.beatChanged(enabled: enabled))
     }
 
     public func setBeatIntensity(_ value: Double) {

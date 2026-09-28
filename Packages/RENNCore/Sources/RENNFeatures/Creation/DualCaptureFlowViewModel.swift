@@ -102,7 +102,11 @@ public final class DualCaptureFlowViewModel {
             let catalog = try? await lookCatalog.catalog()
             let look = lookID.flatMap { catalog?.look($0) } ?? catalog?.recommendedLook
             if let stamp = try? StampDate(date: now(), timeZone: timeZone) {
-                draft.begin(Recipe.initial(look: look, creationStamp: stamp, seed: UInt64.random(in: .min ... .max)), catalog: catalog)
+                let telemetry = telemetry
+                draft.begin(
+                    Recipe.initial(look: look, creationStamp: stamp, seed: UInt64.random(in: .min ... .max)),
+                    catalog: catalog,
+                    onCommit: { event in Task { await telemetry.record(event) } })
             }
         }
         var camera = await permissions.cameraStatus()

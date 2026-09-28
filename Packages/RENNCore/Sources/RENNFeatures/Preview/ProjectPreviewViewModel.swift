@@ -221,10 +221,28 @@ public final class ProjectPreviewViewModel {
         guard updated != recipe else { return }
         self.recipe = updated
         scheduleSave(immediately: true)
+        // Committed change only, never per slider frame (06 C05).
+        if updated.lookID != recipe.lookID, let lookID = updated.lookID {
+            record(.lookSelected(lookID: lookID))
+        }
     }
 
     public func cancelLookSelection() {
         lookSelection = nil
+    }
+
+    /// System share sheet presentation and callback; completion is not proof of posting (06 C05).
+    public func shareSheetOpened() {
+        record(.shareSheetOpened)
+    }
+
+    public func shareSheetFinished(completed: Bool) {
+        record(.shareSheetFinished(completed: completed))
+    }
+
+    private func record(_ event: TelemetryEvent) {
+        let telemetry = telemetry
+        Task { await telemetry.record(event) }
     }
 
     // MARK: Adjustments
@@ -251,6 +269,7 @@ public final class ProjectPreviewViewModel {
         recipe.beat = BeatSettings(isEnabled: enabled, intensity: recipe.beat.intensity)
         self.recipe = recipe
         scheduleSave(immediately: true)
+        record(.beatChanged(enabled: enabled))
     }
 
     /// Beat intensity 0 renders identically to Beat off (05 V04).
