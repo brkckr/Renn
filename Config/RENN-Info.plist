@@ -12,6 +12,15 @@
 	<string>$(RENN_PRIVACY_URL)</string>
 	<key>RENNTermsURL</key>
 	<string>$(RENN_TERMS_URL)</string>
+	<!-- Firebase: no collection before the user opts in to diagnostics (06 C05); no ad signals. -->
+	<key>FIREBASE_ANALYTICS_COLLECTION_ENABLED</key>
+	<false/>
+	<key>FirebaseCrashlyticsCollectionEnabled</key>
+	<false/>
+	<key>GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS</key>
+	<false/>
+	<key>GOOGLE_ANALYTICS_REGISTRATION_WITH_AD_NETWORK_ENABLED</key>
+	<false/>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>

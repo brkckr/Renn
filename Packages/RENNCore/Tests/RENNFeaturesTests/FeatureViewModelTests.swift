@@ -215,13 +215,17 @@ struct SettingsViewModelTests {
 
     @Test func diagnosticsDefaultOffAndExplicit() {
         let store = InMemoryAppPreferencesStore()
+        let log = CallLog()
         let viewModel = SettingsViewModel(
-            purchases: FakePurchaseService(), preferencesStore: store, onLanguageChange: { _ in }, onShowPaywall: {})
+            purchases: FakePurchaseService(), preferencesStore: store, onLanguageChange: { _ in },
+            onDiagnosticsChange: { log.record("sdk \($0.rawValue)") }, onShowPaywall: {})
         #expect(!viewModel.diagnosticsConsent.allowsCollection)
         viewModel.setDiagnosticsEnabled(true)
         #expect(store.stored.diagnosticsConsent == .granted)
+        viewModel.setDiagnosticsEnabled(true)
         viewModel.setDiagnosticsEnabled(false)
         #expect(store.stored.diagnosticsConsent == .declined)
+        #expect(log.entries == ["sdk granted", "sdk declined"], "SDK collection follows each real change once")
     }
 
     @Test func restoreFailureIsTruthfulWhenNotConfigured() async {

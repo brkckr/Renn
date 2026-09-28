@@ -71,24 +71,30 @@ final class AppComposition {
         let configuration = AppConfiguration.load()
         let purchases: any Purchasing
         #if DEBUG
-        if configuration.usesFakePurchases {
-            // Explicit developer opt-in; fixture products are visibly marked "DEV".
+        let fake = configuration.usesFakePurchases
+        #else
+        let fake = false
+        #endif
+        if fake {
+            // Explicit developer opt-in (DEBUG only); fixture products are visibly marked "DEV".
             purchases = FakePurchaseService()
+        } else if let apiKey = configuration.revenueCatAPIKey {
+            // Owner-provided public SDK key (Config/Secrets.xcconfig, git-ignored).
+            purchases = RevenueCatPurchaseService.configure(apiKey: apiKey, environment: configuration.environment)
         } else {
+            // No configuration: never grants Pro, products unavailable, restore explains why.
             purchases = UnconfiguredPurchaseService()
         }
-        #else
-        // M06 replaces this with the RevenueCat adapter once the owner supplies configuration.
-        purchases = UnconfiguredPurchaseService()
-        #endif
 
         let storage = makeStorage()
+        let preferencesStore = UserDefaultsAppPreferencesStore()
+        // Firebase only with the owner's GoogleService-Info.plist; the consent gate stays in front.
+        let hasFirebase = FirebaseDiagnostics.configureIfAvailable(consent: preferencesStore.load().diagnosticsConsent)
         return AppComposition(
             configuration: configuration,
-            preferencesStore: UserDefaultsAppPreferencesStore(),
+            preferencesStore: preferencesStore,
             purchases: purchases,
-            // M06: Firebase sink once GoogleService-Info.plist exists. Consent gate stays in front.
-            telemetrySink: DiscardingTelemetrySink(),
+            telemetrySink: hasFirebase ? FirebaseAnalyticsSink() : DiscardingTelemetrySink(),
             projectStore: storage.projects,
             lookCatalog: BundledLookCatalogProvider(),
             lookPreferencesStore: storage.lookPreferences,
@@ -175,6 +181,7 @@ final class AppComposition {
                 projectsRoot: Self.dataRoot.appendingPathComponent("Projects", isDirectory: true),
                 cacheRoot: Self.cacheRoot),
             onLanguageChange: { [localization] in localization.apply($0) },
+            onDiagnosticsChange: { FirebaseDiagnostics.apply($0) },
             onShowPaywall: { [router] in router.showPaywall(.settings) })
     }
 

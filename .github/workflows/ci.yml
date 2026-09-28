@@ -52,6 +52,8 @@ jobs:
             -project RENN.xcodeproj -scheme RENN -configuration Debug \
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO | tee build.log
+      - name: Show resolved package versions
+        run: cat RENN.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved || echo "No Package.resolved"
       - name: Run app tests on an iPhone simulator
         run: |
           set -o pipefail

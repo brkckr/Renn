@@ -25,6 +25,7 @@ public final class SettingsViewModel {
     private let preferencesStore: any AppPreferencesStoring
     private let storageUsage: (any StorageUsageProviding)?
     private let onLanguageChange: @MainActor (AppLanguage) -> Void
+    private let onDiagnosticsChange: @MainActor (DiagnosticsConsent) -> Void
     private let onShowPaywall: @MainActor () -> Void
 
     public init(
@@ -32,12 +33,14 @@ public final class SettingsViewModel {
         preferencesStore: any AppPreferencesStoring,
         storageUsage: (any StorageUsageProviding)? = nil,
         onLanguageChange: @escaping @MainActor (AppLanguage) -> Void,
+        onDiagnosticsChange: @escaping @MainActor (DiagnosticsConsent) -> Void = { _ in },
         onShowPaywall: @escaping @MainActor () -> Void
     ) {
         self.purchases = purchases
         self.preferencesStore = preferencesStore
         self.storageUsage = storageUsage
         self.onLanguageChange = onLanguageChange
+        self.onDiagnosticsChange = onDiagnosticsChange
         self.onShowPaywall = onShowPaywall
         let preferences = preferencesStore.load()
         language = preferences.language
@@ -69,6 +72,8 @@ public final class SettingsViewModel {
         var preferences = preferencesStore.load()
         preferences.diagnosticsConsent = consent
         preferencesStore.save(preferences)
+        // SDK-level collection (automatic events, crash reports) follows the same choice.
+        onDiagnosticsChange(consent)
     }
 
     public func refreshStorage() async {
