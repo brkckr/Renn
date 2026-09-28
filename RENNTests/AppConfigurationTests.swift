@@ -43,6 +43,18 @@ struct AppBundleTests {
         }
     }
 
+    @Test func brandFontsAreBundledWithTheirLicenses() throws {
+        FontRegistry.registerBundledFonts()
+        for face in FontRegistry.report() {
+            #expect(face.isAvailable, "\(face.postScriptName) must load (no silent system fallback)")
+        }
+        let url = try #require(Bundle.main.url(forResource: "FontLicenses", withExtension: "txt"))
+        let notices = try String(contentsOf: url, encoding: .utf8)
+        for required in ["Monoton", "Press Start 2P", "Roboto", "SIL OPEN FONT LICENSE Version 1.1"] {
+            #expect(notices.contains(required))
+        }
+    }
+
     @Test func unconfiguredProvidersAreReportedAsPlaceholders() {
         let configuration = AppConfiguration.load()
         // No owner configuration is committed to the repository.
