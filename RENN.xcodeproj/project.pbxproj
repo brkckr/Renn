@@ -24,11 +24,20 @@
 			remoteGlobalIDString = 240E89B38A85A7372B9B6393;
 			remoteInfo = RENN;
 		};
+		F8B534BE36D7A81AACA784A4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 139793B3D38BD2FF05955B75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 240E89B38A85A7372B9B6393;
+			remoteInfo = RENN;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		B77B418FAF6BA8079A7C4FA4 /* RENN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RENN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F4A5BB87CD09091460A28B9 /* RENNTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RENNTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B5E1F7CABA100B0BCF8F0ED3 /* RENNUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RENNUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		02FBD76EBC90DF6730920AB8 /* RENNUITests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RENNUITests.xcconfig; sourceTree = "<group>"; };
 		60D598CF90ED524E04B7ADD4 /* RENN.shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RENN.shared.xcconfig; sourceTree = "<group>"; };
 		FDC72B93D488E47D2FAB0FD2 /* RENN.debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RENN.debug.xcconfig; sourceTree = "<group>"; };
 		BC6E4269E2965431380C12AF /* RENN.release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RENN.release.xcconfig; sourceTree = "<group>"; };
@@ -46,6 +55,11 @@
 		7B72C455E28230BB83B43792 /* RENNTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = RENNTests;
+			sourceTree = "<group>";
+		};
+		0073B7D79328C6DA53F51996 /* RENNUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RENNUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -72,6 +86,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		30A21284C4EECC6480E57621 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -80,6 +101,7 @@
 			children = (
 				7B16E9F4A4B58DC9248027EA /* RENN */,
 				7B72C455E28230BB83B43792 /* RENNTests */,
+				0073B7D79328C6DA53F51996 /* RENNUITests */,
 				213D7AD75C1A638BDC023825 /* Config */,
 				A7D54A97D4041BF86F9228A3 /* Products */,
 			);
@@ -92,6 +114,7 @@
 				FDC72B93D488E47D2FAB0FD2 /* RENN.debug.xcconfig */,
 				BC6E4269E2965431380C12AF /* RENN.release.xcconfig */,
 				FCBF95F7505930FFB30C44B4 /* RENNTests.xcconfig */,
+				02FBD76EBC90DF6730920AB8 /* RENNUITests.xcconfig */,
 				3E92B86A414244657C96CED0 /* Secrets.example.xcconfig */,
 				DE6582B5E95589693248B5DF /* RENN-Info.plist */,
 			);
@@ -103,6 +126,7 @@
 			children = (
 				B77B418FAF6BA8079A7C4FA4 /* RENN.app */,
 				0F4A5BB87CD09091460A28B9 /* RENNTests.xctest */,
+				B5E1F7CABA100B0BCF8F0ED3 /* RENNUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -162,6 +186,29 @@
 			productReference = 0F4A5BB87CD09091460A28B9 /* RENNTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		E33D7304DA4720733880B93D /* RENNUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 248229186E754507E2364398 /* Build configuration list for PBXNativeTarget "RENNUITests" */;
+			buildPhases = (
+				AA9129BA575769E9820DD55C /* Sources */,
+				30A21284C4EECC6480E57621 /* Frameworks */,
+				449845C562E1700C6F3CBD4C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3B6604B90D61716B6DD3FDB5 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				0073B7D79328C6DA53F51996 /* RENNUITests */,
+			);
+			name = RENNUITests;
+			packageProductDependencies = (
+			);
+			productName = RENNUITests;
+			productReference = B5E1F7CABA100B0BCF8F0ED3 /* RENNUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -176,6 +223,10 @@
 						CreatedOnToolsVersion = 16.0;
 					};
 					39459CE05D44010C67DB6EA3 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 240E89B38A85A7372B9B6393;
+					};
+					E33D7304DA4720733880B93D = {
 						CreatedOnToolsVersion = 16.0;
 						TestTargetID = 240E89B38A85A7372B9B6393;
 					};
@@ -203,6 +254,7 @@
 			targets = (
 				240E89B38A85A7372B9B6393 /* RENN */,
 				39459CE05D44010C67DB6EA3 /* RENNTests */,
+				E33D7304DA4720733880B93D /* RENNUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -216,6 +268,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		167A51AFE53741DDBF1BBDAC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		449845C562E1700C6F3CBD4C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -239,6 +298,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AA9129BA575769E9820DD55C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -246,6 +312,11 @@
 			isa = PBXTargetDependency;
 			target = 240E89B38A85A7372B9B6393 /* RENN */;
 			targetProxy = 1821858C4F842ABCC4D1F2EC /* PBXContainerItemProxy */;
+		};
+		3B6604B90D61716B6DD3FDB5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 240E89B38A85A7372B9B6393 /* RENN */;
+			targetProxy = F8B534BE36D7A81AACA784A4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -399,6 +470,20 @@
 			};
 			name = Release;
 		};
+		06132AD24945A955746E6AA9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 02FBD76EBC90DF6730920AB8 /* RENNUITests.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		5372FCEF2B2E69280F746939 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 02FBD76EBC90DF6730920AB8 /* RENNUITests.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -425,6 +510,15 @@
 			buildConfigurations = (
 				98E3DBB8426EEFE5A4DC7A0F /* Debug */,
 				57D304B71A1C24DA33D01997 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		248229186E754507E2364398 /* Build configuration list for PBXNativeTarget "RENNUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				06132AD24945A955746E6AA9 /* Debug */,
+				5372FCEF2B2E69280F746939 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

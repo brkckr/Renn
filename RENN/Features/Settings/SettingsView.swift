@@ -158,6 +158,7 @@ struct SettingsView: View {
             Button("settings.storage.clearCache") {
                 Task { await viewModel.clearCache() }
             }
+            .accessibilityIdentifier("settings.storage.clearCache")
             .buttonStyle(SettingsRowButtonStyle())
             .disabled(viewModel.isClearingCache || (viewModel.storage?.cacheBytes ?? 0) == 0)
             Text("settings.storage.cacheFooter")

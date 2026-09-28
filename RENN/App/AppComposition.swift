@@ -86,8 +86,14 @@ final class AppComposition {
             purchases = UnconfiguredPurchaseService()
         }
 
-        let storage = makeStorage()
-        let preferencesStore = UserDefaultsAppPreferencesStore()
+        #if DEBUG
+        // UI tests: fresh, isolated state every launch (never used by a Release build).
+        let uiTesting = ProcessInfo.processInfo.arguments.contains("-RENNUITestFreshState")
+        #else
+        let uiTesting = false
+        #endif
+        let storage = uiTesting ? makeUITestStorage() : makeStorage()
+        let preferencesStore = uiTesting ? freshUITestPreferences() : UserDefaultsAppPreferencesStore()
         // Firebase only with the owner's GoogleService-Info.plist; the consent gate stays in front.
         let hasFirebase = FirebaseDiagnostics.configureIfAvailable(consent: preferencesStore.load().diagnosticsConsent)
         return AppComposition(
@@ -107,6 +113,27 @@ final class AppComposition {
     static let dataRoot = URL.applicationSupportDirectory.appendingPathComponent("RENN", isDirectory: true)
     /// Regenerable data only (posters); Settings may clear it at any time.
     static let cacheRoot = URL.cachesDirectory.appendingPathComponent("RENN", isDirectory: true)
+
+    /// In-memory metadata and a per-launch file root, so each UI test starts empty.
+    private static func makeUITestStorage() -> (projects: ProjectLibrary, lookPreferences: any LookPreferencesStoring) {
+        let root = URL.temporaryDirectory.appendingPathComponent("RENN-UITest-\(UUID().uuidString)", isDirectory: true)
+        let files = FileSystemOwnedFileStore(
+            rootURL: root.appendingPathComponent("Data", isDirectory: true),
+            temporaryURL: root.appendingPathComponent("tmp", isDirectory: true))
+        guard let container = try? PersistenceController.makeInMemoryContainer() else {
+            return (ProjectLibrary(metadata: UnavailableProjectMetadataStore(), files: files), InMemoryLookPreferencesStore())
+        }
+        return (
+            ProjectLibrary(metadata: SwiftDataProjectMetadataStore(modelContainer: container), files: files),
+            SwiftDataLookPreferencesStore(modelContainer: container))
+    }
+
+    private static func freshUITestPreferences() -> UserDefaultsAppPreferencesStore {
+        let suite = "tzlapp.studio.renn.uitests"
+        let defaults = UserDefaults(suiteName: suite) ?? .standard
+        defaults.removePersistentDomain(forName: suite)
+        return UserDefaultsAppPreferencesStore(defaults: defaults)
+    }
 
     private static func makeStorage() -> (projects: ProjectLibrary, lookPreferences: any LookPreferencesStoring) {
         let files = FileSystemOwnedFileStore(

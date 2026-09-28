@@ -1,0 +1,11 @@
+// UI test runner for the RENN app (simulator smoke flows, 07 test level 4).
+PRODUCT_NAME = RENNUITests
+PRODUCT_BUNDLE_IDENTIFIER = tzlapp.studio.renn.uitests
+IPHONEOS_DEPLOYMENT_TARGET = 17.0
+SDKROOT = iphoneos
+SUPPORTED_PLATFORMS = iphoneos iphonesimulator
+TARGETED_DEVICE_FAMILY = 1
+SWIFT_VERSION = 6.0
+GENERATE_INFOPLIST_FILE = YES
+CODE_SIGN_STYLE = Automatic
+TEST_TARGET_NAME = RENN

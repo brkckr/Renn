@@ -45,6 +45,8 @@ for path in glob.glob(f"{ROOT}/RENN/**/*.swift", recursive=True):
     if path.split("/")[-1] in IGNORED_FILES:
         continue
     source = open(path, encoding="utf-8").read()
+    # Accessibility identifiers are UI-test handles, not user-visible strings.
+    source = re.sub(r'accessibilityIdentifier\("(?:[^"\\]|\\.)*"\)', "", source)
     for match in LITERAL.finditer(source):
         key = match.group(1)
         if key.startswith(IGNORED_PREFIXES) or key.split(".")[0] not in NAMESPACES:

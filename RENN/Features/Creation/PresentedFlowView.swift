@@ -80,6 +80,7 @@ struct DualCameraUnavailableView: View {
                     .foregroundStyle(RENNColor.textSecondary)
                 Spacer()
                 Button("creation.record.title", action: onRecordWithOneCamera)
+                    .accessibilityIdentifier("dual.unavailable.oneCamera")
                     .buttonStyle(.rennPrimary)
                 Button("creation.import.title", action: onImport)
                     .buttonStyle(.rennSecondary)
