@@ -37,7 +37,7 @@ struct SplashView: View {
                     ForEach(Array("RENN".enumerated()), id: \.offset) { index, glyph in
                         Text(String(glyph))
                             .font(RENNFont.monoton(stripeWidth * 0.9, relativeTo: .largeTitle))
-                            .foregroundStyle(RENNColor.backgroundBase)
+                            .foregroundStyle(Color.white)  // Owner decision (2026-09-28): white glyphs, overriding the dark-brown baseline.
                             .frame(width: stripeWidth)
                             .position(x: startX + stripeWidth * (CGFloat(index) + 0.5), y: size.height / 2)
                     }
