@@ -161,3 +161,22 @@ per motion so stale completions never act.
 - Not done: visual comparison against the reference videos, 60/120 Hz device recordings, final fonts and
   artwork (owner inputs).
 
+## M06 Commerce/telemetry: adapters in place, owner configuration pending (2026-09-28)
+
+- SPM: RevenueCat `purchases-ios` from 5.91.0 and `firebase-ios-sdk` from 12.19.2 (FirebaseAnalytics +
+  FirebaseCrashlytics; no FirebaseAnalyticsIdentitySupport, so no IDFA). Package.resolved pending the
+  first CI resolution.
+- `PurchaseMapping` (RENNDomain, Linux-tested): offering packages → monthly/annual/lifetime in display
+  order (first per type, others ignored, none invented), `pro` entitlement → access with cache/verified
+  provenance, transaction and restore outcomes (Pro only from the active entitlement).
+- `RevenueCatPurchaseService`: sole transaction owner; customer-info stream + refresh on launch and
+  foreground; purchase uses the package captured by product ID; typed errors only. Used only when
+  `RENN_REVENUECAT_API_KEY` is set.
+- `FirebaseDiagnostics` + `FirebaseAnalyticsSink`: configured only when GoogleService-Info.plist is
+  bundled; Info.plist defaults disable Analytics/Crashlytics collection and ad signals; Settings consent
+  turns SDK collection on/off; custom events stay behind the consent gate.
+- Telemetry now emits look_selected / beat_changed on commit (never per slider frame) and
+  share_sheet_opened / share_sheet_finished from the system share sheet.
+- Owner steps: `docs/OWNER_SETUP_M06.md`. Not done: sandbox purchase evidence, Crashlytics dSYM upload
+  phase, privacy manifest review of the pinned SDKs.
+
