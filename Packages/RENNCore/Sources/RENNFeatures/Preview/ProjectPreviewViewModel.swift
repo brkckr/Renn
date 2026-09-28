@@ -55,6 +55,9 @@ public final class ProjectPreviewViewModel {
     public private(set) var beatAvailability: BeatAvailability = .analyzing
     public var showsOriginal = false
     public var isLooping = true
+    /// Look selector state while its sheet is open (02 D05): staged, applied as one revision.
+    public private(set) var lookSelection: LookSelection?
+    public private(set) var catalog: LookCatalog?
 
     private var pendingSave: Task<Void, Never>?
     private let projectID: ProjectID
@@ -63,6 +66,8 @@ public final class ProjectPreviewViewModel {
     private let exporter: ExportCoordinator
     private let telemetry: any TelemetryRecording
     private let beatTimelines: (any BeatTimelineProviding)?
+    private let lookCatalog: (any LookCatalogProviding)?
+    private let posters: (any PosterProviding)?
     private let onClose: @MainActor () -> Void
     private let onShowPaywall: @MainActor () -> Void
 
@@ -73,10 +78,14 @@ public final class ProjectPreviewViewModel {
         exporter: ExportCoordinator,
         telemetry: any TelemetryRecording,
         beatTimelines: (any BeatTimelineProviding)? = nil,
+        lookCatalog: (any LookCatalogProviding)? = nil,
+        posters: (any PosterProviding)? = nil,
         onClose: @escaping @MainActor () -> Void,
         onShowPaywall: @escaping @MainActor () -> Void
     ) {
         self.beatTimelines = beatTimelines
+        self.lookCatalog = lookCatalog
+        self.posters = posters
         self.projectID = projectID
         self.projects = projects
         self.access = access
@@ -95,6 +104,21 @@ public final class ProjectPreviewViewModel {
         (record?.sources.first { $0.role == .primary || $0.role == .rearCamera } ?? record?.sources.first)?.metadata.displayDimensions
     }
     public var name: String { record?.name.value ?? "" }
+
+    private var presentedCompletions: Set<OutputID> = []
+
+    /// True the first time a verified output's completion is shown: the settle motion and its one
+    /// haptic never replay when the result sheet is reopened (03 M06).
+    public func beginCompletionPresentation(of output: OutputID) -> Bool {
+        presentedCompletions.insert(output).inserted
+    }
+    /// Same deterministic case as on the Projects shelf (01 P03).
+    public var caseVariant: Int { ProjectsViewModel.caseVariant(for: projectID) }
+
+    /// The project's own processed cover for the result cassette; nil shows the empty case.
+    public func poster() async -> Data? {
+        await posters?.posterJPEG(for: projectID)
+    }
     public var isBeatEnabled: Bool { recipe?.beat.isEnabled ?? false }
     public var beatIntensity: Double { recipe?.beat.intensity ?? 0 }
     /// Beat modulation actually applies: enabled, not muted, usable audio (01 P06).
@@ -160,6 +184,67 @@ public final class ProjectPreviewViewModel {
         showsWatermark = await access.currentAccess().effectiveTier == .free
     }
 
+    /// What the preview renders: the staged Look selection while the selector is open.
+    public var displayRecipe: Recipe? {
+        guard let recipe else { return nil }
+        guard let lookSelection else { return recipe }
+        return lookSelection.applied(to: recipe, catalog: catalog)
+    }
+
+    // MARK: Look selector (02 D05)
+
+    public func openLookSelector() async {
+        guard let recipe, lookSelection == nil else { return }
+        if catalog == nil { catalog = try? await lookCatalog?.catalog() }
+        lookSelection = LookSelection(lookID: recipe.lookID, intensity: recipe.intensity.value)
+    }
+
+    /// Selecting another Look stages its default intensity; re-selecting the project's own Look
+    /// restores the saved intensity.
+    public func stageLook(_ id: LookID) {
+        guard lookSelection != nil, let recipe,
+              let staged = LookSelection.staging(id, over: recipe, catalog: catalog)
+        else { return }
+        lookSelection = staged
+    }
+
+    public func stageIntensity(_ value: Double) {
+        guard lookSelection != nil, LookIntensity(value) != nil else { return }
+        lookSelection?.intensity = value
+    }
+
+    /// Apply: one recipe revision for the whole staged change (01 P07).
+    public func applyLookSelection() {
+        guard let lookSelection, let recipe else { return }
+        let updated = lookSelection.applied(to: recipe, catalog: catalog)
+        self.lookSelection = nil
+        guard updated != recipe else { return }
+        self.recipe = updated
+        scheduleSave(immediately: true)
+        // Committed change only, never per slider frame (06 C05).
+        if updated.lookID != recipe.lookID, let lookID = updated.lookID {
+            record(.lookSelected(lookID: lookID))
+        }
+    }
+
+    public func cancelLookSelection() {
+        lookSelection = nil
+    }
+
+    /// System share sheet presentation and callback; completion is not proof of posting (06 C05).
+    public func shareSheetOpened() {
+        record(.shareSheetOpened)
+    }
+
+    public func shareSheetFinished(completed: Bool) {
+        record(.shareSheetFinished(completed: completed))
+    }
+
+    private func record(_ event: TelemetryEvent) {
+        let telemetry = telemetry
+        Task { await telemetry.record(event) }
+    }
+
     // MARK: Adjustments
 
     public func setIntensity(_ value: Double) {
@@ -184,6 +269,7 @@ public final class ProjectPreviewViewModel {
         recipe.beat = BeatSettings(isEnabled: enabled, intensity: recipe.beat.intensity)
         self.recipe = recipe
         scheduleSave(immediately: true)
+        record(.beatChanged(enabled: enabled))
     }
 
     /// Beat intensity 0 renders identically to Beat off (05 V04).

@@ -3,7 +3,7 @@ import RENNDomain
 /// Production-safe purchase service used while the RevenueCat configuration is absent.
 /// It never grants Pro: access stays unknown (Free policy applies), products are
 /// unavailable and restore reports the missing configuration truthfully (06 C03).
-/// Replaced by the RevenueCat adapter in M06.
+/// The RevenueCat adapter replaces it when the owner configures `RENN_REVENUECAT_API_KEY`.
 struct UnconfiguredPurchaseService: Purchasing {
     func currentAccess() async -> AccessState { .notConfigured }
 

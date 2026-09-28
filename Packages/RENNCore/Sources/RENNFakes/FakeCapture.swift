@@ -9,6 +9,7 @@ public final class FakeCaptureController: CaptureControlling {
     public var stopResult: Result<RecordedTake, CaptureFailure>?
     public private(set) var preparedPositions: [CameraPosition] = []
     public private(set) var preparedWithAudio: [Bool] = []
+    public private(set) var preparedTiers: [AccessTier] = []
     public private(set) var recordingFile: URL?
     public private(set) var maximumDuration: RationalTime?
     public private(set) var stopCount = 0
@@ -22,10 +23,11 @@ public final class FakeCaptureController: CaptureControlling {
         continuation.yield(event)
     }
 
-    public func prepare(position: CameraPosition, withAudio: Bool) async throws(CaptureFailure) {
+    public func prepare(position: CameraPosition, withAudio: Bool, tier: AccessTier) async throws(CaptureFailure) {
         if let prepareFailure { throw prepareFailure }
         preparedPositions.append(position)
         preparedWithAudio.append(withAudio)
+        preparedTiers.append(tier)
     }
 
     public func switchCamera(to position: CameraPosition) async throws(CaptureFailure) {

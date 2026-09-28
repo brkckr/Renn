@@ -70,6 +70,19 @@ public struct Recipe: Sendable, Equatable, Codable {
             dualLayout: dualLayout)
     }
 
+    /// The recipe with another Look (01 P04): its version, a fresh parameter snapshot and its
+    /// default intensity. Beat, mute, indicators, seed and the Dual-Cam layout are untouched.
+    /// Re-selecting the current Look keeps the saved intensity.
+    public func switchingLook(to look: LookDefinition?) -> Recipe {
+        guard look?.id != lookID || look?.version != lookVersion else { return self }
+        var result = self
+        result.lookID = look?.id
+        result.lookVersion = look?.version
+        result.lookParameters = look?.parameters ?? [:]
+        result.intensity = look?.defaultIntensity ?? .off
+        return result
+    }
+
     public enum ValidationError: Error, Equatable, Sendable {
         case unsupportedVersion(Int)
         case nonFiniteParameter(String)

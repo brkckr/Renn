@@ -150,3 +150,31 @@ struct LookParameterTests {
         #expect(catalog.looks[0].lut == nil && catalog.looks[0].parameters.isEmpty)
     }
 }
+
+@Suite("Recipe Look switching (01 P04)")
+struct RecipeLookSwitchTests {
+    @Test func switchingLoadsDefaultsAndSnapshotButKeepsEverythingElse() throws {
+        let first = LookDefinition(
+            id: "a", version: 1, family: "f", nameKey: "n", descriptionKey: "d",
+            defaultIntensity: LookIntensity(0.7)!, renderVersion: 1, isDevelopmentFixture: true,
+            parameters: [LookParameter.grain: 0.1])
+        let second = LookDefinition(
+            id: "b", version: 3, family: "f", nameKey: "n", descriptionKey: "d",
+            defaultIntensity: LookIntensity(0.2)!, renderVersion: 1, isDevelopmentFixture: true,
+            parameters: [LookParameter.vignette: 1])
+        var recipe = Recipe.initial(look: first, creationStamp: try StampDate(year: 2026, month: 1, day: 1), seed: 9)
+        recipe.intensity = LookIntensity(1)!
+        recipe.audioMuted = true
+        recipe.indicators.showsDate = true
+        recipe.dualLayout = DualCameraLayout(insetCorner: .bottomLeft)
+
+        let switched = recipe.switchingLook(to: second)
+        #expect(switched.lookID == "b" && switched.lookVersion == 3)
+        #expect(switched.lookParameters == [LookParameter.vignette: 1])
+        #expect(switched.intensity.value == 0.2)
+        #expect(switched.seed == 9 && switched.audioMuted && switched.indicators.showsDate)
+        #expect(switched.dualLayout == recipe.dualLayout)
+        #expect(recipe.switchingLook(to: first) == recipe, "Same Look keeps the saved intensity")
+        #expect(recipe.switchingLook(to: nil).lookID == nil)
+    }
+}

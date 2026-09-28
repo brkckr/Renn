@@ -11,6 +11,9 @@
 		DF728900804122296C47C920 /* RENNFeatures in Frameworks */ = {isa = PBXBuildFile; productRef = B2C05826F15EFBBAC11F3C66 /* RENNFeatures */; };
 		21264E520EEF120AB505F10C /* RENNFakes in Frameworks */ = {isa = PBXBuildFile; productRef = 246A0595B590F18F9AD61991 /* RENNFakes */; };
 		F6B66F51854C1B7130CAC291 /* RENNStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 596E913551BB0F0B6B5CBA79 /* RENNStorage */; };
+		80EBE7F91B6CDFE527E76D2B /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 901A41D812D87ADD19A8718C /* RevenueCat */; };
+		79F6102047AECBE33A46D23F /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 95CEA464470703255FF6BF2D /* FirebaseAnalyticsCore */; };
+		ADFDF9674516EF0BD1215A21 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 11AB622B58A185C9D46DF7D8 /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +59,9 @@
 				DF728900804122296C47C920 /* RENNFeatures in Frameworks */,
 				21264E520EEF120AB505F10C /* RENNFakes in Frameworks */,
 				F6B66F51854C1B7130CAC291 /* RENNStorage in Frameworks */,
+				80EBE7F91B6CDFE527E76D2B /* RevenueCat in Frameworks */,
+				79F6102047AECBE33A46D23F /* FirebaseAnalyticsCore in Frameworks */,
+				ADFDF9674516EF0BD1215A21 /* FirebaseCrashlytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +131,9 @@
 				B2C05826F15EFBBAC11F3C66 /* RENNFeatures */,
 				246A0595B590F18F9AD61991 /* RENNFakes */,
 				596E913551BB0F0B6B5CBA79 /* RENNStorage */,
+				901A41D812D87ADD19A8718C /* RevenueCat */,
+				95CEA464470703255FF6BF2D /* FirebaseAnalyticsCore */,
+				11AB622B58A185C9D46DF7D8 /* FirebaseCrashlytics */,
 			);
 			productName = RENN;
 			productReference = B77B418FAF6BA8079A7C4FA4 /* RENN.app */;
@@ -184,6 +193,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				AE6C9E1BE27A11721C5075EF /* XCLocalSwiftPackageReference "Packages/RENNCore" */,
+				5315B7F048DD780524C928F3 /* XCRemoteSwiftPackageReference "purchases-ios" */,
+				3B0B77CB512A74018D4F9CF3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A7D54A97D4041BF86F9228A3 /* Products */;
@@ -427,6 +438,25 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		5315B7F048DD780524C928F3 /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.91.0;
+			};
+		};
+		3B0B77CB512A74018D4F9CF3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.19.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		F269A67C864335CC0D73F961 /* RENNDomain */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -447,6 +477,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AE6C9E1BE27A11721C5075EF /* XCLocalSwiftPackageReference "Packages/RENNCore" */;
 			productName = RENNStorage;
+		};
+		901A41D812D87ADD19A8718C /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5315B7F048DD780524C928F3 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCat;
+		};
+		95CEA464470703255FF6BF2D /* FirebaseAnalyticsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3B0B77CB512A74018D4F9CF3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsCore;
+		};
+		11AB622B58A185C9D46DF7D8 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3B0B77CB512A74018D4F9CF3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

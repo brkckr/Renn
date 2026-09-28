@@ -128,3 +128,70 @@ Evidence status:
   composition clock. Device plan: `docs/DEVICE_TEST_PLAN_M04.md`.
 - `DeviceCaptureCapabilities` probes the real format pair. Remaining: device evidence on supported and
   unsupported hardware (nothing Dual-Cam has run on a device yet).
+
+## M05 App flows: in progress (2026-09-27)
+
+- Preview Look selector (02 D05 S10): catalog grid with yellow outline + check, one intensity slider,
+  staged Apply/Cancel (swipe-down = Cancel); the preview renders the staged choice. `Recipe.switchingLook`
+  loads the new Look's version, parameter snapshot and default intensity and keeps Beat, mute,
+  indicators, seed and Dual-Cam layout; Apply writes one revision (Linux-tested).
+- Camera (02 D06): Look / Beat / Indicators before recording through `RecipeDraftEditor`, locked from
+  countdown until the take is finalized; the draft seeds the project for single and Dual-Cam capture.
+- Look history: already recorded on successful creation and successful export only (tested).
+- Settings storage (02 D09): space used by projects and by the regenerable cache, Clear cache (posters
+  only; projects are removed only by deleting projects). VM tested on Linux.
+- Export result cassette shows the project's own processed cover and its deterministic case variant.
+
+## M07 Visual and motion: in progress (2026-09-27)
+
+Motion timelines are pure functions of elapsed time in RENNDomain (frame-rate independent,
+Linux-tested); SwiftUI drives them with `TimelineView(.animation)` and one identified transition
+per motion so stale completions never act.
+- Onboarding curved wipe (03 M02): leading edge covers by 380 ms (incl. corners), swap while covered,
+  trailing edge reveals by 760 ms; copy fades per spec; Next serialized; inactivity settles; Reduce
+  Motion keeps the 120 ms dissolve. Deviation: the mask draws above the navigation row (controls are
+  disabled during the 760 ms) instead of below it.
+- VHS insertion (03 M05): lift / curved travel / slide behind the front plate / present once at 700 ms;
+  real occlusion by re-drawing the player's upper part above the travelling case; cancel on tab change,
+  background, inactivity. Player art is vector development art (owner layers pending, 08 I02).
+- Paywall selection stage (03 M04): passive pose → selected pose in 320 ms, halo 0.12 → 0.28 → 0.20,
+  billing data independent of motion. Stage objects are RENN's own simple cassette shapes, pending review.
+- Export completion (03 M06): 6 pt / opacity settle over 240 ms and one light haptic, once per output.
+- Already present since M00: splash ribbons (03 M01) and the glass bar morph (03 M03).
+- Not done: visual comparison against the reference videos, 60/120 Hz device recordings, final fonts and
+  artwork (owner inputs).
+
+## M06 Commerce/telemetry: adapters in place, owner configuration pending (2026-09-28)
+
+- SPM: RevenueCat `purchases-ios` from 5.91.0 and `firebase-ios-sdk` from 12.19.2: **FirebaseAnalyticsCore**
+  + FirebaseCrashlytics. Correction: the plain `FirebaseAnalytics` product (first used) links
+  GoogleAppMeasurement with IdentitySupport (IDFA) and Google Ads on-device conversion; `…Core` links
+  GoogleAppMeasurementCore without them, matching "no advertising/cross-app tracking". Package.resolved
+  committed from CI run 36361408000 (14 pins; the ads package may stay listed as a declared dependency but
+  is no longer linked).
+- `PurchaseMapping` (RENNDomain, Linux-tested): offering packages → monthly/annual/lifetime in display
+  order (first per type, others ignored, none invented), `pro` entitlement → access with cache/verified
+  provenance, transaction and restore outcomes (Pro only from the active entitlement).
+- `RevenueCatPurchaseService`: sole transaction owner; customer-info stream + refresh on launch and
+  foreground; purchase uses the package captured by product ID; typed errors only. Used only when
+  `RENN_REVENUECAT_API_KEY` is set.
+- `FirebaseDiagnostics` + `FirebaseAnalyticsSink`: configured only when GoogleService-Info.plist is
+  bundled; Info.plist defaults disable Analytics/Crashlytics collection and ad signals; Settings consent
+  turns SDK collection on/off; custom events stay behind the consent gate.
+- Telemetry now emits look_selected / beat_changed on commit (never per slider frame) and
+  share_sheet_opened / share_sheet_finished from the system share sheet.
+- Owner steps: `docs/OWNER_SETUP_M06.md`. Not done: sandbox purchase evidence, Crashlytics dSYM upload
+  phase, privacy manifest review of the pinned SDKs.
+
+## M09 Hardening: started (2026-09-28)
+
+- Privacy manifest `RENN/Resources/PrivacyInfo.xcprivacy`: no tracking; required-reason APIs used by app
+  code (UserDefaults CA92.1, disk space E174.1). SDK collection is declared by the SDK manifests; the App
+  Store privacy details are an owner task from Xcode's privacy report. Simulator tests assert the manifest
+  and default-off Firebase/ad-signal keys.
+- Capture quality per tier (`CaptureFormatSelection`, Linux-tested): Free up to 1080p30, Pro the largest
+  device format up to 4K60, chosen before recording and never switched mid-take. Dual-Cam stays at the
+  validated 1080p30 pair and discloses it before recording.
+- Test robustness: main-actor polling budget raised to 10 s after five timeouts on a loaded macOS runner
+  (returns immediately when the condition holds).
+

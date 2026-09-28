@@ -87,8 +87,14 @@ struct ExportStatusView: View {
     let viewModel: ProjectPreviewViewModel
 
     @State private var outputURL: URL?
+    @State private var cover: UIImage?
     @State private var watching = false
+    @State private var sharing = false
+    /// Completion settle (03 M06): 6 pt + opacity over 240 ms, once per verified output.
+    @State private var settled = true
+    @State private var hapticTrigger = 0
     @Environment(\.openURL) private var openURL
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
@@ -114,6 +120,17 @@ struct ExportStatusView: View {
                 }
             }
             .padding(RENNMetrics.sideMargin)
+        }
+        // Cancel keeps the local result and returns here (06 C06).
+        .sheet(isPresented: $sharing) {
+            if let outputURL {
+                ActivityShareSheet(items: [outputURL]) { completed in
+                    viewModel.shareSheetFinished(completed: completed)
+                    sharing = false
+                }
+                .presentationDetents([.medium, .large])
+                .ignoresSafeArea()
+            }
         }
         .sheet(isPresented: $watching) {
             if let outputURL {
@@ -160,8 +177,10 @@ struct ExportStatusView: View {
             Button {
                 watching = true
             } label: {
-                VHSCaseShell(name: viewModel.name, variant: 0)
+                VHSCaseShell(name: viewModel.name, variant: viewModel.caseVariant, poster: cover)
                     .frame(width: 140)
+                    .offset(y: settled || reduceMotion ? 0 : -6)
+                    .opacity(settled ? 1 : 0)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(Text("export.result.watch"))
@@ -170,9 +189,10 @@ struct ExportStatusView: View {
                 .foregroundStyle(RENNColor.textPrimary)
             saveStatus(output, saving: saving)
             Spacer()
-            if let outputURL {
-                ShareLink(item: outputURL) {
-                    Text("export.result.share")
+            if outputURL != nil {
+                Button("export.result.share") {
+                    sharing = true
+                    viewModel.shareSheetOpened()
                 }
                 .buttonStyle(.rennPrimary)
             }
@@ -180,7 +200,16 @@ struct ExportStatusView: View {
                 .buttonStyle(.rennSecondary)
                 .disabled(outputURL == nil)
         }
-        .task(id: output.id) { outputURL = await viewModel.url(for: output) }
+        .sensoryFeedback(.impact(weight: .light), trigger: hapticTrigger)
+        .task(id: output.id) {
+            if viewModel.beginCompletionPresentation(of: output.id) {
+                settled = false
+                withAnimation(.easeOut(duration: reduceMotion ? 0.12 : 0.24)) { settled = true }
+                hapticTrigger += 1
+            }
+            outputURL = await viewModel.url(for: output)
+            cover = await viewModel.poster().flatMap(UIImage.init(data:))
+        }
     }
 
     @ViewBuilder
@@ -226,5 +255,37 @@ struct ExportStatusView: View {
             Button("common.close") { viewModel.acknowledgeExport() }
                 .buttonStyle(.rennSecondary)
         }
+    }
+}
+
+/// System share sheet with its completion callback, so the result can report
+/// share_sheet_finished (not proof of posting) and stay on the result sheet on cancel.
+private struct ActivityShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+    let onFinish: (Bool) -> Void
+
+    @MainActor
+    final class Coordinator {
+        var onFinish: (Bool) -> Void
+        init(onFinish: @escaping (Bool) -> Void) { self.onFinish = onFinish }
+        func finish(_ completed: Bool) { onFinish(completed) }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onFinish: onFinish)
+    }
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        let coordinator = context.coordinator
+        // UIKit calls this on the main thread; only the main-actor coordinator is captured.
+        controller.completionWithItemsHandler = { [weak coordinator] _, completed, _, _ in
+            MainActor.assumeIsolated { coordinator?.finish(completed) }
+        }
+        return controller
+    }
+
+    func updateUIViewController(_ controller: UIActivityViewController, context: Context) {
+        context.coordinator.onFinish = onFinish
     }
 }

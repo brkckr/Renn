@@ -34,6 +34,7 @@ the results into `docs/IMPLEMENTATION_LEDGER.md`. A step not run stays "not run"
 | 15 | Kill the app during export, relaunch | Project still opens; no half-written output appears as a result | — |
 | 16 | Import an iPhone HDR (Dolby Vision/HLG) clip | Summary says HDR is converted; compare highlights vs. Photos app (clipping = fail) | Side-by-side screenshots |
 | 17 | Rename and delete a project | Name updates on Home and Projects; delete asks for confirmation; Photos copy remains | — |
+| 19 | Pro (DEBUG `-RENNUseFakePurchases YES` or sandbox Pro): record ~10 s | Recorded source is the highest format up to 4K60 the device offers (check the export summary: Pro 3840×2160, 60 FPS when supported); Free records 1080p30 | Export summary + file info |
 | 18 | Switch language to Türkçe in Settings | All app text Turkish; permission prompts Turkish after relaunch | Screenshots |
 
 ## Measurements (07 performance targets, initial evidence only)

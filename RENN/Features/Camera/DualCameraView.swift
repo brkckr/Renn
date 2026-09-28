@@ -40,7 +40,19 @@ struct DualCameraView: View {
             VStack {
                 topBar
                 Spacer()
-                if viewModel.state == .ready { cornerPicker }
+                if viewModel.state == .ready {
+                    // Dual-Cam's lower quality ceiling is disclosed before recording (05 V02).
+                    Text("dual.quality.disclosure")
+                        .font(RENNFont.secondary)
+                        .foregroundStyle(RENNColor.textPrimary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .glassBackground(Capsule())
+                        .padding(.bottom, 8)
+                    CaptureRecipeControls(draft: viewModel.draft, isSilent: viewModel.isSilent, engine: engine, source: source)
+                        .padding(.bottom, 12)
+                    cornerPicker
+                }
                 bottomBar
             }
             .padding(RENNMetrics.sideMargin)

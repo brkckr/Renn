@@ -34,6 +34,7 @@ struct SettingsView: View {
                 languageSection
                 purchasesSection
                 privacySection
+                storageSection
                 aboutSection
                 #if DEBUG
                 developerSection
@@ -146,10 +147,45 @@ struct SettingsView: View {
                 if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
             }
             .buttonStyle(SettingsRowButtonStyle())
+        }
+    }
+
+    /// Storage/cache controls (02 D09): usage, clear regenerable cache, where projects live.
+    private var storageSection: some View {
+        SettingsGroup(title: "settings.storage") {
+            storageRow("settings.storage.projects", bytes: viewModel.storage?.projectBytes)
+            storageRow("settings.storage.cache", bytes: viewModel.storage?.cacheBytes)
+            Button("settings.storage.clearCache") {
+                Task { await viewModel.clearCache() }
+            }
+            .buttonStyle(SettingsRowButtonStyle())
+            .disabled(viewModel.isClearingCache || (viewModel.storage?.cacheBytes ?? 0) == 0)
+            Text("settings.storage.cacheFooter")
+                .font(RENNFont.secondary)
+                .foregroundStyle(RENNColor.textSecondary)
             Text("settings.storage.footer")
                 .font(RENNFont.secondary)
                 .foregroundStyle(RENNColor.textSecondary)
         }
+        .task { await viewModel.refreshStorage() }
+    }
+
+    private func storageRow(_ title: LocalizedStringKey, bytes: Int64?) -> some View {
+        HStack {
+            Text(title)
+                .font(RENNFont.body)
+                .foregroundStyle(RENNColor.textPrimary)
+            Spacer()
+            if let bytes {
+                Text(bytes, format: .byteCount(style: .file))
+                    .font(RENNFont.body)
+                    .foregroundStyle(RENNColor.textSecondary)
+                    .monospacedDigit()
+            } else {
+                ProgressView()
+            }
+        }
+        .accessibilityElement(children: .combine)
     }
 
     private var aboutSection: some View {

@@ -69,7 +69,8 @@ public enum CaptureEvent: Sendable, Equatable {
 public protocol CaptureControlling: AnyObject {
     var events: AsyncStream<CaptureEvent> { get }
     /// Configures a portrait 9:16 session for `position`; `withAudio` false records silently.
-    func prepare(position: CameraPosition, withAudio: Bool) async throws(CaptureFailure)
+    /// `tier` selects the capture format (`CaptureFormatSelection`) before recording.
+    func prepare(position: CameraPosition, withAudio: Bool, tier: AccessTier) async throws(CaptureFailure)
     /// Pre-record only (01 P05).
     func switchCamera(to position: CameraPosition) async throws(CaptureFailure)
     /// Starts writing clean media to `file`. `maximumDuration` is the Free limit, nil for Pro.

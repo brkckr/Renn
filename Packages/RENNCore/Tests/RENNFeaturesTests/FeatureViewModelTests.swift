@@ -187,6 +187,20 @@ struct ProjectsViewModelTests {
 @MainActor
 @Suite("Settings view model (01 P10, 06 C03/C05)")
 struct SettingsViewModelTests {
+    @Test func storageShowsUsageAndClearsOnlyTheCache() async {
+        let usage = FakeStorageUsage(StorageUsage(projectBytes: 5_000_000, cacheBytes: 120_000))
+        let viewModel = SettingsViewModel(
+            purchases: FakePurchaseService(), preferencesStore: InMemoryAppPreferencesStore(), storageUsage: usage,
+            onLanguageChange: { _ in }, onShowPaywall: {})
+        #expect(viewModel.storage == nil)
+        await viewModel.refreshStorage()
+        #expect(viewModel.storage == StorageUsage(projectBytes: 5_000_000, cacheBytes: 120_000))
+        await viewModel.clearCache()
+        #expect(viewModel.storage == StorageUsage(projectBytes: 5_000_000, cacheBytes: 0), "Projects are untouched")
+        #expect(await usage.clearCount == 1)
+        #expect(!viewModel.isClearingCache)
+    }
+
     @Test func languageChoicePersistsAndNotifies() {
         let store = InMemoryAppPreferencesStore()
         let log = CallLog()
@@ -201,13 +215,17 @@ struct SettingsViewModelTests {
 
     @Test func diagnosticsDefaultOffAndExplicit() {
         let store = InMemoryAppPreferencesStore()
+        let log = CallLog()
         let viewModel = SettingsViewModel(
-            purchases: FakePurchaseService(), preferencesStore: store, onLanguageChange: { _ in }, onShowPaywall: {})
+            purchases: FakePurchaseService(), preferencesStore: store, onLanguageChange: { _ in },
+            onDiagnosticsChange: { log.record("sdk \($0.rawValue)") }, onShowPaywall: {})
         #expect(!viewModel.diagnosticsConsent.allowsCollection)
         viewModel.setDiagnosticsEnabled(true)
         #expect(store.stored.diagnosticsConsent == .granted)
+        viewModel.setDiagnosticsEnabled(true)
         viewModel.setDiagnosticsEnabled(false)
         #expect(store.stored.diagnosticsConsent == .declined)
+        #expect(log.entries == ["sdk granted", "sdk declined"], "SDK collection follows each real change once")
     }
 
     @Test func restoreFailureIsTruthfulWhenNotConfigured() async {

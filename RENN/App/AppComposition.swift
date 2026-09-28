@@ -57,7 +57,9 @@ final class AppComposition {
         renderEngine = engine
         let timelines = AVBeatTimelineProvider()
         beatTimelines = timelines
-        posters = PosterProvider(projects: projectStore, engine: engine)
+        posters = PosterProvider(
+            projects: projectStore, engine: engine,
+            cacheDirectory: Self.cacheRoot.appendingPathComponent("Posters", isDirectory: true))
         exportCoordinator = ExportCoordinator(
             projects: projectStore, access: purchases,
             renderer: AVExportRenderer(engine: engine, beatTimelines: timelines),
@@ -69,24 +71,30 @@ final class AppComposition {
         let configuration = AppConfiguration.load()
         let purchases: any Purchasing
         #if DEBUG
-        if configuration.usesFakePurchases {
-            // Explicit developer opt-in; fixture products are visibly marked "DEV".
+        let fake = configuration.usesFakePurchases
+        #else
+        let fake = false
+        #endif
+        if fake {
+            // Explicit developer opt-in (DEBUG only); fixture products are visibly marked "DEV".
             purchases = FakePurchaseService()
+        } else if let apiKey = configuration.revenueCatAPIKey {
+            // Owner-provided public SDK key (Config/Secrets.xcconfig, git-ignored).
+            purchases = RevenueCatPurchaseService.configure(apiKey: apiKey, environment: configuration.environment)
         } else {
+            // No configuration: never grants Pro, products unavailable, restore explains why.
             purchases = UnconfiguredPurchaseService()
         }
-        #else
-        // M06 replaces this with the RevenueCat adapter once the owner supplies configuration.
-        purchases = UnconfiguredPurchaseService()
-        #endif
 
         let storage = makeStorage()
+        let preferencesStore = UserDefaultsAppPreferencesStore()
+        // Firebase only with the owner's GoogleService-Info.plist; the consent gate stays in front.
+        let hasFirebase = FirebaseDiagnostics.configureIfAvailable(consent: preferencesStore.load().diagnosticsConsent)
         return AppComposition(
             configuration: configuration,
-            preferencesStore: UserDefaultsAppPreferencesStore(),
+            preferencesStore: preferencesStore,
             purchases: purchases,
-            // M06: Firebase sink once GoogleService-Info.plist exists. Consent gate stays in front.
-            telemetrySink: DiscardingTelemetrySink(),
+            telemetrySink: hasFirebase ? FirebaseAnalyticsSink() : DiscardingTelemetrySink(),
             projectStore: storage.projects,
             lookCatalog: BundledLookCatalogProvider(),
             lookPreferencesStore: storage.lookPreferences,
@@ -96,9 +104,13 @@ final class AppComposition {
     /// SwiftData metadata + owned files under Application Support/RENN (05 V07).
     /// If the store cannot be opened (e.g. written by a newer version), projects report
     /// "unavailable" and nothing is deleted; the database is never wiped (05 V08).
+    static let dataRoot = URL.applicationSupportDirectory.appendingPathComponent("RENN", isDirectory: true)
+    /// Regenerable data only (posters); Settings may clear it at any time.
+    static let cacheRoot = URL.cachesDirectory.appendingPathComponent("RENN", isDirectory: true)
+
     private static func makeStorage() -> (projects: ProjectLibrary, lookPreferences: any LookPreferencesStoring) {
         let files = FileSystemOwnedFileStore(
-            rootURL: URL.applicationSupportDirectory.appendingPathComponent("RENN", isDirectory: true),
+            rootURL: Self.dataRoot,
             temporaryURL: URL.temporaryDirectory.appendingPathComponent("RENN", isDirectory: true))
         let library: ProjectLibrary
         let lookPreferences: any LookPreferencesStoring
@@ -165,7 +177,11 @@ final class AppComposition {
         SettingsViewModel(
             purchases: purchases,
             preferencesStore: preferencesStore,
+            storageUsage: FileStorageUsage(
+                projectsRoot: Self.dataRoot.appendingPathComponent("Projects", isDirectory: true),
+                cacheRoot: Self.cacheRoot),
             onLanguageChange: { [localization] in localization.apply($0) },
+            onDiagnosticsChange: { FirebaseDiagnostics.apply($0) },
             onShowPaywall: { [router] in router.showPaywall(.settings) })
     }
 
@@ -269,6 +285,8 @@ final class AppComposition {
             exporter: exportCoordinator,
             telemetry: telemetry,
             beatTimelines: beatTimelines,
+            lookCatalog: lookCatalog,
+            posters: posters,
             onClose: { [router] in router.dismissFlow() },
             onShowPaywall: { [router] in router.showNestedPaywall(.exportUpgrade) })
     }

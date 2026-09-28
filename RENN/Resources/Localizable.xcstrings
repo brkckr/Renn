@@ -1,6 +1,23 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "camera.beat.silent": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No microphone access, so this take has no sound and Beat can't respond. The Look still applies."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mikrofon izni olmadığı için bu çekimde ses yok ve Beat tepki veremez. Look yine uygulanır."
+          }
+        }
+      }
+    },
     "camera.countdown %lld": {
       "extractionState": "manual",
       "localizations": {
@@ -609,6 +626,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sağ üst"
+          }
+        }
+      }
+    },
+    "dual.quality.disclosure": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Both cameras record at up to 1080p, 30 FPS."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İki kamera da en fazla 1080p, 30 FPS kaydeder."
           }
         }
       }
@@ -1867,6 +1901,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Favorilerden çıkar"
+          }
+        }
+      }
+    },
+    "lookSelector.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look"
           }
         }
       }
@@ -3622,6 +3673,74 @@
         }
       }
     },
+    "settings.storage": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Storage"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Depolama"
+          }
+        }
+      }
+    },
+    "settings.storage.cache": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cache"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önbellek"
+          }
+        }
+      }
+    },
+    "settings.storage.cacheFooter": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clearing the cache only removes cover images RENN can recreate. Your projects stay."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önbelleği temizlemek yalnızca RENN'in yeniden oluşturabileceği kapak görsellerini siler. Projelerin olduğu gibi kalır."
+          }
+        }
+      }
+    },
+    "settings.storage.clearCache": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear cache"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önbelleği temizle"
+          }
+        }
+      }
+    },
     "settings.storage.footer": {
       "extractionState": "manual",
       "localizations": {
@@ -3635,6 +3754,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Projeler yalnızca bu iPhone'da saklanır. Uygulamayı silmek projeleri de siler; satın almaları geri yüklemek videoları geri getirmez."
+          }
+        }
+      }
+    },
+    "settings.storage.projects": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projects"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projeler"
           }
         }
       }

@@ -80,6 +80,17 @@ struct ProjectPreviewView: View {
                     onCancel: { showsIndicators = false })
             }
         }
+        .sheet(isPresented: lookSelectorBinding) {
+            if let selection = viewModel.lookSelection {
+                LookSelectorSheet(
+                    looks: viewModel.catalog?.looks ?? [],
+                    selection: selection,
+                    onSelect: { viewModel.stageLook($0) },
+                    onIntensity: { viewModel.stageIntensity($0) },
+                    onApply: { viewModel.applyLookSelection() },
+                    onCancel: { viewModel.cancelLookSelection() })
+            }
+        }
         .fullScreenCover(isPresented: statusBinding) {
             ExportStatusView(viewModel: viewModel)
         }
@@ -105,7 +116,7 @@ struct ProjectPreviewView: View {
             .padding(.horizontal, RENNMetrics.sideMargin)
 
             MetalPreviewView(
-                engine: engine, source: frameSource, recipe: viewModel.recipe,
+                engine: engine, source: frameSource, recipe: viewModel.displayRecipe,
                 sourceDimensions: viewModel.displayDimensions, showsWatermark: viewModel.showsWatermark,
                 bypassCreative: viewModel.showsOriginal, beatTimeline: viewModel.beatTimeline,
                 beatTimeOffset: viewModel.beatTimeOffset)
@@ -130,6 +141,9 @@ struct ProjectPreviewView: View {
                     .disabled(!viewModel.hasAudio)
                 controlButton("repeat", label: "preview.loop", isOn: viewModel.isLooping) {
                     viewModel.isLooping.toggle()
+                }
+                controlButton("sparkles", label: "lookSelector.title", isOn: false) {
+                    Task { await viewModel.openLookSelector() }
                 }
                 controlButton("calendar.badge.clock", label: "indicators.title", isOn: indicatorsOn) {
                     showsIndicators = true
@@ -266,6 +280,13 @@ struct ProjectPreviewView: View {
         Binding(
             get: { if case .summary = viewModel.exportEntry { true } else { false } },
             set: { if !$0, case .summary = viewModel.exportEntry { viewModel.dismissExportEntry() } })
+    }
+
+    /// Swipe-down dismissal counts as Cancel (staged changes are discarded).
+    private var lookSelectorBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.lookSelection != nil },
+            set: { if !$0 { viewModel.cancelLookSelection() } })
     }
 
     private var requiresProBinding: Binding<Bool> {

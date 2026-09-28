@@ -19,7 +19,8 @@ struct AVCapturePermissions: CapturePermissionProviding {
     }
 }
 
-/// Single-camera capture (M02 prototype: 1080p30 portrait, 05 V01). The capture graph lives on
+/// Single-camera capture (05 V01/V02): portrait, with the format chosen per tier before recording
+/// by `CaptureFormatSelection` (Free up to 1080p30, Pro up to 4K60). The capture graph lives on
 /// `sessionQueue`; samples arrive on `dataQueue`, where the `SourceRecorder` writes clean media.
 /// Nothing drawn by the app (controls, countdown, REC UI) can enter the recorded pixels.
 @MainActor
@@ -32,6 +33,7 @@ final class AVCaptureController: CaptureControlling {
     private let graph = CaptureGraph()
     private var position: CameraPosition = .rear
     private var withAudio = true
+    private var tier: AccessTier = .free
     private var observers: [NSObjectProtocol] = []
 
     init() {
@@ -40,12 +42,13 @@ final class AVCaptureController: CaptureControlling {
 
     var isMirrored: Bool { position == .front }
 
-    func prepare(position: CameraPosition, withAudio: Bool) async throws(CaptureFailure) {
+    func prepare(position: CameraPosition, withAudio: Bool, tier: AccessTier) async throws(CaptureFailure) {
         self.position = position
         self.withAudio = withAudio
+        self.tier = tier
         let frames = frames
         try await graph.run { graph in
-            try graph.configure(position: position, withAudio: withAudio, frames: frames)
+            try graph.configure(position: position, withAudio: withAudio, tier: tier, frames: frames)
             graph.session.startRunning()
         }
         observeInterruptions()
@@ -54,8 +57,9 @@ final class AVCaptureController: CaptureControlling {
     func switchCamera(to position: CameraPosition) async throws(CaptureFailure) {
         let frames = frames
         let withAudio = withAudio
+        let tier = tier
         try await graph.run { graph in
-            try graph.configure(position: position, withAudio: withAudio, frames: frames)
+            try graph.configure(position: position, withAudio: withAudio, tier: tier, frames: frames)
         }
         self.position = position
     }
@@ -123,8 +127,8 @@ final class CaptureGraph: NSObject, @unchecked Sendable,
     private var recorder: SourceRecorder?
     private var pendingStop: [CheckedContinuation<SourceRecorder.Take, any Error>] = []
     private var isStopping = false
-
-    static let frameRate = FrameRate.fps(30)
+    /// Rate of the configured format; the recorder writes it as the source cadence.
+    private var frameRate = FrameRate.fps(30)
 
     /// Runs `body` on the session queue.
     func run(_ body: @escaping @Sendable (CaptureGraph) throws -> Void) async throws(CaptureFailure) {
@@ -141,11 +145,12 @@ final class CaptureGraph: NSObject, @unchecked Sendable,
         try result.get()
     }
 
-    func configure(position: CameraPosition, withAudio: Bool, frames: CaptureFrameBox) throws(CaptureFailure) {
+    func configure(position: CameraPosition, withAudio: Bool, tier: AccessTier, frames: CaptureFrameBox) throws(CaptureFailure) {
         self.frames = frames
         session.beginConfiguration()
         defer { session.commitConfiguration() }
-        session.sessionPreset = .hd1920x1080
+        // The device format decides size and rate (set below), not a preset.
+        session.sessionPreset = .inputPriority
 
         if let videoInput { session.removeInput(videoInput) }
         guard let device = AVCaptureDevice.default(
@@ -154,11 +159,24 @@ final class CaptureGraph: NSObject, @unchecked Sendable,
         else { throw .cameraUnavailable }
         session.addInput(input)
         videoInput = input
-        if let device = videoInput?.device, (try? device.lockForConfiguration()) != nil {
-            device.activeVideoMinFrameDuration = CMTime(value: 1, timescale: 30)
-            device.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: 30)
-            device.unlockForConfiguration()
+        let candidates = device.formats.enumerated().compactMap { index, format -> CaptureFormatSelection.Candidate? in
+            let size = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
+            guard let dimensions = try? PixelDimensions(width: Int(size.width), height: Int(size.height)) else { return nil }
+            let maxRate = format.videoSupportedFrameRateRanges.map(\.maxFrameRate).max() ?? 0
+            return CaptureFormatSelection.Candidate(index: index, dimensions: dimensions, maximumFrameRate: maxRate)
         }
+        guard let choice = CaptureFormatSelection.select(candidates, tier: tier) else { throw .configurationFailed }
+        do {
+            try device.lockForConfiguration()
+            device.activeFormat = device.formats[choice.candidate.index]
+            let duration = CMTime(value: 1, timescale: choice.frameRate.frames)
+            device.activeVideoMinFrameDuration = duration
+            device.activeVideoMaxFrameDuration = duration
+            device.unlockForConfiguration()
+        } catch {
+            throw .configurationFailed
+        }
+        frameRate = choice.frameRate
 
         if withAudio, audioInput == nil,
            let microphone = AVCaptureDevice.default(for: .audio),
@@ -198,7 +216,7 @@ final class CaptureGraph: NSObject, @unchecked Sendable,
         let audioSettings = audioInput == nil
             ? nil : audioOutput.recommendedAudioSettingsForAssetWriter(writingTo: .mov) as? [String: Any]
         let recorder = SourceRecorder(
-            file: file, limit: limit, audioSettings: audioSettings, frameRate: Self.frameRate,
+            file: file, limit: limit, audioSettings: audioSettings, frameRate: frameRate,
             onDuration: onDuration, onLimitReached: onLimitReached)
         dataQueue.sync {
             self.isStopping = false

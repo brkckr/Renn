@@ -3,8 +3,11 @@ import RENNDomain
 
 /// Polls a main-actor condition until true or a bounded timeout, for stream-driven
 /// ViewModel updates. Fails the expectation at the call site if it never becomes true.
+/// The budget is generous because all main-actor tests share one executor: on a loaded CI
+/// runner an observation task may wait seconds for its turn. A passing condition returns
+/// immediately, so the budget only matters for real failures.
 @MainActor
-func eventually(timeout: Duration = .seconds(2), _ condition: @MainActor () -> Bool) async -> Bool {
+func eventually(timeout: Duration = .seconds(10), _ condition: @MainActor () -> Bool) async -> Bool {
     let clock = ContinuousClock()
     let deadline = clock.now.advanced(by: timeout)
     while clock.now < deadline {

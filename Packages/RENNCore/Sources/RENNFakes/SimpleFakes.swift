@@ -74,3 +74,19 @@ public struct StaticLookCatalogProvider: LookCatalogProviding {
                 ])
         ])
 }
+
+public actor FakeStorageUsage: StorageUsageProviding {
+    public private(set) var current: StorageUsage
+    public private(set) var clearCount = 0
+
+    public init(_ usage: StorageUsage = StorageUsage(projectBytes: 0, cacheBytes: 0)) {
+        current = usage
+    }
+
+    public func usage() async -> StorageUsage { current }
+
+    public func clearCache() async {
+        clearCount += 1
+        current = StorageUsage(projectBytes: current.projectBytes, cacheBytes: 0)
+    }
+}

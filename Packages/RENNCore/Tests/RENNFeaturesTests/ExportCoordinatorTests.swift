@@ -43,7 +43,7 @@ struct ExportCoordinatorTests {
     }
 
     private func waitForTerminal(_ coordinator: ExportCoordinator) async -> Bool {
-        await eventually(timeout: .seconds(3)) { !coordinator.isBusy && coordinator.state != .idle }
+        await eventually { !coordinator.isBusy && coordinator.state != .idle }
     }
 
     @Test func summaryReflectsFreePolicy() async throws {
