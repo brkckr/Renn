@@ -158,6 +158,7 @@ struct SettingsView: View {
             Button("settings.storage.clearCache") {
                 Task { await viewModel.clearCache() }
             }
+            .accessibilityIdentifier("settings.storage.clearCache")
             .buttonStyle(SettingsRowButtonStyle())
             .disabled(viewModel.isClearingCache || (viewModel.storage?.cacheBytes ?? 0) == 0)
             Text("settings.storage.cacheFooter")
@@ -297,14 +298,28 @@ private struct SettingsRowButtonStyle: ButtonStyle {
 
 /// Third-party notices. Font and SDK notices are added when the licensed files/SDKs are
 /// bundled (08 I03, M06).
+/// Third-party notices shipped with the app (06 C07): the bundled fonts' copyright lines and the
+/// full SIL Open Font License text, shown verbatim in system type (never retro display type).
 private struct LicensesView: View {
+    private static let notices: String? = Bundle.main.url(forResource: "FontLicenses", withExtension: "txt")
+        .flatMap { try? String(contentsOf: $0, encoding: .utf8) }
+
     var body: some View {
         ScrollView {
-            Text("settings.licenses.pending")
-                .font(RENNFont.body)
-                .foregroundStyle(RENNColor.textSecondary)
-                .padding(RENNMetrics.sideMargin)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            Group {
+                if let notices = Self.notices {
+                    Text(verbatim: notices)
+                        .font(.footnote)
+                        .foregroundStyle(RENNColor.textPrimary)
+                        .textSelection(.enabled)
+                } else {
+                    Text("settings.licenses.pending")
+                        .font(RENNFont.body)
+                        .foregroundStyle(RENNColor.textSecondary)
+                }
+            }
+            .padding(RENNMetrics.sideMargin)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .background(RENNColor.backgroundBase.ignoresSafeArea())
         .navigationTitle(Text("settings.licenses"))

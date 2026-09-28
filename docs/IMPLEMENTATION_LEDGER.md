@@ -192,6 +192,12 @@ per motion so stale completions never act.
 - Capture quality per tier (`CaptureFormatSelection`, Linux-tested): Free up to 1080p30, Pro the largest
   device format up to 4K60, chosen before recording and never switched mid-take. Dual-Cam stays at the
   validated 1080p30 pair and discloses it before recording.
+- `scripts/release_audit.py` (printed by CI, informational; `--strict` for a release job): lists the
+  remaining release blockers from the repository alone (DEV Look catalog, fonts, app icon, Firebase plist,
+  owner values in the git-ignored Secrets.xcconfig, owner/device evidence).
+- UI smoke tests (`RENNUITests`, in the RENN scheme): onboarding Skip and Next to Home, four tabs with the
+  creation button only on Home, the three creation rows, unsupported Dual-Cam explanation. DEBUG-only
+  `-RENNUITestFreshState` gives each launch in-memory projects and fresh preferences. First CI run pending.
 - Test robustness: main-actor polling budget raised to 10 s after five timeouts on a loaded macOS runner
   (returns immediately when the condition holds).
 

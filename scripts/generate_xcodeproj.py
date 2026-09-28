@@ -2,7 +2,7 @@
 """Generates RENN.xcodeproj/project.pbxproj deterministically (stable object IDs).
 
 Run from anywhere: `python3 scripts/generate_xcodeproj.py`. Sources are synchronized folders
-(RENN/, RENNTests/), so adding Swift files needs no regeneration; targets, build settings and
+(RENN/, RENNTests/, RENNUITests/), so adding Swift files needs no regeneration; targets, build settings and
 package dependencies are defined here.
 """
 import hashlib
@@ -19,6 +19,8 @@ I = {n: oid(n) for n in [
  "xcDebugRef","xcReleaseRef","xcSharedRef","xcTestsRef","xcSecretsExampleRef","infoPlistRef",
  "pkgRef","prodDomain","prodFeatures","prodFakes","bfDomain","bfFeatures","bfFakes","prodStorage","bfStorage",
  "testProdFakes","testBfFakes","testProdDomain","testBfDomain","testProdFeatures","testBfFeatures",
+ "uiTarget","uiProduct","uiSources","uiFrameworks","uiResources","uiGroup","uiProxy","uiDependency",
+ "uiCfgList","uiDebug","uiRelease","xcUITestsRef",
  "rcPkg","fbPkg","prodRevenueCat","bfRevenueCat","prodAnalytics","bfAnalytics","prodCrashlytics","bfCrashlytics",
 ]}
 
@@ -104,7 +106,8 @@ def cfg(idk, name, d, base=None):
     return (f"\t\t{I[idk]} /* {name} */ = {{\n\t\t\tisa = XCBuildConfiguration;\n{b}"
             f"\t\t\tbuildSettings = {{\n{settings(d)}\t\t\t}};\n\t\t\tname = {name};\n\t\t}};\n")
 
-base_names = {"xcDebugRef": "RENN.debug.xcconfig", "xcReleaseRef": "RENN.release.xcconfig", "xcTestsRef": "RENNTests.xcconfig"}
+base_names = {"xcDebugRef": "RENN.debug.xcconfig", "xcReleaseRef": "RENN.release.xcconfig", "xcTestsRef": "RENNTests.xcconfig",
+              "xcUITestsRef": "RENNUITests.xcconfig"}
 
 out = f"""// !$*UTF8*$!
 {{
@@ -132,11 +135,20 @@ out = f"""// !$*UTF8*$!
 			remoteGlobalIDString = {I['appTarget']};
 			remoteInfo = RENN;
 		}};
+		{I['uiProxy']} /* PBXContainerItemProxy */ = {{
+			isa = PBXContainerItemProxy;
+			containerPortal = {I['project']} /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = {I['appTarget']};
+			remoteInfo = RENN;
+		}};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		{I['appProduct']} /* RENN.app */ = {{isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RENN.app; sourceTree = BUILT_PRODUCTS_DIR; }};
 		{I['testProduct']} /* RENNTests.xctest */ = {{isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RENNTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; }};
+		{I['uiProduct']} /* RENNUITests.xctest */ = {{isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RENNUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; }};
+		{I['xcUITestsRef']} /* RENNUITests.xcconfig */ = {{isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RENNUITests.xcconfig; sourceTree = "<group>"; }};
 		{I['xcSharedRef']} /* RENN.shared.xcconfig */ = {{isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RENN.shared.xcconfig; sourceTree = "<group>"; }};
 		{I['xcDebugRef']} /* RENN.debug.xcconfig */ = {{isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RENN.debug.xcconfig; sourceTree = "<group>"; }};
 		{I['xcReleaseRef']} /* RENN.release.xcconfig */ = {{isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RENN.release.xcconfig; sourceTree = "<group>"; }};
@@ -154,6 +166,11 @@ out = f"""// !$*UTF8*$!
 		{I['testsGroup']} /* RENNTests */ = {{
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = RENNTests;
+			sourceTree = "<group>";
+		}};
+		{I['uiGroup']} /* RENNUITests */ = {{
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RENNUITests;
 			sourceTree = "<group>";
 		}};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -180,6 +197,13 @@ out = f"""// !$*UTF8*$!
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		}};
+		{I['uiFrameworks']} /* Frameworks */ = {{
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		}};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -188,6 +212,7 @@ out = f"""// !$*UTF8*$!
 			children = (
 				{I['rennGroup']} /* RENN */,
 				{I['testsGroup']} /* RENNTests */,
+				{I['uiGroup']} /* RENNUITests */,
 				{I['configGroup']} /* Config */,
 				{I['productsGroup']} /* Products */,
 			);
@@ -200,6 +225,7 @@ out = f"""// !$*UTF8*$!
 				{I['xcDebugRef']} /* RENN.debug.xcconfig */,
 				{I['xcReleaseRef']} /* RENN.release.xcconfig */,
 				{I['xcTestsRef']} /* RENNTests.xcconfig */,
+				{I['xcUITestsRef']} /* RENNUITests.xcconfig */,
 				{I['xcSecretsExampleRef']} /* Secrets.example.xcconfig */,
 				{I['infoPlistRef']} /* RENN-Info.plist */,
 			);
@@ -211,6 +237,7 @@ out = f"""// !$*UTF8*$!
 			children = (
 				{I['appProduct']} /* RENN.app */,
 				{I['testProduct']} /* RENNTests.xctest */,
+				{I['uiProduct']} /* RENNUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -270,6 +297,29 @@ out = f"""// !$*UTF8*$!
 			productReference = {I['testProduct']} /* RENNTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		}};
+		{I['uiTarget']} /* RENNUITests */ = {{
+			isa = PBXNativeTarget;
+			buildConfigurationList = {I['uiCfgList']} /* Build configuration list for PBXNativeTarget "RENNUITests" */;
+			buildPhases = (
+				{I['uiSources']} /* Sources */,
+				{I['uiFrameworks']} /* Frameworks */,
+				{I['uiResources']} /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				{I['uiDependency']} /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				{I['uiGroup']} /* RENNUITests */,
+			);
+			name = RENNUITests;
+			packageProductDependencies = (
+			);
+			productName = RENNUITests;
+			productReference = {I['uiProduct']} /* RENNUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		}};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -284,6 +334,10 @@ out = f"""// !$*UTF8*$!
 						CreatedOnToolsVersion = 16.0;
 					}};
 					{I['testTarget']} = {{
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = {I['appTarget']};
+					}};
+					{I['uiTarget']} = {{
 						CreatedOnToolsVersion = 16.0;
 						TestTargetID = {I['appTarget']};
 					}};
@@ -311,6 +365,7 @@ out = f"""// !$*UTF8*$!
 			targets = (
 				{I['appTarget']} /* RENN */,
 				{I['testTarget']} /* RENNTests */,
+				{I['uiTarget']} /* RENNUITests */,
 			);
 		}};
 /* End PBXProject section */
@@ -324,6 +379,13 @@ out = f"""// !$*UTF8*$!
 			runOnlyForDeploymentPostprocessing = 0;
 		}};
 		{I['testResources']} /* Resources */ = {{
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		}};
+		{I['uiResources']} /* Resources */ = {{
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -347,6 +409,13 @@ out = f"""// !$*UTF8*$!
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		}};
+		{I['uiSources']} /* Sources */ = {{
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		}};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -355,10 +424,15 @@ out = f"""// !$*UTF8*$!
 			target = {I['appTarget']} /* RENN */;
 			targetProxy = {I['proxy']} /* PBXContainerItemProxy */;
 		}};
+		{I['uiDependency']} /* PBXTargetDependency */ = {{
+			isa = PBXTargetDependency;
+			target = {I['appTarget']} /* RENN */;
+			targetProxy = {I['uiProxy']} /* PBXContainerItemProxy */;
+		}};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-{cfg('projDebug', 'Debug', proj_debug)}{cfg('projRelease', 'Release', proj_release)}{cfg('appDebug', 'Debug', {}, 'xcDebugRef')}{cfg('appRelease', 'Release', {}, 'xcReleaseRef')}{cfg('testDebug', 'Debug', {}, 'xcTestsRef')}{cfg('testRelease', 'Release', {}, 'xcTestsRef')}/* End XCBuildConfiguration section */
+{cfg('projDebug', 'Debug', proj_debug)}{cfg('projRelease', 'Release', proj_release)}{cfg('appDebug', 'Debug', {}, 'xcDebugRef')}{cfg('appRelease', 'Release', {}, 'xcReleaseRef')}{cfg('testDebug', 'Debug', {}, 'xcTestsRef')}{cfg('testRelease', 'Release', {}, 'xcTestsRef')}{cfg('uiDebug', 'Debug', {}, 'xcUITestsRef')}{cfg('uiRelease', 'Release', {}, 'xcUITestsRef')}/* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		{I['projCfgList']} /* Build configuration list for PBXProject "RENN" */ = {{
@@ -384,6 +458,15 @@ out = f"""// !$*UTF8*$!
 			buildConfigurations = (
 				{I['testDebug']} /* Debug */,
 				{I['testRelease']} /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		}};
+		{I['uiCfgList']} /* Build configuration list for PBXNativeTarget "RENNUITests" */ = {{
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				{I['uiDebug']} /* Debug */,
+				{I['uiRelease']} /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

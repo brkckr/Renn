@@ -104,6 +104,7 @@ struct GlassNavigationBar: View {
         .buttonStyle(.plain)
         .accessibilityLabel(Text(tab.titleKey))
         .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
+        .accessibilityIdentifier("tab.\(tab)")
     }
 
     // MARK: Menu
@@ -168,6 +169,7 @@ struct GlassNavigationBar: View {
             .contentShape(RoundedRectangle(cornerRadius: RENNMetrics.menuRowRadius, style: .continuous))
         }
         .buttonStyle(MenuRowButtonStyle())
+        .accessibilityIdentifier("creation.\(action)")
         .transition(.asymmetric(
             insertion: .opacity.combined(with: .offset(y: 8))
                 .animation(.easeOut(duration: 0.16).delay(0.10 + 0.03 * Double(index))),
@@ -188,6 +190,7 @@ struct GlassNavigationBar: View {
         }
         .buttonStyle(PressScaleButtonStyle())
         .accessibilityLabel(Text(isMenuOpen ? LocalizedStringKey("creation.close") : LocalizedStringKey("creation.open")))
+        .accessibilityIdentifier("creation.toggle")
     }
 }
 

@@ -85,6 +85,7 @@ struct OnboardingView: View {
             HStack {
                 Spacer()
                 Button("onboarding.skip") { viewModel.skip() }
+                    .accessibilityIdentifier("onboarding.skip")
                     .font(RENNFont.bodyMedium)
                     .foregroundStyle(RENNColor.textSecondary)
                     .frame(minWidth: RENNMetrics.minimumTouchTarget, minHeight: RENNMetrics.minimumTouchTarget)
@@ -133,6 +134,7 @@ struct OnboardingView: View {
             } label: {
                 Text(viewModel.isLastPage ? LocalizedStringKey("onboarding.getStarted") : LocalizedStringKey("onboarding.next"))
             }
+            .accessibilityIdentifier("onboarding.next")
             .buttonStyle(.rennPrimary)
             // A running transition serializes navigation so a double tap cannot skip a page.
             .disabled(transition != nil)

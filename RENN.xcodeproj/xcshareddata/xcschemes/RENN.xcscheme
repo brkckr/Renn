@@ -39,6 +39,16 @@
                ReferencedContainer = "container:RENN.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E33D7304DA4720733880B93D"
+               BuildableName = "RENNUITests.xctest"
+               BlueprintName = "RENNUITests"
+               ReferencedContainer = "container:RENN.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
