@@ -26,6 +26,23 @@ struct AppBundleTests {
         }
     }
 
+    @Test func privacyManifestDeclaresNoTrackingAndRequiredReasons() throws {
+        let url = try #require(Bundle.main.url(forResource: "PrivacyInfo", withExtension: "xcprivacy"))
+        let manifest = try #require(
+            try PropertyListSerialization.propertyList(from: Data(contentsOf: url), format: nil) as? [String: Any])
+        #expect(manifest["NSPrivacyTracking"] as? Bool == false)
+        let categories = (manifest["NSPrivacyAccessedAPITypes"] as? [[String: Any]] ?? [])
+            .compactMap { $0["NSPrivacyAccessedAPIType"] as? String }
+        #expect(Set(categories) == ["NSPrivacyAccessedAPICategoryUserDefaults", "NSPrivacyAccessedAPICategoryDiskSpace"])
+    }
+
+    @Test func firebaseCollectionIsOffUntilConsent() {
+        for key in ["FIREBASE_ANALYTICS_COLLECTION_ENABLED", "FirebaseCrashlyticsCollectionEnabled",
+                    "GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS"] {
+            #expect(Bundle.main.object(forInfoDictionaryKey: key) as? Bool == false, "\(key) must default to off")
+        }
+    }
+
     @Test func unconfiguredProvidersAreReportedAsPlaceholders() {
         let configuration = AppConfiguration.load()
         // No owner configuration is committed to the repository.
