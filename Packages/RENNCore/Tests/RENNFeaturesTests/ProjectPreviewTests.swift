@@ -47,7 +47,7 @@ struct ProjectPreviewTests {
         await viewModel.load()
         for value in stride(from: 0.1, through: 0.5, by: 0.1) { viewModel.setIntensity(value) }
         #expect(try await store.project(id).recipeRevision == 1, "Nothing written while dragging")
-        #expect(await eventually(timeout: .seconds(2)) { viewModel.record?.recipeRevision == 2 })
+        #expect(await eventually { viewModel.record?.recipeRevision == 2 })
         let stored = try await store.project(id)
         #expect(stored.recipeRevision == 2)
         #expect(abs(stored.recipe.intensity.value - 0.5) < 0.0001)
@@ -87,7 +87,7 @@ struct ProjectPreviewTests {
         viewModel.confirmExport()
         viewModel.confirmExport()
         #expect(viewModel.exportEntry == .none)
-        #expect(await eventually(timeout: .seconds(3)) {
+        #expect(await eventually {
             if case .completed = viewModel.exportState { true } else { false }
         })
     }
