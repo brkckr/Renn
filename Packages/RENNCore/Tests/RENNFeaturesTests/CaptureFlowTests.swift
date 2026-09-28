@@ -84,6 +84,15 @@ struct CaptureFlowTests {
         #expect(recipe.seed == viewModel.draft.recipe?.seed)
     }
 
+    @Test func captureQualityFollowsTheTierBeforeRecording() async {
+        let (free, freeCapture, _, _) = make()
+        await free.start()
+        #expect(freeCapture.preparedTiers == [.free])
+        let (pro, proCapture, _, _) = make(access: AccessState(level: .pro, provenance: .developmentFake))
+        await pro.start()
+        #expect(proCapture.preparedTiers == [.pro])
+    }
+
     @Test func proHasNoRecordingLimit() async {
         let (viewModel, capture, _, _) = make(access: AccessState(level: .pro, provenance: .developmentFake))
         await viewModel.start()

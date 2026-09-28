@@ -172,3 +172,38 @@ struct DualFormatSelectionTests {
         #expect(DualFormatSelection.select(rear: front, front: [Self.candidate(0, 1920, 1080, fps: 24)]) == nil)
     }
 }
+
+@Suite("Capture format selection (05 V01/V02)")
+struct CaptureFormatSelectionTests {
+    static func candidate(_ index: Int, _ width: Int, _ height: Int, fps: Double) -> CaptureFormatSelection.Candidate {
+        .init(index: index, dimensions: try! PixelDimensions(width: width, height: height), maximumFrameRate: fps)
+    }
+
+    let formats = [
+        candidate(0, 1280, 720, fps: 240),
+        candidate(1, 1920, 1080, fps: 30),
+        candidate(2, 1920, 1080, fps: 60),
+        candidate(3, 3840, 2160, fps: 30),
+        candidate(4, 3840, 2160, fps: 60),
+        candidate(5, 4032, 3024, fps: 30),
+    ]
+
+    @Test func freeCapturesUpTo1080p30() {
+        let choice = CaptureFormatSelection.select(formats, tier: .free)
+        #expect(choice?.candidate.index == 1, "1080p at the lowest sufficient rate")
+        #expect(choice?.frameRate == .fps(30))
+    }
+
+    @Test func proTargetsTheHighestUpTo4K60() {
+        let choice = CaptureFormatSelection.select(formats, tier: .pro)
+        #expect(choice?.candidate.index == 4)
+        #expect(choice?.frameRate == .fps(60))
+        let no4K60 = CaptureFormatSelection.select(formats.filter { $0.index != 4 }, tier: .pro)
+        #expect(no4K60?.candidate.index == 3 && no4K60?.frameRate == .fps(30), "4K30 beats 1080p60 on size")
+    }
+
+    @Test func nothingBelow30FPSOrAboveTheTarget() {
+        #expect(CaptureFormatSelection.select([Self.candidate(0, 4032, 3024, fps: 30)], tier: .pro) == nil)
+        #expect(CaptureFormatSelection.select([Self.candidate(0, 1920, 1080, fps: 24)], tier: .free) == nil)
+    }
+}

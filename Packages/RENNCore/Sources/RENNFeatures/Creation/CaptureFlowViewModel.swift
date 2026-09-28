@@ -145,7 +145,9 @@ public final class CaptureFlowViewModel {
         }
         isSilent = microphone != .authorized
         do {
-            try await capture.prepare(position: position, withAudio: !isSilent)
+            // Capture quality follows the tier known before recording; never switched mid-take.
+            let tier = await access.currentAccess().effectiveTier
+            try await capture.prepare(position: position, withAudio: !isSilent, tier: tier)
             state = .ready
         } catch {
             state = .failed(.cameraUnavailable)
