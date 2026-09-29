@@ -44,6 +44,11 @@ struct LaunchCatalogManifestTests {
             let tape = [LookParameter.chromaBleed, LookParameter.tapeSoftness, LookParameter.scanlines,
                         LookParameter.lineJitter, LookParameter.tracking]
             #expect(tape.allSatisfy { look.parameters[$0] != nil }, "\(look.id.rawValue)")
+            // A leak tone is only set together with a leak, and is 0 (warm) or 1 (cool).
+            if let tone = look.parameters[LookParameter.lightLeakCool] {
+                #expect(tone == 0 || tone == 1)
+                #expect(look.parameters[LookParameter.lightLeak] != nil)
+            }
         }
     }
 

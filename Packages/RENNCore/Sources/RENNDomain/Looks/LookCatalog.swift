@@ -88,18 +88,27 @@ public enum LookParameter {
     public static let lineJitter = "lineJitter"
     public static let tracking = "tracking"
 
+    /// Film overlays (`FilmOverlays`): dust and scratches, a light leak and burnt edges, each 0...1.
+    /// `lightLeakCool` picks the leak texture (0 warm, 1 cool) and is not scaled by intensity.
+    public static let dust = "dust"
+    public static let lightLeak = "lightLeak"
+    public static let lightLeakCool = "lightLeakCool"
+    public static let burnEdges = "burnEdges"
+
     public static let all: Set<String> = [
         lutMix, saturation, contrast, warmth, vignette, grain, grainSize, grainChroma,
         chromaBleed, tapeSoftness, scanlines, lineJitter, tracking,
+        dust, lightLeak, lightLeakCool, burnEdges,
     ]
     /// Shape parameters describe how an effect looks, not how strong it is: intensity does not scale
     /// them (`Recipe.shapeParameter`).
-    public static let unscaled: Set<String> = [grainSize, grainChroma]
+    public static let unscaled: Set<String> = [grainSize, grainChroma, lightLeakCool]
     /// Per-key limits so a malformed manifest cannot produce unbounded effects.
     public static let limits: [String: ClosedRange<Double>] = [
         lutMix: 0...1, saturation: -1...1, contrast: -0.5...0.5, warmth: -4000...4000, vignette: 0...2, grain: 0...0.3,
         grainSize: 0.5...4, grainChroma: 0...1,
         chromaBleed: 0...1, tapeSoftness: 0...1, scanlines: 0...1, lineJitter: 0...1, tracking: 0...1,
+        dust: 0...1, lightLeak: 0...1, lightLeakCool: 0...1, burnEdges: 0...1,
     ]
 }
 

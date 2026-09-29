@@ -1,0 +1,12 @@
+{
+  "pack": "Resource Boy VHS/film texture pack (100 JPEGs, License.txt): use inside apps allowed; redistributing the files, even free, is not. Keep them out of git.",
+  "textures": {
+    "renn_dust_1": "026.jpg",
+    "renn_dust_2": "032.jpg",
+    "renn_dust_3": "003.jpg",
+    "renn_dust_4": "007.jpg",
+    "renn_leak_warm": "035.jpg",
+    "renn_leak_cool": "072.jpg",
+    "renn_burn": "038.jpg"
+  }
+}

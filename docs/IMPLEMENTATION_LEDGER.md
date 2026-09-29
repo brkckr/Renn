@@ -243,6 +243,19 @@ per motion so stale completions never act.
   tests: both kernels load, and with a Metal device the split moves red at an edge and leaves flat
   areas unchanged.
 
+- Film overlays: dust/scratches, a light leak and burnt edges from the owner's texture pack (Resource
+  Boy license: use inside the app allowed, redistributing the files is not). The seven chosen JPEGs
+  (screened on the owner's machine: black-background dust 026/032/003/007, warm leak 035, cool leak 072,
+  burnt edge 038) are installed by `scripts/install_overlays.py` into the git-ignored
+  `RENN/Resources/Overlays/`; the repository and CI never contain them, and a build without them renders
+  every Look without overlays. `OverlayTextureStore` decodes them once to at most 2048 px. Motion comes
+  from `FilmOverlays` (pure, Linux-tested): dust picks a texture, flip, zoom and offset 20 times a second;
+  the leak drifts in and fades once per 6 s cycle (dark 40% of it); the burn breathes within 5%. Blends:
+  leak and dust screen, burn multiply, after the tape stage. New Look parameters `dust`, `lightLeak`,
+  `burnEdges` (0...1, scaled by intensity) and `lightLeakCool` (tone, unscaled); nine Looks use them
+  (none on Clean Tape, Late Night VHS, Handycam Green). Simulator tests use synthetic textures. The
+  release audit lists missing local textures.
+
 ## M09 Hardening: started (2026-09-28)
 
 - Privacy manifest `RENN/Resources/PrivacyInfo.xcprivacy`: no tracking; required-reason APIs used by app
