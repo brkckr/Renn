@@ -103,6 +103,7 @@ struct AppBundleTests {
         let expected: [AppLanguage: String] = [
             .spanish: "Inicio", .portugueseBrazil: "Início", .german: "Start", .french: "Accueil",
             .japanese: "ホーム", .korean: "홈", .chineseSimplified: "首页", .russian: "Главная",
+            .thai: "หน้าแรก", .vietnamese: "Trang chủ", .indonesian: "Beranda",
         ]
         for (language, home) in expected {
             let controller = LocalizationController(language: language)

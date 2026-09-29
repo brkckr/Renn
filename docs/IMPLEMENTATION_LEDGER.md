@@ -272,6 +272,10 @@ per motion so stale completions never act.
   `everySupportedLanguageIsBundled` (simulator). Not done: App Store metadata in these languages,
   layout review of longer strings (German, Russian) on device.
 
+- 2026-09-30: Thai, Vietnamese and Indonesian added (thirteen languages), after the owner's
+  Southeast Asia market question. Roboto covers Vietnamese diacritics; Thai falls back to the system
+  font. Filipino is not added (English is widely used in the Philippines).
+
 ## M09 Hardening: started (2026-09-28)
 
 - Privacy manifest `RENN/Resources/PrivacyInfo.xcprivacy`: no tracking; required-reason APIs used by app

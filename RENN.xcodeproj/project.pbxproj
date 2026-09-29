@@ -246,6 +246,9 @@
 				ko,
 				"zh-Hans",
 				ru,
+				th,
+				vi,
+				id,
 				Base,
 			);
 			mainGroup = 0B4DE15B6935E70EEE497966;

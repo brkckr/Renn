@@ -1,5 +1,5 @@
 /// In-app language choice (02 D09, extended by the owner on 2026-09-30 from English and Turkish
-/// to ten languages). System follows the device language with English fallback.
+/// to thirteen languages). System follows the device language with English fallback.
 public enum AppLanguage: String, Sendable, Codable, CaseIterable {
     case system
     case english
@@ -12,6 +12,9 @@ public enum AppLanguage: String, Sendable, Codable, CaseIterable {
     case korean
     case chineseSimplified
     case russian
+    case thai
+    case vietnamese
+    case indonesian
 
     /// Localization identifier for an explicit choice; nil means follow the system.
     public var localizationIdentifier: String? {
@@ -27,6 +30,9 @@ public enum AppLanguage: String, Sendable, Codable, CaseIterable {
         case .korean: "ko"
         case .chineseSimplified: "zh-Hans"
         case .russian: "ru"
+        case .thai: "th"
+        case .vietnamese: "vi"
+        case .indonesian: "id"
         }
     }
 
@@ -44,6 +50,9 @@ public enum AppLanguage: String, Sendable, Codable, CaseIterable {
         case .korean: "한국어"
         case .chineseSimplified: "简体中文"
         case .russian: "Русский"
+        case .thai: "ไทย"
+        case .vietnamese: "Tiếng Việt"
+        case .indonesian: "Bahasa Indonesia"
         }
     }
 

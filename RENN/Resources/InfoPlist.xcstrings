@@ -63,6 +63,24 @@
             "state": "translated",
             "value": "RENN"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN"
+          }
         }
       }
     },
@@ -127,6 +145,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "RENN использует камеру, чтобы записывать видео, которые вы превращаете в ретро-кассеты."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN ใช้กล้องเพื่อบันทึกวิดีโอที่คุณจะเปลี่ยนเป็นเทปย้อนยุค"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN dùng camera để quay video mà bạn biến thành những cuộn băng retro."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN menggunakan kamera untuk merekam video yang Anda ubah menjadi kaset retro."
           }
         }
       }
@@ -193,6 +229,24 @@
             "state": "translated",
             "value": "RENN записывает звук вместе с видео. Записанный звук может управлять эффектами Beat."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN บันทึกเสียงพร้อมกับวิดีโอของคุณ เสียงที่บันทึกสามารถขับเคลื่อนเอฟเฟกต์ Beat ได้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN ghi âm cùng video của bạn. Âm thanh đã ghi có thể điều khiển hiệu ứng Beat."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN merekam suara bersama video Anda. Suara yang direkam dapat menggerakkan efek Beat."
+          }
         }
       }
     },
@@ -257,6 +311,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "RENN сохраняет готовые видео в Фото."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN บันทึกวิดีโอที่เสร็จแล้วของคุณลงในรูปภาพ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN lưu video đã hoàn thành của bạn vào Ảnh."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN menyimpan video Anda yang sudah jadi ke Foto."
           }
         }
       }

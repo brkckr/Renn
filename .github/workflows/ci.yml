@@ -25,7 +25,7 @@ jobs:
         run: swift test --package-path Packages/RENNCore
 
   localization:
-    name: String Catalog check (en + tr)
+    name: String Catalog check (all languages)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

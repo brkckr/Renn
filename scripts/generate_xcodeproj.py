@@ -357,6 +357,9 @@ out = f"""// !$*UTF8*$!
 				ko,
 				"zh-Hans",
 				ru,
+				th,
+				vi,
+				id,
 				Base,
 			);
 			mainGroup = {I['mainGroup']};

@@ -63,6 +63,24 @@
             "state": "translated",
             "value": "Нет доступа к микрофону, поэтому у этого дубля нет звука и Beat не может реагировать. Look по-прежнему применяется."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่มีสิทธิ์เข้าถึงไมโครโฟน เทคนี้จึงไม่มีเสียงและ Beat ไม่สามารถตอบสนองได้ Look ยังคงถูกใช้อยู่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có quyền truy cập micrô nên cảnh quay này không có âm thanh và Beat không thể phản hồi. Look vẫn được áp dụng."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tidak ada akses mikrofon, jadi rekaman ini tidak bersuara dan Beat tidak bisa merespons. Look tetap diterapkan."
+          }
         }
       }
     },
@@ -127,6 +145,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Запись начнется через %lld"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เริ่มบันทึกใน %lld"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bắt đầu quay sau %lld"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perekaman dimulai dalam %lld"
           }
         }
       }
@@ -193,6 +229,24 @@
             "state": "translated",
             "value": "RENN нужен доступ к камере для записи. Разрешите его в Настройках или импортируйте видео."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN ต้องใช้สิทธิ์เข้าถึงกล้องเพื่อบันทึก คุณสามารถอนุญาตได้ในการตั้งค่า หรือนำเข้าวิดีโอแทน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN cần quyền truy cập camera để quay. Bạn có thể cho phép trong Cài đặt hoặc nhập video thay thế."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN memerlukan akses kamera untuk merekam. Anda bisa mengizinkannya di Pengaturan, atau mengimpor video."
+          }
         }
       }
     },
@@ -257,6 +311,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Не удалось завершить запись."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถบันทึกให้เสร็จได้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể hoàn tất việc quay."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perekaman tidak dapat diselesaikan."
           }
         }
       }
@@ -323,6 +395,24 @@
             "state": "translated",
             "value": "Не удалось сохранить запись как проект. Попробуйте еще раз."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถบันทึกวิดีโอเป็นโปรเจกต์ได้ โปรดลองอีกครั้ง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể lưu bản quay thành dự án. Vui lòng thử lại."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rekaman tidak dapat disimpan sebagai proyek. Silakan coba lagi."
+          }
         }
       }
     },
@@ -387,6 +477,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Недостаточно свободного места для записи. Освободите место и попробуйте еще раз."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "พื้นที่ว่างไม่พอสำหรับการบันทึก โปรดเพิ่มพื้นที่ว่างแล้วลองอีกครั้ง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không đủ dung lượng trống để quay. Hãy giải phóng dung lượng và thử lại."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ruang kosong tidak cukup untuk merekam. Kosongkan ruang dan coba lagi."
           }
         }
       }
@@ -453,6 +561,24 @@
             "state": "translated",
             "value": "Не удалось запустить камеру. Возможно, она используется другим приложением."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถเปิดกล้องได้ อาจมีแอปอื่นกำลังใช้งานอยู่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể khởi động camera. Có thể một ứng dụng khác đang sử dụng."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamera tidak dapat dimulai. Mungkin sedang digunakan oleh app lain."
+          }
         }
       }
     },
@@ -517,6 +643,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Открыть Настройки"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปิดการตั้งค่า"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở Cài đặt"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buka Pengaturan"
           }
         }
       }
@@ -583,6 +727,24 @@
             "state": "translated",
             "value": "Запись"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "บันทึก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quay"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rekam"
+          }
         }
       }
     },
@@ -647,6 +809,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Идет запись"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำลังบันทึก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang quay"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merekam"
           }
         }
       }
@@ -713,6 +893,24 @@
             "state": "translated",
             "value": "Нет доступа к микрофону: запись без звука"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่มีสิทธิ์ใช้ไมโครโฟน: กำลังบันทึกแบบไม่มีเสียง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có quyền micrô: đang quay không có âm thanh"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tidak ada akses mikrofon: merekam tanpa suara"
+          }
         }
       }
     },
@@ -777,6 +975,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Остановить запись"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "หยุดบันทึก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dừng quay"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hentikan rekaman"
           }
         }
       }
@@ -843,6 +1059,24 @@
             "state": "translated",
             "value": "Сменить камеру"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สลับกล้อง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi camera"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ganti kamera"
+          }
         }
       }
     },
@@ -907,6 +1141,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Таймер"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ตัวจับเวลา"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hẹn giờ"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timer"
           }
         }
       }
@@ -973,6 +1225,24 @@
             "state": "translated",
             "value": "Выкл."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ปิด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tắt"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mati"
+          }
         }
       }
     },
@@ -1037,6 +1307,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "10 с"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "10 วิ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "10 giây"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "10 dtk"
           }
         }
       }
@@ -1103,6 +1391,24 @@
             "state": "translated",
             "value": "3 с"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3 วิ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3 giây"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3 dtk"
+          }
         }
       }
     },
@@ -1167,6 +1473,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Видоискатель камеры"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ช่องมองภาพของกล้อง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khung ngắm camera"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jendela bidik kamera"
           }
         }
       }
@@ -1233,6 +1557,24 @@
             "state": "translated",
             "value": "Отменить"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ยกเลิก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hủy"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Batal"
+          }
         }
       }
     },
@@ -1297,6 +1639,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Закрыть"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ปิด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đóng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutup"
           }
         }
       }
@@ -1363,6 +1723,24 @@
             "state": "translated",
             "value": "ОК"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ตกลง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
         }
       }
     },
@@ -1427,6 +1805,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Повторить"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ลองอีกครั้ง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thử lại"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coba lagi"
           }
         }
       }
@@ -1493,6 +1889,24 @@
             "state": "translated",
             "value": "Сохранить"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "บันทึก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lưu"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Simpan"
+          }
         }
       }
     },
@@ -1557,6 +1971,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Закрыть меню"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ปิดเมนู"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đóng menu"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutup menu"
           }
         }
       }
@@ -1623,6 +2055,24 @@
             "state": "translated",
             "value": "Фронтальная и основная вместе"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กล้องหน้าและหลังพร้อมกัน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera trước và sau cùng lúc"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Depan dan belakang bersamaan"
+          }
         }
       }
     },
@@ -1687,6 +2137,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Запись на обе камеры"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "บันทึกด้วยกล้องทั้งสองตัว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quay bằng cả hai camera"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rekam dengan dua kamera"
           }
         }
       }
@@ -1753,6 +2221,24 @@
             "state": "translated",
             "value": "Не поддерживается на этом iPhone"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone เครื่องนี้ไม่รองรับ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không được hỗ trợ trên iPhone này"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tidak didukung di iPhone ini"
+          }
         }
       }
     },
@@ -1817,6 +2303,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Выберите видео из медиатеки"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เลือกวิดีโอจากคลังของคุณ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn video từ thư viện của bạn"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih video dari perpustakaan Anda"
           }
         }
       }
@@ -1883,6 +2387,24 @@
             "state": "translated",
             "value": "Импорт видео"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "นำเข้าวิดีโอ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập video"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impor video"
+          }
         }
       }
     },
@@ -1947,6 +2469,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Создать"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สร้าง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tạo"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buat"
           }
         }
       }
@@ -2013,6 +2553,24 @@
             "state": "translated",
             "value": "Запись на одну камеру"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "บันทึกด้วยกล้องตัวเดียว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quay bằng một camera"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rekam dengan satu kamera"
+          }
         }
       }
     },
@@ -2077,6 +2635,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Записать видео"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "บันทึกวิดีโอ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quay video"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rekam video"
           }
         }
       }
@@ -2143,6 +2719,24 @@
             "state": "translated",
             "value": "Угол врезки"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "มุมของภาพเล็ก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Góc khung nhỏ"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sudut bingkai kecil"
+          }
         }
       }
     },
@@ -2207,6 +2801,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Снизу слева"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ล่างซ้าย"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dưới bên trái"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kiri bawah"
           }
         }
       }
@@ -2273,6 +2885,24 @@
             "state": "translated",
             "value": "Снизу справа"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ล่างขวา"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dưới bên phải"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanan bawah"
+          }
         }
       }
     },
@@ -2337,6 +2967,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Сверху слева"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "บนซ้าย"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trên bên trái"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kiri atas"
           }
         }
       }
@@ -2403,6 +3051,24 @@
             "state": "translated",
             "value": "Сверху справа"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "บนขวา"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trên bên phải"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanan atas"
+          }
         }
       }
     },
@@ -2467,6 +3133,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Обе камеры записывают в разрешении до 1080p при 30 FPS."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กล้องทั้งสองบันทึกได้สูงสุด 1080p ที่ 30 FPS"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cả hai camera quay tối đa 1080p, 30 FPS."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kedua kamera merekam hingga 1080p, 30 FPS."
           }
         }
       }
@@ -2533,6 +3217,24 @@
             "state": "translated",
             "value": "Поменять камеры"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สลับกล้อง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoán đổi camera"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tukar kamera"
+          }
         }
       }
     },
@@ -2597,6 +3299,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Этот iPhone сообщает о поддержке двух камер, но совместимая пара форматов для фронтальной и основной камер не найдена. Вы по-прежнему можете снимать на одну камеру или импортировать видео."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone เครื่องนี้แจ้งว่ารองรับกล้องสองตัว แต่ไม่พบคู่รูปแบบกล้องหน้าและหลังที่เข้ากันได้ คุณยังบันทึกด้วยกล้องตัวเดียวหรือนำเข้าวิดีโอได้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone này báo hỗ trợ hai camera nhưng không tìm thấy cặp định dạng trước và sau tương thích. Bạn vẫn có thể quay bằng một camera hoặc nhập video."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone ini menyatakan mendukung dua kamera, tetapi tidak ditemukan pasangan format depan dan belakang yang kompatibel. Anda tetap bisa merekam dengan satu kamera atau mengimpor video."
           }
         }
       }
@@ -2663,6 +3383,24 @@
             "state": "translated",
             "value": "Этот iPhone не может одновременно снимать на фронтальную и основную камеры. Вы по-прежнему можете снимать на одну камеру или импортировать видео."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone เครื่องนี้ไม่สามารถบันทึกด้วยกล้องหน้าและหลังพร้อมกันได้ คุณยังบันทึกด้วยกล้องตัวเดียวหรือนำเข้าวิดีโอได้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone này không thể quay bằng camera trước và sau cùng lúc. Bạn vẫn có thể quay bằng một camera hoặc nhập video."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone ini tidak dapat merekam dengan kamera depan dan belakang secara bersamaan. Anda tetap bisa merekam dengan satu kamera atau mengimpor video."
+          }
         }
       }
     },
@@ -2727,6 +3465,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Обе камеры недоступны"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถใช้กล้องทั้งสองตัวได้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không dùng được cả hai camera"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kedua kamera tidak tersedia"
           }
         }
       }
@@ -2793,6 +3549,24 @@
             "state": "translated",
             "value": "Экспорт отменен. Ваш проект не изменился."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ยกเลิกการส่งออกแล้ว โปรเจกต์ของคุณไม่มีการเปลี่ยนแปลง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã hủy xuất. Dự án của bạn không thay đổi."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekspor dibatalkan. Proyek Anda tidak berubah."
+          }
         }
       }
     },
@@ -2857,6 +3631,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Не удалось экспортировать видео. Ваш проект и исходное видео не изменились."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถส่งออกวิดีโอได้ โปรเจกต์และวิดีโอต้นฉบับไม่มีการเปลี่ยนแปลง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể xuất video. Dự án và video gốc của bạn không thay đổi."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video tidak dapat diekspor. Proyek dan video aslinya tidak berubah."
           }
         }
       }
@@ -2923,6 +3715,24 @@
             "state": "translated",
             "value": "Недостаточно свободного места для экспорта. Ваш проект не изменился; освободите место и попробуйте еще раз."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "พื้นที่ว่างไม่พอสำหรับการส่งออก โปรเจกต์ของคุณไม่มีการเปลี่ยนแปลง โปรดเพิ่มพื้นที่ว่างแล้วลองอีกครั้ง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không đủ dung lượng trống để xuất. Dự án của bạn không thay đổi; hãy giải phóng dung lượng và thử lại."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ruang kosong tidak cukup untuk mengekspor. Proyek Anda tidak berubah; kosongkan ruang dan coba lagi."
+          }
         }
       }
     },
@@ -2987,6 +3797,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Не закрывайте приложение, пока обработка не завершится."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "โปรดเปิดแอปไว้จนกว่าการประมวลผลจะเสร็จ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hãy giữ ứng dụng mở cho đến khi xử lý xong."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Biarkan app tetap terbuka sampai pemrosesan selesai."
           }
         }
       }
@@ -3053,6 +3881,24 @@
             "state": "translated",
             "value": "RENN Free экспортирует до 30 секунд. В RENN Pro нет ограничения по длительности. RENN никогда не обрезает видео автоматически."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN Free ส่งออกได้สูงสุด 30 วินาที RENN Pro ไม่จำกัดความยาว RENN จะไม่ตัดวิดีโอของคุณโดยอัตโนมัติ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN Free xuất tối đa 30 giây. RENN Pro không giới hạn thời lượng. RENN không bao giờ tự động cắt video của bạn."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN Free mengekspor hingga 30 detik. RENN Pro tidak punya batas durasi. RENN tidak pernah memotong video Anda secara otomatis."
+          }
         }
       }
     },
@@ -3117,6 +3963,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Это видео длиннее 30 секунд"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วิดีโอนี้ยาวเกิน 30 วินาที"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video này dài hơn 30 giây"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video ini lebih dari 30 detik"
           }
         }
       }
@@ -3183,6 +4047,24 @@
             "state": "translated",
             "value": "Получить RENN Pro"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "รับ RENN Pro"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nâng cấp RENN Pro"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dapatkan RENN Pro"
+          }
         }
       }
     },
@@ -3247,6 +4129,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Открыть Настройки"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปิดการตั้งค่า"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở Cài đặt"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buka Pengaturan"
           }
         }
       }
@@ -3313,6 +4213,24 @@
             "state": "translated",
             "value": "Ваше видео готово."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วิดีโอของคุณพร้อมแล้ว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video của bạn đã sẵn sàng."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video Anda sudah siap."
+          }
         }
       }
     },
@@ -3377,6 +4295,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Сохранить еще раз"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ลองบันทึกอีกครั้ง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thử lưu lại"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coba simpan lagi"
           }
         }
       }
@@ -3443,6 +4379,24 @@
             "state": "translated",
             "value": "У RENN нет разрешения добавлять видео в Фото. Вы по-прежнему можете поделиться им или посмотреть его здесь."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN ไม่มีสิทธิ์เพิ่มวิดีโอลงในรูปภาพ คุณยังแชร์หรือดูวิดีโอที่นี่ได้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN không có quyền thêm video vào Ảnh. Bạn vẫn có thể chia sẻ hoặc xem tại đây."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN tidak punya izin untuk menambahkan video ke Foto. Anda tetap bisa membagikan atau menontonnya di sini."
+          }
         }
       }
     },
@@ -3507,6 +4461,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Не удалось сохранить видео в Фото. Вы по-прежнему можете поделиться им или посмотреть его здесь."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถบันทึกวิดีโอลงในรูปภาพได้ คุณยังแชร์หรือดูวิดีโอที่นี่ได้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể lưu video vào Ảnh. Bạn vẫn có thể chia sẻ hoặc xem tại đây."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video tidak dapat disimpan ke Foto. Anda tetap bisa membagikan atau menontonnya di sini."
           }
         }
       }
@@ -3573,6 +4545,24 @@
             "state": "translated",
             "value": "Сохранено в Фото"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "บันทึกลงในรูปภาพแล้ว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã lưu vào Ảnh"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tersimpan di Foto"
+          }
         }
       }
     },
@@ -3637,6 +4627,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Сохранение в Фото…"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำลังบันทึกลงในรูปภาพ…"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang lưu vào Ảnh…"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menyimpan ke Foto…"
           }
         }
       }
@@ -3703,6 +4711,24 @@
             "state": "translated",
             "value": "Поделиться"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "แชร์"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chia sẻ"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bagikan"
+          }
         }
       }
     },
@@ -3767,6 +4793,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Смотреть в RENN"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ดูใน RENN"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xem trong RENN"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tonton di RENN"
           }
         }
       }
@@ -3833,6 +4877,24 @@
             "state": "translated",
             "value": "Завершение…"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำลังเสร็จสิ้น…"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang hoàn tất…"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menyelesaikan…"
+          }
         }
       }
     },
@@ -3897,6 +4959,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Подготовка…"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำลังเตรียม…"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang chuẩn bị…"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menyiapkan…"
           }
         }
       }
@@ -3963,6 +5043,24 @@
             "state": "translated",
             "value": "Обработка видео"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำลังประมวลผลวิดีโอของคุณ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang xử lý video của bạn"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Memproses video Anda"
+          }
         }
       }
     },
@@ -4027,6 +5125,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Экспортировать видео"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ส่งออกวิดีโอ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xuất video"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekspor video"
           }
         }
       }
@@ -4093,6 +5209,24 @@
             "state": "translated",
             "value": "Длительность"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ความยาว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thời lượng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Durasi"
+          }
         }
       }
     },
@@ -4157,6 +5291,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Частота кадров"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "อัตราเฟรม"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tốc độ khung hình"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frame rate"
           }
         }
       }
@@ -4223,6 +5375,24 @@
             "state": "translated",
             "value": "Это HDR-видео будет преобразовано в стандартный динамический диапазон."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วิดีโอ HDR นี้จะถูกแปลงเป็นช่วงไดนามิกมาตรฐาน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video HDR này được chuyển sang dải động tiêu chuẩn."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video HDR ini dikonversi ke rentang dinamis standar."
+          }
         }
       }
     },
@@ -4287,6 +5457,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Длинные или более качественные видео могут обрабатываться дольше. Не закрывайте RENN до завершения."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วิดีโอที่ยาวหรือคุณภาพสูงอาจใช้เวลาสักครู่ โปรดเปิด RENN ไว้จนกว่าจะเสร็จ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video dài hơn hoặc chất lượng cao hơn có thể mất một lúc. Hãy giữ RENN mở cho đến khi xong."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video yang lebih panjang atau berkualitas lebih tinggi bisa memakan waktu. Biarkan RENN tetap terbuka sampai selesai."
           }
         }
       }
@@ -4353,6 +5541,24 @@
             "state": "translated",
             "value": "Разрешение"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ความละเอียด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Độ phân giải"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resolusi"
+          }
         }
       }
     },
@@ -4417,6 +5623,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Звук"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เสียง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Âm thanh"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suara"
           }
         }
       }
@@ -4483,6 +5707,24 @@
             "state": "translated",
             "value": "Без звука"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่มีเสียง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có âm thanh"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanpa suara"
+          }
         }
       }
     },
@@ -4547,6 +5789,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Оригинальный звук"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เสียงต้นฉบับ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Âm thanh gốc"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suara asli"
           }
         }
       }
@@ -4613,6 +5873,24 @@
             "state": "translated",
             "value": "Экспорт"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ส่งออก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xuất"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekspor"
+          }
         }
       }
     },
@@ -4677,6 +5955,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Уберите водяной знак с RENN Pro"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ลบลายน้ำด้วย RENN Pro"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa hình mờ với RENN Pro"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hapus watermark dengan RENN Pro"
           }
         }
       }
@@ -4743,6 +6039,24 @@
             "state": "translated",
             "value": "Водяной знак"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ลายน้ำ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hình mờ"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watermark"
+          }
         }
       }
     },
@@ -4808,6 +6122,24 @@
             "state": "translated",
             "value": "Нет"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่มี"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tidak ada"
+          }
         }
       }
     },
@@ -4869,6 +6201,24 @@
           }
         },
         "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "shot by RENN"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "shot by RENN"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "shot by RENN"
+          }
+        },
+        "id": {
           "stringUnit": {
             "state": "translated",
             "value": "shot by RENN"
@@ -4938,6 +6288,24 @@
             "state": "translated",
             "value": "DEV"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DEV"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DEV"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DEV"
+          }
         }
       }
     },
@@ -5002,6 +6370,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Временный элемент разработки"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เนื้อหาชั่วคราวสำหรับการพัฒนา"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nội dung tạm thời để phát triển"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Konten sementara pengembangan"
           }
         }
       }
@@ -5068,6 +6454,24 @@
             "state": "translated",
             "value": "Не удалось загрузить Look."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถโหลด Look ได้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể tải các Look."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look tidak dapat dimuat."
+          }
         }
       }
     },
@@ -5132,6 +6536,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Нажмите +, чтобы записать или импортировать видео."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "แตะ + เพื่อบันทึกหรือนำเข้าวิดีโอ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chạm vào + để quay hoặc nhập video."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ketuk + untuk merekam atau mengimpor video."
           }
         }
       }
@@ -5198,6 +6620,24 @@
             "state": "translated",
             "value": "Ваша первая кассета ждет."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เทปม้วนแรกของคุณรออยู่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuộn băng đầu tiên đang chờ bạn."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset pertama Anda sedang menunggu."
+          }
         }
       }
     },
@@ -5262,6 +6702,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Недавние"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ใช้ล่าสุด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dùng gần đây"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baru digunakan"
           }
         }
       }
@@ -5328,6 +6786,24 @@
             "state": "translated",
             "value": "Недавние кассеты"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เทปล่าสุด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Băng gần đây"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset terbaru"
+          }
         }
       }
     },
@@ -5392,6 +6868,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Рекомендуемый Look"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look แนะนำ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look đề xuất"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look rekomendasi"
           }
         }
       }
@@ -5458,6 +6952,24 @@
             "state": "translated",
             "value": "Показывает подробности и позволяет создать видео с этим Look"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "แสดงรายละเอียดและให้คุณสร้างด้วย Look นี้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiển thị chi tiết và cho phép tạo với Look này"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menampilkan detail dan memungkinkan Anda berkreasi dengan Look ini"
+          }
         }
       }
     },
@@ -5522,6 +7034,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Показать все"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ดูทั้งหมด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xem tất cả"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lihat semua"
           }
         }
       }
@@ -5588,6 +7118,24 @@
             "state": "translated",
             "value": "В этом файле нет видеодорожки."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไฟล์นี้ไม่มีแทร็กวิดีโอ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tệp này không có rãnh video."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "File ini tidak memiliki trek video."
+          }
         }
       }
     },
@@ -5652,6 +7200,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Не удалось сохранить видео как проект. Попробуйте еще раз."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถบันทึกวิดีโอเป็นโปรเจกต์ได้ โปรดลองอีกครั้ง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể lưu video thành dự án. Vui lòng thử lại."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video tidak dapat disimpan sebagai proyek. Silakan coba lagi."
           }
         }
       }
@@ -5718,6 +7284,24 @@
             "state": "translated",
             "value": "На этом iPhone недостаточно свободного места. Освободите место и попробуйте еще раз."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone เครื่องนี้มีพื้นที่ว่างไม่พอ โปรดเพิ่มพื้นที่ว่างแล้วลองอีกครั้ง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone này không đủ dung lượng trống. Hãy giải phóng dung lượng và thử lại."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ruang kosong di iPhone ini tidak cukup. Kosongkan ruang dan coba lagi."
+          }
         }
       }
     },
@@ -5782,6 +7366,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Не удалось открыть это видео. Возможно, оно еще загружается из iCloud или повреждено."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถเปิดวิดีโอนี้ได้ อาจยังดาวน์โหลดจาก iCloud ไม่เสร็จหรือไฟล์เสียหาย"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể mở video này. Có thể video vẫn đang tải từ iCloud hoặc bị hỏng."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video ini tidak dapat dibuka. Mungkin masih diunduh dari iCloud atau rusak."
           }
         }
       }
@@ -5848,6 +7450,24 @@
             "state": "translated",
             "value": "Этот формат видео пока не поддерживается. Попробуйте обычное видео H.264 или HEVC."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ยังไม่รองรับรูปแบบวิดีโอนี้ โปรดลองวิดีโอ H.264 หรือ HEVC มาตรฐาน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Định dạng video này chưa được hỗ trợ. Hãy thử video H.264 hoặc HEVC tiêu chuẩn."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Format video ini belum didukung. Coba video H.264 atau HEVC standar."
+          }
         }
       }
     },
@@ -5912,6 +7532,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Выбрать другое видео"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เลือกวิดีโออื่น"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn video khác"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih video lain"
           }
         }
       }
@@ -5978,6 +7616,24 @@
             "state": "translated",
             "value": "Длительность этого видео — %@. В RENN Pro нет ограничения по длительности, или вы можете выбрать другое видео. RENN никогда не обрезает видео автоматически."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วิดีโอนี้ยาว %@ RENN Pro ไม่จำกัดความยาว หรือคุณจะเลือกวิดีโออื่นก็ได้ RENN จะไม่ตัดวิดีโอของคุณโดยอัตโนมัติ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video này dài %@. RENN Pro không giới hạn thời lượng, hoặc bạn có thể chọn video khác. RENN không bao giờ tự động cắt video của bạn."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video ini berdurasi %@. RENN Pro tidak punya batas durasi, atau Anda bisa memilih video lain. RENN tidak pernah memotong video Anda secara otomatis."
+          }
         }
       }
     },
@@ -6042,6 +7698,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "В RENN Free видео может длиться до 30 секунд"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วิดีโอใน RENN Free ยาวได้สูงสุด 30 วินาที"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video trong RENN Free dài tối đa 30 giây"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video di RENN Free maksimal 30 detik"
           }
         }
       }
@@ -6108,6 +7782,24 @@
             "state": "translated",
             "value": "Получить RENN Pro"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "รับ RENN Pro"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nâng cấp RENN Pro"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dapatkan RENN Pro"
+          }
         }
       }
     },
@@ -6172,6 +7864,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Открыть медиатеку"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปิดคลังภาพ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở thư viện"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buka perpustakaan"
           }
         }
       }
@@ -6238,6 +7948,24 @@
             "state": "translated",
             "value": "Выберите видео"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เลือกวิดีโอ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn video"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih video"
+          }
         }
       }
     },
@@ -6302,6 +8030,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Подготовка видео…"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำลังเตรียมวิดีโอของคุณ…"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang chuẩn bị video của bạn…"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menyiapkan video Anda…"
           }
         }
       }
@@ -6368,6 +8114,24 @@
             "state": "translated",
             "value": "Применить"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ใช้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Áp dụng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terapkan"
+          }
         }
       }
     },
@@ -6432,6 +8196,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Батарея"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "แบตเตอรี่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pin"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baterai"
           }
         }
       }
@@ -6498,6 +8280,24 @@
             "state": "translated",
             "value": "Дата"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วันที่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ngày"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanggal"
+          }
         }
       }
     },
@@ -6563,6 +8363,24 @@
             "state": "translated",
             "value": "Дата на видео"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วันที่บนวิดีโอ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ngày trên video"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanggal di video"
+          }
         }
       }
     },
@@ -6624,6 +8442,24 @@
           }
         },
         "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PLAY"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PLAY"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PLAY"
+          }
+        },
+        "id": {
           "stringUnit": {
             "state": "translated",
             "value": "PLAY"
@@ -6693,6 +8529,24 @@
             "state": "translated",
             "value": "REC"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "REC"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "REC"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "REC"
+          }
         }
       }
     },
@@ -6757,6 +8611,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Экранные индикаторы"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สัญลักษณ์บนหน้าจอ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ báo trên màn hình"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Indikator di layar"
           }
         }
       }
@@ -6823,6 +8695,24 @@
             "state": "translated",
             "value": "Выключить все"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ปิดทั้งหมด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tắt tất cả"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Matikan semua"
+          }
         }
       }
     },
@@ -6887,6 +8777,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Естественные цвета с легкой текстурой пленки."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สีธรรมชาติพร้อมพื้นผิวเทปบางๆ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màu sắc tự nhiên với chút kết cấu băng từ."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warna alami dengan sedikit tekstur pita kaset."
           }
         }
       }
@@ -6953,6 +8861,24 @@
             "state": "translated",
             "value": "Чистая кассета"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เทปใส"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Băng Sạch"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset Bersih"
+          }
         }
       }
     },
@@ -7017,6 +8943,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Создать с этим Look"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สร้างด้วย Look นี้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tạo với Look này"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buat dengan Look ini"
           }
         }
       }
@@ -7083,6 +9027,24 @@
             "state": "translated",
             "value": "Тестовый элемент для проверки обработки медиа. Не финальный Look RENN."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เนื้อหาสำหรับการพัฒนาเพื่อตรวจสอบการประมวลผลสื่อ ไม่ใช่ Look ฉบับจริงของ RENN"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nội dung phát triển để kiểm tra quy trình xử lý media. Không phải Look chính thức của RENN."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Konten pengembangan untuk memeriksa pemrosesan media. Bukan Look final RENN."
+          }
         }
       }
     },
@@ -7147,6 +9109,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Диагностика (dev)"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วินิจฉัย (dev)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chẩn đoán (dev)"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnostik (dev)"
           }
         }
       }
@@ -7213,6 +9193,24 @@
             "state": "translated",
             "value": "Фиолетовое небо и выцветшие цвета восьмидесятых."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ท้องฟ้าสีม่วงและสีสันยุค 80 ที่ซีดจาง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bầu trời tím và sắc màu thập niên 80 đã phai."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langit ungu dan warna tahun 80-an yang pudar."
+          }
         }
       }
     },
@@ -7277,6 +9275,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Выцветшее лето"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ฤดูร้อนสีซีด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mùa Hè Phai Màu"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Musim Panas Pudar"
           }
         }
       }
@@ -7343,6 +9359,24 @@
             "state": "translated",
             "value": "Холодные"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "โทนเย็น"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lạnh"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dingin"
+          }
         }
       }
     },
@@ -7407,6 +9441,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Диагностика"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วินิจฉัย"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chẩn đoán"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnostik"
           }
         }
       }
@@ -7473,6 +9525,24 @@
             "state": "translated",
             "value": "Моно"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ขาวดำ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đơn sắc"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mono"
+          }
         }
       }
     },
@@ -7537,6 +9607,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Естественные"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ธรรมชาติ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tự nhiên"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alami"
           }
         }
       }
@@ -7603,6 +9691,24 @@
             "state": "translated",
             "value": "Поп"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ป๊อป"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pop"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pop"
+          }
         }
       }
     },
@@ -7667,6 +9773,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Теплые"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "โทนอุ่น"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ấm"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hangat"
           }
         }
       }
@@ -7733,6 +9857,24 @@
             "state": "translated",
             "value": "Добавить в избранное"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เพิ่มในรายการโปรด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm vào yêu thích"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tambahkan ke favorit"
+          }
         }
       }
     },
@@ -7797,6 +9939,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Зеленоватый оттенок старой домашней видеокамеры."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "โทนเขียวของกล้องวิดีโอบ้านรุ่นเก่า"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sắc xanh lục của chiếc máy quay gia đình cũ."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rona hijau dari kamera video rumahan lama."
           }
         }
       }
@@ -7863,6 +10023,24 @@
             "state": "translated",
             "value": "Зеленая Handycam"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "แฮนดีแคมเขียว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Handycam Xanh"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Handycam Hijau"
+          }
         }
       }
     },
@@ -7927,6 +10105,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Холодные синие тона ночной записи."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "โทนสีฟ้าเย็นจากการบันทึกยามดึก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tông xanh lạnh của một bản quay đêm muộn."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nada biru dingin dari rekaman larut malam."
           }
         }
       }
@@ -7993,6 +10189,24 @@
             "state": "translated",
             "value": "Полуночный VHS"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VHS เที่ยงคืน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VHS Nửa Đêm"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VHS Tengah Malam"
+          }
         }
       }
     },
@@ -8057,6 +10271,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Насыщенный красный и пурпурный вечерний свет."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สีแดงเข้มและแสงยามเย็นสีม่วงชมพู"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sắc đỏ đậm và ánh hoàng hôn màu hồng tím."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merah pekat dan cahaya senja magenta."
           }
         }
       }
@@ -8123,6 +10355,24 @@
             "state": "translated",
             "value": "Неоновые сумерки"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สนธยานีออน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoàng Hôn Neon"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Senja Neon"
+          }
         }
       }
     },
@@ -8187,6 +10437,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Контрастное черно-белое изображение с сильным зерном."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ขาวดำคอนทราสต์สูงพร้อมเกรนหนา"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đen trắng tương phản cao với hạt nhiễu dày."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hitam putih kontras tinggi dengan grain tebal."
           }
         }
       }
@@ -8253,6 +10521,24 @@
             "state": "translated",
             "value": "Нуар-зерно"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เกรนนัวร์"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hạt Noir"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grain Noir"
+          }
         }
       }
     },
@@ -8317,6 +10603,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Желтые тона кросс-процесса и глубокий бирюзовый."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สีเหลืองแบบครอสโพรเซสและสีเขียวอมฟ้าเข้ม"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sắc vàng tráng chéo và xanh mòng két đậm."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kuning proses silang dan hijau kebiruan pekat."
           }
         }
       }
@@ -8383,6 +10687,24 @@
             "state": "translated",
             "value": "Странная партия"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ล็อตแปลก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lô Lạ"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lot Aneh"
+          }
         }
       }
     },
@@ -8447,6 +10769,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Мягкие бирюзовые тени и спокойное дождливое настроение."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เงาสีเขียวอมฟ้าที่นุ่มนวลและบรรยากาศฝนตกที่สงบ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bóng đổ xanh mòng két dịu nhẹ và bầu không khí mưa yên tĩnh."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bayangan hijau kebiruan yang lembut dan suasana hujan yang tenang."
           }
         }
       }
@@ -8513,6 +10853,24 @@
             "state": "translated",
             "value": "Дождливый утренник"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "รอบบ่ายวันฝนตก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suất Chiếu Ngày Mưa"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Matinee Hujan"
+          }
         }
       }
     },
@@ -8577,6 +10935,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Теплая сепия, как у потертой архивной кассеты."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สีซีเปียอบอุ่น เหมือนเทปเก็บถาวรที่เก่าแล้ว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sắc nâu đỏ ấm áp như một cuộn băng lưu trữ đã cũ."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sepia hangat, seperti kaset arsip yang usang."
           }
         }
       }
@@ -8643,6 +11019,24 @@
             "state": "translated",
             "value": "Кассета сепия"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เทปซีเปีย"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Băng Nâu Đỏ"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset Sepia"
+          }
         }
       }
     },
@@ -8707,6 +11101,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Мягкое выцветшее тепло, как на старом семейном фото."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ความอบอุ่นที่นุ่มนวลและซีดจาง เหมือนรูปครอบครัวเก่า"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sự ấm áp dịu nhẹ và phai màu như một tấm ảnh gia đình cũ."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kehangatan lembut dan pudar seperti foto keluarga lama."
           }
         }
       }
@@ -8773,6 +11185,24 @@
             "state": "translated",
             "value": "Воскресный полароид"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "โพลารอยด์วันอาทิตย์"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Polaroid Chủ Nhật"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Polaroid Minggu"
+          }
         }
       }
     },
@@ -8837,6 +11267,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Сочный контраст в духе домашнего кино."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "คอนทราสต์จัดจ้านให้ความรู้สึกหนังบ้าน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Độ tương phản mạnh mang cảm giác phim gia đình."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontras kuat dengan nuansa film rumahan."
           }
         }
       }
@@ -8903,6 +11351,24 @@
             "state": "translated",
             "value": "Super 8 Поп"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ซูเปอร์ 8 ป๊อป"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Super 8 Pop"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Super 8 Pop"
+          }
         }
       }
     },
@@ -8967,6 +11433,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Розовое небо и свечение просроченной пленки."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ท้องฟ้าสีชมพูและแสงเรืองของฟิล์มหมดอายุ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bầu trời hồng và ánh sáng của phim đã hết hạn."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langit merah muda dan pendar film kedaluwarsa."
           }
         }
       }
@@ -9033,6 +11517,24 @@
             "state": "translated",
             "value": "Дни вольфрама"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วันทังสเตน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Những Ngày Tungsten"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hari-Hari Tungsten"
+          }
         }
       }
     },
@@ -9097,6 +11599,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Этот Look недоступен."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look นี้ไม่พร้อมใช้งาน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look này không khả dụng."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look ini tidak tersedia."
           }
         }
       }
@@ -9163,6 +11683,24 @@
             "state": "translated",
             "value": "Удалить из избранного"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ลบออกจากรายการโปรด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa khỏi yêu thích"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hapus dari favorit"
+          }
         }
       }
     },
@@ -9224,6 +11762,24 @@
           }
         },
         "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look"
+          }
+        },
+        "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Look"
@@ -9293,6 +11849,24 @@
             "state": "translated",
             "value": "Показывает подробности"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "แสดงรายละเอียด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiển thị chi tiết"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menampilkan detail"
+          }
         }
       }
     },
@@ -9357,6 +11931,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Каталог разработки: диагностических элементов — %1$lld. %2$lld Look для запуска появятся вместе с финальными материалами."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "แคตตาล็อกสำหรับพัฒนา: เนื้อหาวินิจฉัย %1$lld รายการ Look สำหรับเปิดตัว %2$lld แบบจะมาพร้อมไฟล์ฉบับสุดท้าย"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Danh mục phát triển: %1$lld nội dung chẩn đoán. %2$lld Look chính thức sẽ có cùng các tài nguyên cuối cùng."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Katalog pengembangan: %1$lld konten diagnostik. %2$lld Look peluncuran hadir bersama aset final."
           }
         }
       }
@@ -9423,6 +12015,24 @@
             "state": "translated",
             "value": "Здесь пока нет Look."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ยังไม่มี Look ที่นี่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có Look nào ở đây."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belum ada Look di sini."
+          }
         }
       }
     },
@@ -9487,6 +12097,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Здесь появятся Look, добавленные в избранное."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look ที่คุณทำเครื่องหมายเป็นรายการโปรดจะแสดงที่นี่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Các Look bạn đánh dấu yêu thích sẽ xuất hiện ở đây."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look yang Anda tandai sebagai favorit akan muncul di sini."
           }
         }
       }
@@ -9553,6 +12181,24 @@
             "state": "translated",
             "value": "Все"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ทั้งหมด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tất cả"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semua"
+          }
         }
       }
     },
@@ -9617,6 +12263,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Избранное"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "รายการโปรด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yêu thích"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favorit"
           }
         }
       }
@@ -9683,6 +12347,24 @@
             "state": "translated",
             "value": "Не удалось загрузить Look."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถโหลด Look ได้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể tải các Look."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look tidak dapat dimuat."
+          }
         }
       }
     },
@@ -9744,6 +12426,24 @@
           }
         },
         "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look"
+          }
+        },
+        "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Look"
@@ -9813,6 +12513,24 @@
             "state": "translated",
             "value": "Начать"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เริ่มต้นใช้งาน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bắt đầu"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mulai"
+          }
         }
       }
     },
@@ -9877,6 +12595,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Далее"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ถัดไป"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiếp"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Berikutnya"
           }
         }
       }
@@ -9943,6 +12679,24 @@
             "state": "translated",
             "value": "Снимайте сегодня в другой эпохе."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "บันทึกวันนี้ในอีกยุคหนึ่ง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ghi lại hôm nay ở một thời đại khác."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abadikan hari ini di zaman yang lain."
+          }
         }
       }
     },
@@ -10007,6 +12761,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "12 Look. Все бесплатно."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "12 Look ใช้ฟรีทั้งหมด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "12 Look. Tất cả đều miễn phí."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "12 Look. Semuanya gratis."
           }
         }
       }
@@ -10073,6 +12845,24 @@
             "state": "translated",
             "value": "У каждого момента свое настроение."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ทุกช่วงเวลามีบรรยากาศของมัน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mỗi khoảnh khắc đều có cảm xúc riêng."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Setiap momen punya suasananya sendiri."
+          }
         }
       }
     },
@@ -10137,6 +12927,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Эффекты, которые находят ритм в звуке вашего видео."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เอฟเฟกต์ที่จับจังหวะจากเสียงในวิดีโอของคุณ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiệu ứng bắt nhịp theo âm thanh của video."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Efek yang menemukan ritme dari suara video Anda."
           }
         }
       }
@@ -10203,6 +13011,24 @@
             "state": "translated",
             "value": "Пусть звук оживит ваше видео."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ให้เสียงขับเคลื่อนวิดีโอของคุณ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Để âm thanh làm video chuyển động."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Biarkan suara menggerakkan video Anda."
+          }
         }
       }
     },
@@ -10267,6 +13093,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Снимите или импортируйте. Остальное сделает RENN."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "บันทึกหรือนำเข้า ที่เหลือให้ RENN จัดการ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quay hoặc nhập video. Phần còn lại để RENN lo."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rekam atau impor. Biarkan RENN mengurus sisanya."
           }
         }
       }
@@ -10333,6 +13177,24 @@
             "state": "translated",
             "value": "Ваша первая кассета ждет."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เทปม้วนแรกของคุณรออยู่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuộn băng đầu tiên đang chờ bạn."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset pertama Anda sedang menunggu."
+          }
         }
       }
     },
@@ -10397,6 +13259,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Страница %1$lld из %2$lld"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "หน้า %1$lld จาก %2$lld"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trang %1$lld / %2$lld"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halaman %1$lld dari %2$lld"
           }
         }
       }
@@ -10463,6 +13343,24 @@
             "state": "translated",
             "value": "Временная сцена. Лицензированные демоматериалы еще нужны."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ฉากชั่วคราว ยังต้องใช้ฟุตเทจเดโมที่มีลิขสิทธิ์"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cảnh tạm thời. Vẫn cần video demo có bản quyền."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adegan sementara. Rekaman demo berlisensi masih diperlukan."
+          }
         }
       }
     },
@@ -10527,6 +13425,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Пропустить"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ข้าม"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bỏ qua"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lewati"
           }
         }
       }
@@ -10593,6 +13509,24 @@
             "state": "translated",
             "value": "У вас уже есть RENN Pro."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "คุณมี RENN Pro อยู่แล้ว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bạn đã có RENN Pro."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anda sudah memiliki RENN Pro."
+          }
         }
       }
     },
@@ -10657,6 +13591,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Видео длиннее 30 секунд"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วิดีโอที่ยาวกว่า 30 วินาที"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video dài hơn 30 giây"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video lebih dari 30 detik"
           }
         }
       }
@@ -10723,6 +13675,24 @@
             "state": "translated",
             "value": "Сохраняет поддерживаемое разрешение и частоту кадров видео"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "คงความละเอียดและอัตราเฟรมที่รองรับของวิดีโอไว้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giữ độ phân giải và tốc độ khung hình được hỗ trợ của video"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mempertahankan resolusi dan frame rate video yang didukung"
+          }
         }
       }
     },
@@ -10787,6 +13757,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Без водяного знака"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่มีลายน้ำ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có hình mờ"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanpa watermark"
           }
         }
       }
@@ -10853,6 +13841,24 @@
             "state": "translated",
             "value": "Продолжить"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ดำเนินการต่อ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiếp tục"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lanjutkan"
+          }
         }
       }
     },
@@ -10917,6 +13923,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Все Look и творческие инструменты остаются бесплатными."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look และเครื่องมือสร้างสรรค์ทั้งหมดยังคงใช้ฟรี"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tất cả Look và công cụ sáng tạo vẫn miễn phí."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semua Look dan alat kreatif tetap gratis."
           }
         }
       }
@@ -10983,6 +14007,24 @@
             "state": "translated",
             "value": "Оплата раз в год"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เรียกเก็บเงินปีละครั้ง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thanh toán mỗi năm một lần"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ditagih setahun sekali"
+          }
         }
       }
     },
@@ -11047,6 +14089,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Разовая покупка"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ซื้อครั้งเดียว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mua một lần"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pembelian sekali"
           }
         }
       }
@@ -11113,6 +14173,24 @@
             "state": "translated",
             "value": "Оплата каждый месяц"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เรียกเก็บเงินทุกเดือน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thanh toán hằng tháng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ditagih setiap bulan"
+          }
         }
       }
     },
@@ -11177,6 +14255,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Год"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "รายปี"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hằng năm"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tahunan"
           }
         }
       }
@@ -11243,6 +14339,24 @@
             "state": "translated",
             "value": "Навсегда"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ตลอดชีพ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trọn đời"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seumur hidup"
+          }
         }
       }
     },
@@ -11307,6 +14421,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Месяц"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "รายเดือน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hằng tháng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bulanan"
           }
         }
       }
@@ -11373,6 +14505,24 @@
             "state": "translated",
             "value": "Восстановить"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กู้คืน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khôi phục"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pulihkan"
+          }
         }
       }
     },
@@ -11437,6 +14587,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Покупка отменена."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ยกเลิกการซื้อแล้ว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã hủy giao dịch mua."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pembelian dibatalkan."
           }
         }
       }
@@ -11503,6 +14671,24 @@
             "state": "translated",
             "value": "Не удалось завершить покупку. Попробуйте еще раз."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถซื้อให้เสร็จได้ โปรดลองอีกครั้ง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể hoàn tất giao dịch mua. Vui lòng thử lại."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pembelian tidak dapat diselesaikan. Silakan coba lagi."
+          }
         }
       }
     },
@@ -11567,6 +14753,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ваша покупка ожидает одобрения."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การซื้อของคุณกำลังรอการอนุมัติ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giao dịch mua của bạn đang chờ phê duyệt."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pembelian Anda menunggu persetujuan."
           }
         }
       }
@@ -11633,6 +14837,24 @@
             "state": "translated",
             "value": "Не удалось загрузить тарифы. Проверьте подключение и попробуйте еще раз или продолжайте пользоваться RENN Free."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถโหลดแผนได้ โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง หรือใช้ RENN Free ต่อไป"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể tải các gói. Hãy kiểm tra kết nối và thử lại, hoặc tiếp tục dùng RENN Free."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paket tidak dapat dimuat. Periksa koneksi Anda dan coba lagi, atau tetap gunakan RENN Free."
+          }
         }
       }
     },
@@ -11697,6 +14919,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Покупки в этой сборке не настроены. Вы можете продолжать пользоваться RENN Free."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เวอร์ชันนี้ยังไม่ได้ตั้งค่าการซื้อ คุณสามารถใช้ RENN Free ต่อไปได้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phiên bản này chưa thiết lập tính năng mua. Bạn có thể tiếp tục dùng RENN Free."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pembelian belum dikonfigurasi di versi ini. Anda tetap bisa menggunakan RENN Free."
           }
         }
       }
@@ -11763,6 +15003,24 @@
             "state": "translated",
             "value": "Предпросмотр видео"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ตัวอย่างวิดีโอ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xem trước video"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pratinjau video"
+          }
         }
       }
     },
@@ -11824,6 +15082,24 @@
           }
         },
         "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beat"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beat"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beat"
+          }
+        },
+        "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Beat"
@@ -11893,6 +15169,24 @@
             "state": "translated",
             "value": "Анализ звука видео…"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำลังฟังเสียงของวิดีโอ…"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang nghe âm thanh của video…"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mendengarkan suara video…"
+          }
         }
       }
     },
@@ -11957,6 +15251,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Не удалось проанализировать звук. Look по-прежнему применяется."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถวิเคราะห์เสียงได้ Look ยังคงถูกใช้อยู่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể phân tích âm thanh. Look vẫn được áp dụng."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suara tidak dapat dianalisis. Look tetap diterapkan."
           }
         }
       }
@@ -12023,6 +15335,24 @@
             "state": "translated",
             "value": "Звук выключен, поэтому Beat приостановлен. Включите звук, чтобы вернуть его."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ปิดเสียงอยู่ Beat จึงหยุดชั่วคราว เปิดเสียงเพื่อให้กลับมาทำงาน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Âm thanh đang tắt nên Beat bị tạm dừng. Bật âm thanh để khôi phục."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suara dibisukan, jadi Beat dijeda. Aktifkan suara untuk mengembalikannya."
+          }
         }
       }
     },
@@ -12087,6 +15417,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "В этом видео нет звука, поэтому Beat недоступен. Look по-прежнему применяется."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วิดีโอนี้ไม่มีเสียง จึงใช้ Beat ไม่ได้ Look ยังคงถูกใช้อยู่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video này không có âm thanh nên không dùng được Beat. Look vẫn được áp dụng."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video ini tidak bersuara, jadi Beat tidak tersedia. Look tetap diterapkan."
           }
         }
       }
@@ -12153,6 +15501,24 @@
             "state": "translated",
             "value": "Эффекты следуют за собственным звуком этого видео."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เอฟเฟกต์จะเคลื่อนไหวตามเสียงของวิดีโอนี้เอง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiệu ứng đi theo âm thanh của chính video này."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Efek mengikuti suara video ini sendiri."
+          }
         }
       }
     },
@@ -12217,6 +15583,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Интенсивность Beat"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ความแรงของ Beat"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cường độ Beat"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intensitas Beat"
           }
         }
       }
@@ -12283,6 +15667,24 @@
             "state": "translated",
             "value": "До и после"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ก่อนและหลัง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trước và sau"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sebelum dan sesudah"
+          }
         }
       }
     },
@@ -12347,6 +15749,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Экспорт"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ส่งออก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xuất"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekspor"
           }
         }
       }
@@ -12413,6 +15833,24 @@
             "state": "translated",
             "value": "Интенсивность Look"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ความแรงของ Look"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cường độ Look"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intensitas Look"
+          }
         }
       }
     },
@@ -12477,6 +15915,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Повтор"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วนซ้ำ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lặp lại"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ulangi"
           }
         }
       }
@@ -12543,6 +15999,24 @@
             "state": "translated",
             "value": "Выключить звук"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ปิดเสียง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tắt tiếng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bisukan"
+          }
         }
       }
     },
@@ -12607,6 +16081,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Пауза"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "หยุดชั่วคราว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tạm dừng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeda"
           }
         }
       }
@@ -12673,6 +16165,24 @@
             "state": "translated",
             "value": "Воспроизвести"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เล่น"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phát"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Putar"
+          }
         }
       }
     },
@@ -12737,6 +16247,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Позиция воспроизведения"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ตำแหน่งการเล่น"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vị trí phát"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Posisi pemutaran"
           }
         }
       }
@@ -12803,6 +16331,24 @@
             "state": "translated",
             "value": "Эту кассету пока нельзя открыть."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เทปนี้ยังไม่พร้อมเปิด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuộn băng này chưa sẵn sàng để mở."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset ini belum siap dibuka."
+          }
         }
       }
     },
@@ -12867,6 +16413,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Видео этой кассеты отсутствует, поэтому ее нельзя воспроизвести или экспортировать."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วิดีโอของเทปนี้หายไป จึงเล่นหรือส่งออกไม่ได้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video của cuộn băng này bị thiếu nên không thể phát hoặc xuất."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video kaset ini hilang, jadi tidak bisa diputar atau diekspor."
           }
         }
       }
@@ -12933,6 +16497,24 @@
             "state": "translated",
             "value": "Включить звук"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปิดเสียง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bật tiếng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktifkan suara"
+          }
         }
       }
     },
@@ -12997,6 +16579,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Кассета"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เทป"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Băng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset"
           }
         }
       }
@@ -13063,6 +16663,24 @@
             "state": "translated",
             "value": "Другие действия"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การทำงานเพิ่มเติม"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thao tác khác"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tindakan lain"
+          }
         }
       }
     },
@@ -13127,6 +16745,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Открывает проект"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปิดโปรเจกต์"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở dự án"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Membuka proyek"
           }
         }
       }
@@ -13193,6 +16829,24 @@
             "state": "translated",
             "value": "Удалить"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ลบ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hapus"
+          }
         }
       }
     },
@@ -13257,6 +16911,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Удалить кассету"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ลบเทป"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa băng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hapus kaset"
           }
         }
       }
@@ -13323,6 +16995,24 @@
             "state": "translated",
             "value": "Она будет удалена из RENN на этом iPhone. Видео, уже сохраненные в Фото, останутся в Фото."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เทปจะถูกลบออกจาก RENN ใน iPhone เครื่องนี้ วิดีโอที่บันทึกลงในรูปภาพแล้วจะยังอยู่ในรูปภาพ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Băng sẽ bị xóa khỏi RENN trên iPhone này. Video đã lưu vào Ảnh vẫn còn trong Ảnh."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset akan dihapus dari RENN di iPhone ini. Video yang sudah disimpan ke Foto tetap ada di Foto."
+          }
         }
       }
     },
@@ -13387,6 +17077,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Удалить эту кассету?"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ลบเทปนี้หรือไม่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa cuộn băng này?"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hapus kaset ini?"
           }
         }
       }
@@ -13453,6 +17161,24 @@
             "state": "translated",
             "value": "Запишите или импортируйте видео, чтобы создать первую кассету."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "บันทึกหรือนำเข้าวิดีโอเพื่อสร้างเทปม้วนแรกของคุณ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quay hoặc nhập video để tạo cuộn băng đầu tiên."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rekam atau impor video untuk membuat kaset pertama Anda."
+          }
         }
       }
     },
@@ -13517,6 +17243,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Создать первую кассету"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สร้างเทปม้วนแรก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tạo cuộn băng đầu tiên"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buat kaset pertama Anda"
           }
         }
       }
@@ -13583,6 +17327,24 @@
             "state": "translated",
             "value": "Кассет пока нет"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ยังไม่มีเทป"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có băng nào"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belum ada kaset"
+          }
         }
       }
     },
@@ -13647,6 +17409,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Не удалось удалить кассету. Попробуйте еще раз."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถลบเทปได้ โปรดลองอีกครั้ง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể xóa băng. Vui lòng thử lại."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset tidak dapat dihapus. Silakan coba lagi."
           }
         }
       }
@@ -13713,6 +17493,24 @@
             "state": "translated",
             "value": "Эта кассета сейчас используется. Попробуйте снова, когда запись, экспорт или отправка завершатся."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เทปนี้กำลังถูกใช้งาน โปรดลองอีกครั้งเมื่อการบันทึก การส่งออก หรือการแชร์เสร็จแล้ว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuộn băng này đang được sử dụng. Hãy thử lại khi việc quay, xuất hoặc chia sẻ đã xong."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset ini sedang digunakan. Coba lagi setelah perekaman, ekspor, atau berbagi selesai."
+          }
         }
       }
     },
@@ -13777,6 +17575,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Переименовать"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปลี่ยนชื่อ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi tên"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ganti nama"
           }
         }
       }
@@ -13843,6 +17659,24 @@
             "state": "translated",
             "value": "Введите название."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ป้อนชื่อ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hãy nhập tên."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masukkan nama."
+          }
         }
       }
     },
@@ -13907,6 +17741,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Не удалось переименовать кассету. Попробуйте еще раз."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถเปลี่ยนชื่อเทปได้ โปรดลองอีกครั้ง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể đổi tên băng. Vui lòng thử lại."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nama kaset tidak dapat diganti. Silakan coba lagi."
           }
         }
       }
@@ -13973,6 +17825,24 @@
             "state": "translated",
             "value": "Используйте одну строку."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ใช้บรรทัดเดียว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ dùng một dòng."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gunakan satu baris saja."
+          }
         }
       }
     },
@@ -14037,6 +17907,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Используйте не более %lld символов."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ใช้ได้ไม่เกิน %lld ตัวอักษร"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dùng tối đa %lld ký tự."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gunakan maksimal %lld karakter."
           }
         }
       }
@@ -14103,6 +17991,24 @@
             "state": "translated",
             "value": "Название кассеты"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ชื่อเทป"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tên băng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nama kaset"
+          }
         }
       }
     },
@@ -14167,6 +18073,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Переименовать кассету"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปลี่ยนชื่อเทป"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi tên băng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ganti nama kaset"
           }
         }
       }
@@ -14233,6 +18157,24 @@
             "state": "translated",
             "value": "Прервано"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ถูกขัดจังหวะ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bị gián đoạn"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terputus"
+          }
         }
       }
     },
@@ -14297,6 +18239,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Подготовка"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำลังเตรียม"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang chuẩn bị"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menyiapkan"
           }
         }
       }
@@ -14363,6 +18323,24 @@
             "state": "translated",
             "value": "Нет видео"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่มีวิดีโอ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thiếu video"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video hilang"
+          }
         }
       }
     },
@@ -14427,6 +18405,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Эта версия RENN не может открыть ваши проекты. Обновите приложение, чтобы открыть их; ничего не удалено."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN เวอร์ชันนี้เปิดโปรเจกต์ของคุณไม่ได้ อัปเดตแอปเพื่อเปิด ไม่มีสิ่งใดถูกลบ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phiên bản RENN này không mở được dự án của bạn. Hãy cập nhật ứng dụng để mở; không có gì bị xóa."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versi RENN ini tidak dapat membuka proyek Anda. Perbarui app untuk membukanya; tidak ada yang dihapus."
           }
         }
       }
@@ -14493,6 +18489,24 @@
             "state": "translated",
             "value": "О приложении"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เกี่ยวกับ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giới thiệu"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tentang"
+          }
         }
       }
     },
@@ -14557,6 +18571,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Разработчик"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ผู้พัฒนา"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhà phát triển"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pengembang"
           }
         }
       }
@@ -14623,6 +18655,24 @@
             "state": "translated",
             "value": "Отправлять диагностику"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "แชร์ข้อมูลการวินิจฉัย"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chia sẻ dữ liệu chẩn đoán"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bagikan diagnostik"
+          }
         }
       }
     },
@@ -14687,6 +18737,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Необязательные анонимные данные об использовании и сбоях. Никогда не включают ваши видео, имена или файлы. Выключено, пока вы не включите."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ข้อมูลการใช้งานและข้อขัดข้องแบบไม่ระบุตัวตนซึ่งเป็นทางเลือก ไม่รวมวิดีโอ ชื่อ หรือไฟล์ของคุณ ปิดอยู่จนกว่าคุณจะเปิด"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dữ liệu sử dụng và sự cố ẩn danh, không bắt buộc. Không bao giờ bao gồm video, tên hay tệp của bạn. Tắt trừ khi bạn bật."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data penggunaan dan kerusakan anonim yang opsional. Tidak pernah menyertakan video, nama, atau file Anda. Mati kecuali Anda menyalakannya."
           }
         }
       }
@@ -14753,6 +18821,24 @@
             "state": "translated",
             "value": "Язык"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ภาษา"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ngôn ngữ"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bahasa"
+          }
         }
       }
     },
@@ -14817,6 +18903,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Текст приложения следует этому выбору. Цены зависят от региона вашего App Store."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ข้อความในแอปจะเป็นไปตามตัวเลือกนี้ ราคาเป็นไปตามภูมิภาค App Store ของคุณ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Văn bản trong ứng dụng theo lựa chọn này. Giá theo khu vực App Store của bạn."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teks app mengikuti pilihan ini. Harga mengikuti wilayah App Store Anda."
           }
         }
       }
@@ -14883,6 +18987,24 @@
             "state": "translated",
             "value": "Системный"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ระบบ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hệ thống"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sistem"
+          }
         }
       }
     },
@@ -14947,6 +19069,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Лицензии"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ใบอนุญาต"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giấy phép"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lisensi"
           }
         }
       }
@@ -15013,6 +19153,24 @@
             "state": "translated",
             "value": "Уведомления третьих сторон для шрифтов и SDK добавляются, когда эти компоненты включены в приложение."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ประกาศของบุคคลที่สามสำหรับฟอนต์และ SDK จะเพิ่มเมื่อรวมส่วนประกอบเหล่านั้นแล้ว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thông báo bên thứ ba cho phông chữ và SDK được thêm khi các thành phần đó được tích hợp."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pemberitahuan pihak ketiga untuk font dan SDK ditambahkan saat komponen tersebut disertakan."
+          }
         }
       }
     },
@@ -15077,6 +19235,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Пока недоступно"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ยังไม่พร้อมใช้งาน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa khả dụng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belum tersedia"
           }
         }
       }
@@ -15143,6 +19319,24 @@
             "state": "translated",
             "value": "Доступ к камере, микрофону и Фото"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สิทธิ์เข้าถึงกล้อง ไมโครโฟน และรูปภาพ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quyền truy cập camera, micrô và Ảnh"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Akses kamera, mikrofon, dan Foto"
+          }
         }
       }
     },
@@ -15207,6 +19401,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Конфиденциальность и разрешения"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ความเป็นส่วนตัวและสิทธิ์"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quyền riêng tư và quyền truy cập"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privasi dan izin"
           }
         }
       }
@@ -15273,6 +19485,24 @@
             "state": "translated",
             "value": "Политика конфиденциальности"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "นโยบายความเป็นส่วนตัว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chính sách quyền riêng tư"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kebijakan Privasi"
+          }
         }
       }
     },
@@ -15337,6 +19567,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ваша подписка RENN Pro активна."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สมาชิก RENN Pro ของคุณใช้งานอยู่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gói thành viên RENN Pro của bạn đang hoạt động."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keanggotaan RENN Pro Anda aktif."
           }
         }
       }
@@ -15403,6 +19651,24 @@
             "state": "translated",
             "value": "Покупки в этой сборке не настроены."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เวอร์ชันนี้ยังไม่ได้ตั้งค่าการซื้อ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phiên bản này chưa thiết lập tính năng mua."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pembelian belum dikonfigurasi di versi ini."
+          }
         }
       }
     },
@@ -15468,6 +19734,24 @@
             "state": "translated",
             "value": "Более длинные видео, более высокое поддерживаемое качество и без водяного знака."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "วิดีโอยาวขึ้น คุณภาพสูงขึ้นที่รองรับ และไม่มีลายน้ำ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video dài hơn, chất lượng cao hơn được hỗ trợ và không có hình mờ."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video lebih panjang, kualitas lebih tinggi yang didukung, dan tanpa watermark."
+          }
         }
       }
     },
@@ -15529,6 +19813,24 @@
           }
         },
         "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN Pro"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN Pro"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN Pro"
+          }
+        },
+        "id": {
           "stringUnit": {
             "state": "translated",
             "value": "RENN Pro"
@@ -15598,6 +19900,24 @@
             "state": "translated",
             "value": "Покупки"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การซื้อ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giao dịch mua"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pembelian"
+          }
         }
       }
     },
@@ -15662,6 +19982,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Восстановить покупки"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กู้คืนการซื้อ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khôi phục giao dịch mua"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pulihkan pembelian"
           }
         }
       }
@@ -15728,6 +20066,24 @@
             "state": "translated",
             "value": "Не удалось восстановить покупки. Попробуйте еще раз."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถกู้คืนการซื้อได้ โปรดลองอีกครั้ง"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể khôi phục giao dịch mua. Vui lòng thử lại."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pembelian tidak dapat dipulihkan. Silakan coba lagi."
+          }
         }
       }
     },
@@ -15792,6 +20148,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Покупки в этой сборке не настроены, поэтому пока нечего восстанавливать."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เวอร์ชันนี้ยังไม่ได้ตั้งค่าการซื้อ จึงยังไม่มีอะไรให้กู้คืน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phiên bản này chưa thiết lập tính năng mua nên chưa có gì để khôi phục."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pembelian belum dikonfigurasi di versi ini, jadi belum ada yang bisa dipulihkan."
           }
         }
       }
@@ -15858,6 +20232,24 @@
             "state": "translated",
             "value": "Покупки для восстановления не найдены."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่พบการซื้อที่จะกู้คืน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không tìm thấy giao dịch mua nào để khôi phục."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tidak ditemukan pembelian untuk dipulihkan."
+          }
         }
       }
     },
@@ -15922,6 +20314,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "RENN Pro восстановлен."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กู้คืน RENN Pro แล้ว"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã khôi phục RENN Pro."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN Pro berhasil dipulihkan."
           }
         }
       }
@@ -15988,6 +20398,24 @@
             "state": "translated",
             "value": "Хранилище"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "พื้นที่จัดเก็บ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dung lượng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Penyimpanan"
+          }
         }
       }
     },
@@ -16052,6 +20480,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Кэш"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "แคช"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bộ nhớ đệm"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cache"
           }
         }
       }
@@ -16118,6 +20564,24 @@
             "state": "translated",
             "value": "Очистка кэша удаляет только обложки, которые RENN может создать заново. Ваши проекты останутся."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การล้างแคชจะลบเฉพาะภาพปกที่ RENN สร้างใหม่ได้ โปรเจกต์ของคุณยังอยู่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa bộ nhớ đệm chỉ xóa ảnh bìa mà RENN có thể tạo lại. Dự án của bạn vẫn được giữ."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menghapus cache hanya menghapus gambar sampul yang dapat dibuat ulang oleh RENN. Proyek Anda tetap ada."
+          }
         }
       }
     },
@@ -16182,6 +20646,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Очистить кэш"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ล้างแคช"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa bộ nhớ đệm"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hapus cache"
           }
         }
       }
@@ -16248,6 +20730,24 @@
             "state": "translated",
             "value": "Проекты хранятся только на этом iPhone. При удалении приложения они удаляются; восстановление покупок не возвращает видео."
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "โปรเจกต์จะเก็บไว้ใน iPhone เครื่องนี้เท่านั้น การลบแอปจะลบโปรเจกต์ด้วย และการกู้คืนการซื้อจะไม่กู้คืนวิดีโอ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dự án chỉ được lưu trên iPhone này. Xóa ứng dụng sẽ xóa dự án; khôi phục giao dịch mua không khôi phục video."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Proyek hanya disimpan di iPhone ini. Menghapus app akan menghapus proyek; memulihkan pembelian tidak memulihkan video."
+          }
         }
       }
     },
@@ -16312,6 +20812,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Проекты"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "โปรเจกต์"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dự án"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Proyek"
           }
         }
       }
@@ -16378,6 +20896,24 @@
             "state": "translated",
             "value": "Поддержка"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ฝ่ายสนับสนุน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hỗ trợ"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dukungan"
+          }
         }
       }
     },
@@ -16442,6 +20978,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Условия использования"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ข้อกำหนดการใช้งาน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Điều khoản sử dụng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ketentuan Penggunaan"
           }
         }
       }
@@ -16508,6 +21062,24 @@
             "state": "translated",
             "value": "Настройки"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การตั้งค่า"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cài đặt"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pengaturan"
+          }
         }
       }
     },
@@ -16572,6 +21144,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Версия"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เวอร์ชัน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phiên bản"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versi"
           }
         }
       }
@@ -16638,6 +21228,24 @@
             "state": "translated",
             "value": "Главная"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "หน้าแรก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trang chủ"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beranda"
+          }
         }
       }
     },
@@ -16699,6 +21307,24 @@
           }
         },
         "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look"
+          }
+        },
+        "id": {
           "stringUnit": {
             "state": "translated",
             "value": "Look"
@@ -16768,6 +21394,24 @@
             "state": "translated",
             "value": "Проекты"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "โปรเจกต์"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dự án"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Proyek"
+          }
         }
       }
     },
@@ -16832,6 +21476,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Настройки"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การตั้งค่า"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cài đặt"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pengaturan"
           }
         }
       }
