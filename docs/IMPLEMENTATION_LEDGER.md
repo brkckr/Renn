@@ -243,12 +243,14 @@ per motion so stale completions never act.
   tests: both kernels load, and with a Metal device the split moves red at an edge and leaves flat
   areas unchanged.
 
-- Film overlays: dust/scratches, a light leak and burnt edges from the owner's texture pack (Resource
-  Boy license: use inside the app allowed, redistributing the files is not). The seven chosen JPEGs
-  (screened on the owner's machine: black-background dust 026/032/003/007, warm leak 035, cool leak 072,
-  burnt edge 038) are installed by `scripts/install_overlays.py` into the git-ignored
-  `RENN/Resources/Overlays/`; the repository and CI never contain them, and a build without them renders
-  every Look without overlays. `OverlayTextureStore` decodes them once to at most 2048 px. Motion comes
+- Film overlays: dust/scratches, a light leak and burnt edges from the owner's Resource Boy texture
+  pack. The seven chosen JPEGs (screened on the owner's machine: black-background dust 026/032/003/007,
+  warm leak 035, cool leak 072, burnt edge 038) go into `RENN/Resources/Overlays/`, renamed per
+  `scripts/overlay_sources.json` (`scripts/install_overlays.py` copies them); a build without them
+  renders every Look without overlays. License: use inside apps is allowed; redistributing the files
+  "on their own or as a separate attachment" is not. The agent flagged that a public repository makes
+  the files individually downloadable and suggested asking Resource Boy or a private assets repo; after
+  reading the license text the owner decided to keep them in this repository as part of the app. `OverlayTextureStore` decodes them once to at most 2048 px. Motion comes
   from `FilmOverlays` (pure, Linux-tested): dust picks a texture, flip, zoom and offset 20 times a second;
   the leak drifts in and fades once per 6 s cycle (dark 40% of it); the burn breathes within 5%. Blends:
   leak and dust screen, burn multiply, after the tape stage. New Look parameters `dust`, `lightLeak`,

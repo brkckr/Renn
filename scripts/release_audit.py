@@ -42,7 +42,7 @@ def check_catalog(blockers, ok):
             wanted = sorted(json.loads((ROOT / "scripts" / "overlay_sources.json").read_text())["textures"])
             missing_overlays = [n for n in wanted if not (overlay_dir / f"{n}.jpg").exists()]
             if missing_overlays:
-                blockers.append(f"{len(missing_overlays)} film overlay texture(s) not installed locally ({', '.join(missing_overlays)}); run scripts/install_overlays.py on the release Mac (git-ignored, licensed pack).")
+                blockers.append(f"{len(missing_overlays)} film overlay texture(s) not installed locally ({', '.join(missing_overlays)}); add them to RENN/Resources/Overlays (scripts/install_overlays.py).")
             else:
                 ok.append("Film overlay textures installed locally.")
     if not catalogs:

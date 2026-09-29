@@ -3,9 +3,9 @@
 
     python3 scripts/install_overlays.py /path/to/texture/pack
 
-The pack's license allows the textures inside the app but forbids redistributing the files, so the
-destination `RENN/Resources/Overlays/` is git-ignored: run this on each Mac that builds the app.
-`scripts/overlay_sources.json` maps each bundle name (`renn_dust_1.jpg`, ...) to its file in the pack.
+Copies and renames the seven chosen files into `RENN/Resources/Overlays/` (the owner may also add
+them there by hand). `scripts/overlay_sources.json` maps each bundle name (`renn_dust_1.jpg`, ...)
+to its file in the pack.
 Without the textures the app still builds and renders every Look, just without overlays.
 Works on macOS, Linux and Windows; needs only Python 3.
 """
@@ -39,7 +39,7 @@ def main():
     if failures:
         print("\nNot installed:", *failures, sep="\n  ")
         sys.exit(1)
-    print(f"\nInstalled {len(mapping)} textures into {DEST.relative_to(ROOT)} (git-ignored).")
+    print(f"\nInstalled {len(mapping)} textures into {DEST.relative_to(ROOT)}.")
 
 
 if __name__ == "__main__":

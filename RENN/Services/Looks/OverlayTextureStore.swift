@@ -6,9 +6,8 @@ import OSLog
 /// Still textures for the film overlays (dust, light leaks, burnt edges), loaded from the app
 /// bundle on first use and kept decoded.
 ///
-/// The texture pack's license allows use inside the app but forbids redistributing the files, so
-/// they live in the git-ignored `RENN/Resources/Overlays/` folder, installed on the owner's Mac by
-/// `scripts/install_overlays.py`. A build without them renders every Look without overlays: a
+/// The textures are the owner's Resource Boy pack files in `RENN/Resources/Overlays/` (renamed per
+/// `scripts/overlay_sources.json`). A build without them renders every Look without overlays: a
 /// missing texture is logged once and its layer skipped, never a crash.
 final class OverlayTextureStore: @unchecked Sendable {
     enum Kind: CaseIterable, Sendable {

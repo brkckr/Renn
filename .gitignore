@@ -16,8 +16,6 @@ Packages/RENNCore/.swiftpm/
 # Owner configuration (never commit real values)
 Config/Secrets.xcconfig
 
-# Licensed film overlay textures: allowed inside the app, not redistributable (scripts/install_overlays.py)
-RENN/Resources/Overlays/
 
 # macOS
 .DS_Store
