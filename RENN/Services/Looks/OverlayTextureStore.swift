@@ -2,6 +2,7 @@ import CoreImage
 import Foundation
 import ImageIO
 import OSLog
+import RENNDomain
 
 /// Still textures for the film overlays (dust, light leaks, burnt edges), loaded from the app
 /// bundle on first use and kept decoded.

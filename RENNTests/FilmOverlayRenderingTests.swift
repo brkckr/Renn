@@ -64,6 +64,17 @@ struct FilmOverlayRenderingTests {
         #expect(try Self.centre(engine, base: 0.4, parameters: all) == Self.centre(engine, base: 0.4, parameters: [:]))
     }
 
+    @Test func bundledTexturesLoadDecodedAndBounded() throws {
+        let store = OverlayTextureStore()
+        for kind in OverlayTextureStore.Kind.allCases {
+            for variant in kind.resourceNames.indices {
+                let texture = try #require(store.texture(kind, variant: variant), "\(kind) \(variant) must be bundled")
+                #expect(max(texture.extent.width, texture.extent.height) <= CGFloat(OverlayTextureStore.maximumPixelSize))
+                #expect(min(texture.extent.width, texture.extent.height) >= 1000, "\(kind) keeps enough resolution")
+            }
+        }
+    }
+
     @Test func coverTurnsLandscapeTexturesForPortraitFramesAndFillsThem() {
         let portrait = CGRect(x: 0, y: 0, width: 1080, height: 1920)
         let landscape = Self.grey(0.5, width: 3840, height: 2160)
