@@ -5,7 +5,7 @@ import RENNDomain
 /// annual yellow, lifetime orange). Purely visual: `selectedProductID` is authoritative and the
 /// price/CTA update at t = 0; this stage only follows it. Hidden from accessibility and hit-testing.
 ///
-/// Objects are RENN's own simple cassette shapes (vector art approved by the owner as final), not
+/// Objects are RENN's own simple cassette shapes (development art pending the owner's visual review), not
 /// copies of reference product art.
 struct PaywallStage: View {
     let products: [PurchaseProduct]

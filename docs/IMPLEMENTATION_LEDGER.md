@@ -155,12 +155,12 @@ per motion so stale completions never act.
   real occlusion by re-drawing the player's upper part above the travelling case; cancel on tab change,
   background, inactivity. Player and case art is RENN's own vector art, approved by the owner as final (08 I02).
 - Paywall selection stage (03 M04): passive pose → selected pose in 320 ms, halo 0.12 → 0.28 → 0.20,
-  billing data independent of motion. Stage objects are RENN's own simple cassette shapes, approved by the owner.
+  billing data independent of motion. Stage objects are RENN's own simple cassette shapes, pending the owner's review.
 - Export completion (03 M06): 6 pt / opacity settle over 240 ms and one light haptic, once per output.
 - Already present since M00: splash ribbons (03 M01) and the glass bar morph (03 M03).
 - Not done: visual comparison against the reference videos, 60/120 Hz device recordings.
-- 2026-09-29: the owner reviewed the vector player, VHS case and paywall cassette art on a Mac and
-  approved it as final; no external cassette/player layers are needed (08 I02 item closed).
+- 2026-09-29: the owner reviewed the vector player and VHS case art on a Mac and approved it as
+  final (the paywall stage is still pending review); no external cassette/player layers are needed (08 I02 item closed).
 
 ## M06 Commerce/telemetry: adapters in place, owner configuration pending (2026-09-28)
 
