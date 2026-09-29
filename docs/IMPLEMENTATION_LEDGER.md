@@ -161,6 +161,13 @@ per motion so stale completions never act.
 - Not done: visual comparison against the reference videos, 60/120 Hz device recordings.
 - 2026-09-29: the owner reviewed the vector player and VHS case art on a Mac and approved it as
   final (the paywall stage is still pending review); no external cassette/player layers are needed (08 I02 item closed).
+- 2026-09-30: owner-approved deviation from 02 D04's look: the bottom bar is styled like the native
+  iOS tab bar. Icon over a 10 pt label, filled symbol and brand-yellow tint when selected, a
+  selection pill that slides between tabs, concentric 4 pt inset. On iOS 26 the bar and the + use
+  the system Liquid Glass (`BarGlass.swift`); iOS 17–25 keep the RENN glass surface. Behavior is
+  unchanged: + only on Home in the same place, same capsule/panel morph and timings. Labels have a
+  fixed size like the system bar; large text shows the large content viewer. Written and built in
+  CI only; the iOS 26 glass morph and the + transition need a device check.
 
 ## M06 Commerce/telemetry: adapters in place, owner configuration pending (2026-09-28)
 

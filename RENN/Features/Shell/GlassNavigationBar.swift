@@ -4,6 +4,8 @@ import RENNDomain
 /// One continuous bottom-left-anchored glass surface that morphs from the tab capsule into
 /// the creation menu (02 D04, 03 M03). Geometry uses the contract's starting values;
 /// motion timing is a baseline that M07 refines against references/bottom bar.mp4.
+/// Styled like the native iOS tab bar (owner-approved): icon over label, a sliding selection
+/// pill and system glass on iOS 26. Behavior (Home-only +, menu morph, timings) is unchanged.
 struct GlassNavigationBar: View {
     let selectedTab: AppTab
     let isMenuOpen: Bool
@@ -49,8 +51,6 @@ struct GlassNavigationBar: View {
             cornerRadius: isMenuOpen ? RENNMetrics.panelRadius : RENNMetrics.capsuleRadius,
             style: .continuous)
         return ZStack(alignment: .bottomLeading) {
-            // The same material view in both states, so its identity never changes.
-            GlassSurface(shape: shape)
             if isMenuOpen {
                 menuContent
             } else {
@@ -61,6 +61,8 @@ struct GlassNavigationBar: View {
         .frame(maxWidth: .infinity)
         .frame(minHeight: isMenuOpen ? RENNMetrics.menuOpenHeight : RENNMetrics.capsuleHeight)
         .fixedSize(horizontal: false, vertical: true)
+        // The same material in both states, so its identity never changes.
+        .barGlass(shape)
         .accessibilityAction(.escape) {
             if isMenuOpen { onToggleMenu() }
         }
@@ -85,23 +87,38 @@ struct GlassNavigationBar: View {
         } label: {
             ZStack {
                 if isSelected {
+                    // Slides between tabs with the capsule width animation.
                     Capsule()
                         .fill(Color.white.opacity(contrast == .increased ? 0.2 : 0.12))
                         .matchedGeometryEffect(id: "selectedTabPill", in: pillNamespace)
                 }
-                tab.icon.image
-                    .font(.system(size: 22, weight: .regular))
-                    .foregroundStyle(isSelected ? Color.white : RENNColor.textSecondary)
+                VStack(spacing: 2) {
+                    tab.icon.image
+                        .symbolVariant(isSelected ? .fill : .none)
+                        .font(.system(size: 20, weight: .medium))
+                        .frame(height: 24)
+                    // Fixed size like the system tab bar; large text uses the large content viewer.
+                    Text(tab.titleKey)
+                        .font(.system(size: 10, weight: .semibold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .padding(.horizontal, 4)
+                }
+                .foregroundStyle(isSelected ? RENNColor.brandYellow : RENNColor.textSecondary)
                 if isSelected && contrast == .increased {
-                    // Increase Contrast: selected icon gets a 3 pt indicator dot (02 D01).
-                    Circle().fill(Color.white).frame(width: 3, height: 3).offset(y: 16)
+                    // Increase Contrast: selected tab gets a 3 pt indicator dot (02 D01).
+                    Circle().fill(RENNColor.brandYellow).frame(width: 3, height: 3).offset(y: 24)
                 }
             }
             .frame(maxWidth: .infinity)
             .frame(height: RENNMetrics.tabCellHeight)
-            .contentShape(Rectangle())
+            .contentShape(Capsule())
         }
         .buttonStyle(.plain)
+        .accessibilityShowsLargeContentViewer {
+            tab.icon.image
+            Text(tab.titleKey)
+        }
         .accessibilityLabel(Text(tab.titleKey))
         .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
         .accessibilityIdentifier("tab.\(tab)")
@@ -185,7 +202,7 @@ struct GlassNavigationBar: View {
                 .foregroundStyle(Color.white)
                 .rotationEffect(.degrees(isMenuOpen ? 45 : 0))
                 .frame(width: RENNMetrics.createButtonSize, height: RENNMetrics.createButtonSize)
-                .glassBackground(Circle())
+                .barGlass(Circle(), interactive: true)
                 .contentShape(Circle())
         }
         .buttonStyle(PressScaleButtonStyle())
