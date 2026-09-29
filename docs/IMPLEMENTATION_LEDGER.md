@@ -184,6 +184,22 @@ per motion so stale completions never act.
 - Owner steps: `docs/OWNER_SETUP_M06.md`. Not done: sandbox purchase evidence, Crashlytics dSYM upload
   phase, privacy manifest review of the pinned SDKs.
 
+## M08 Twelve launch Looks: catalog in place, LUT files and visual review pending (2026-09-30)
+
+- Source: the owner's G'MIC film-emulation `.cube` pack (296 files, all 3D, size 13, domain 0...1),
+  screened on the owner's machine (format, Log detection, duplicates, colour metrics, synthetic test
+  chart). The owner reports the pack's repository is MIT licensed ("unless specified otherwise").
+- `RENN/Resources/Looks/LookCatalog.json` (app default manifest): twelve free Looks in five families
+  (natural, warm, cool, pop, mono), recommended `renn.clean_tape`; names/descriptions in en + tr with no
+  film-brand names. Parameters are starting values on top of the full LUT (lutMix 1) and need visual
+  review on real footage.
+- `scripts/look_lut_sources.json` maps each bundle LUT `renn_<look>.cube` to its file in the pack;
+  `scripts/install_look_luts.py <pack>` validates and copies the twelve files.
+- `DevelopmentLookCatalog.json` + `dev_warm.cube` stay bundled for the rendering tests only.
+- Linux-tested: the manifest decodes/validates (twelve Looks, families, keys, LUT names) and any bundled
+  LUT parses. Not done: the twelve LUT files, the pack's copyright/license notice
+  (`RENN/Resources/Licenses/LookLicenses.txt`), Look posters from licensed footage, device review.
+
 ## M09 Hardening: started (2026-09-28)
 
 - Privacy manifest `RENN/Resources/PrivacyInfo.xcprivacy`: no tracking; required-reason APIs used by app

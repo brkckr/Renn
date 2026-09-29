@@ -1786,6 +1786,40 @@
         }
       }
     },
+    "look.clean_tape.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Natural colour with a light tape texture."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hafif bant dokusuyla doğal renkler."
+          }
+        }
+      }
+    },
+    "look.clean_tape.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clean Tape"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temiz Bant"
+          }
+        }
+      }
+    },
     "look.createWithThis": {
       "extractionState": "manual",
       "localizations": {
@@ -1837,6 +1871,57 @@
         }
       }
     },
+    "look.faded_summer.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purple skies and washed-out eighties colour."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mor gökyüzü ve solmuş seksenler renkleri."
+          }
+        }
+      }
+    },
+    "look.faded_summer.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faded Summer"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solmuş Yaz"
+          }
+        }
+      }
+    },
+    "look.family.cool": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cool"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soğuk"
+          }
+        }
+      }
+    },
     "look.family.diagnostic": {
       "extractionState": "manual",
       "localizations": {
@@ -1854,6 +1939,74 @@
         }
       }
     },
+    "look.family.mono": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mono"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mono"
+          }
+        }
+      }
+    },
+    "look.family.natural": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Natural"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğal"
+          }
+        }
+      }
+    },
+    "look.family.pop": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pop"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pop"
+          }
+        }
+      }
+    },
+    "look.family.warm": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warm"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sıcak"
+          }
+        }
+      }
+    },
     "look.favorite": {
       "extractionState": "manual",
       "localizations": {
@@ -1867,6 +2020,346 @@
           "stringUnit": {
             "state": "translated",
             "value": "Favorilere ekle"
+          }
+        }
+      }
+    },
+    "look.handycam_green.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The green cast of an old home camcorder."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eski bir el kamerasının yeşilimsi rengi."
+          }
+        }
+      }
+    },
+    "look.handycam_green.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Handycam Green"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeşil Handycam"
+          }
+        }
+      }
+    },
+    "look.late_night_vhs.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cool blue tones from a late-night recording."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gece geç saatte kaydedilmiş gibi soğuk mavi tonlar."
+          }
+        }
+      }
+    },
+    "look.late_night_vhs.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Late Night VHS"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gece Yarısı VHS"
+          }
+        }
+      }
+    },
+    "look.neon_dusk.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rich reds and magenta evening light."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zengin kırmızılar ve eflatun akşam ışığı."
+          }
+        }
+      }
+    },
+    "look.neon_dusk.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neon Dusk"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neon Alacakaranlık"
+          }
+        }
+      }
+    },
+    "look.noir_grain.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "High-contrast black and white with heavy grain."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yoğun grenli, yüksek kontrastlı siyah-beyaz."
+          }
+        }
+      }
+    },
+    "look.noir_grain.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noir Grain"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kara Film"
+          }
+        }
+      }
+    },
+    "look.odd_lot.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cross-processed yellows and deep teal."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çapraz banyo sarıları ve koyu camgöbeği."
+          }
+        }
+      }
+    },
+    "look.odd_lot.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odd Lot"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Garip Parti"
+          }
+        }
+      }
+    },
+    "look.rainy_matinee.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soft teal shadows and a quiet, rainy mood."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yumuşak camgöbeği gölgeler ve sakin, yağmurlu bir hava."
+          }
+        }
+      }
+    },
+    "look.rainy_matinee.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rainy Matinee"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yağmurlu Matine"
+          }
+        }
+      }
+    },
+    "look.sepia_tape.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warm sepia, like a worn archive tape."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıpranmış bir arşiv kaseti gibi sıcak sepya."
+          }
+        }
+      }
+    },
+    "look.sepia_tape.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sepia Tape"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sepya Bant"
+          }
+        }
+      }
+    },
+    "look.sunday_polaroid.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soft, faded warmth like an old family photo."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eski bir aile fotoğrafı gibi yumuşak, solgun bir sıcaklık."
+          }
+        }
+      }
+    },
+    "look.sunday_polaroid.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sunday Polaroid"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pazar Polaroidi"
+          }
+        }
+      }
+    },
+    "look.super8_pop.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Punchy contrast with a home-movie feel."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ev filmi havasında canlı bir kontrast."
+          }
+        }
+      }
+    },
+    "look.super8_pop.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Super 8 Pop"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Süper 8 Pop"
+          }
+        }
+      }
+    },
+    "look.tungsten_days.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pink skies and the glow of expired film."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pembe gökyüzü ve eskimiş filmin parıltısı."
+          }
+        }
+      }
+    },
+    "look.tungsten_days.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tungsten Days"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tungsten Günleri"
           }
         }
       }

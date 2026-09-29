@@ -1,0 +1,17 @@
+{
+  "packRoot": "G'MIC film emulation collection (.cube export)",
+  "luts": {
+    "renn_clean_tape": "colorslide/fuji_sensia_100.cube",
+    "renn_sunday_polaroid": "negative_old/kodak_portra_160_vc_++.cube",
+    "renn_neon_dusk": "colorslide/fuji_fp_100c.cube",
+    "renn_tungsten_days": "instant_consumer/polaroid_time_zero_expired_---.cube",
+    "renn_late_night_vhs": "negative_old/fuji_superia_100_-.cube",
+    "renn_rainy_matinee": "instant_pro/polaroid_690_cold_+.cube",
+    "renn_handycam_green": "colorslide/polaroid_669.cube",
+    "renn_super8_pop": "fujixtransiii/fuji_xtrans_iii_classic_chrome.cube",
+    "renn_faded_summer": "instant_pro/fuji_fp-100c_negative_+++.cube",
+    "renn_odd_lot": "instant_consumer/polaroid_px-70_cold_+.cube",
+    "renn_sepia_tape": "fujixtransiii/fuji_xtrans_iii_sepia.cube",
+    "renn_noir_grain": "bw/agfa_apx_25.cube"
+  }
+}

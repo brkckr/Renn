@@ -62,11 +62,19 @@ struct AppBundleTests {
         #expect(!configuration.missingConfiguration.isEmpty)
     }
 
-    @Test func bundledDevelopmentCatalogLoads() async throws {
+    @Test func bundledLaunchCatalogHasTheTwelveLooks() async throws {
         let catalog = try await BundledLookCatalogProvider().catalog()
+        #expect(catalog.isLaunchReady)
+        #expect(catalog.looks.count == LookCatalog.requiredLaunchLookCount)
+        #expect(catalog.recommendedLook?.id == "renn.clean_tape")
+        #expect(catalog.looks.allSatisfy { $0.lut != nil })
+    }
+
+    @Test func developmentCatalogStaysAvailableForRenderingTests() throws {
+        let catalog = try BundledLookCatalogProvider.load(
+            bundle: .main, manifestName: BundledLookCatalogProvider.developmentManifestName)
         #expect(catalog.isDevelopmentFixture)
         #expect(!catalog.isLaunchReady)
-        #expect(catalog.recommendedLook != nil)
     }
 
     @Test func languageChoiceSelectsLocalizedBundle() {

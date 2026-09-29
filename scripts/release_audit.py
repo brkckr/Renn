@@ -16,7 +16,8 @@ RES = ROOT / "RENN" / "Resources"
 
 
 def check_catalog(blockers, ok):
-    catalogs = list((RES / "Looks").glob("*Catalog*.json"))
+    # The app loads LookCatalog.json; DevelopmentLookCatalog.json is a test fixture only.
+    catalogs = [p for p in [RES / "Looks" / "LookCatalog.json"] if p.exists()]
     for path in catalogs:
         data = json.loads(path.read_text())
         looks = data.get("looks", [])
@@ -27,6 +28,16 @@ def check_catalog(blockers, ok):
             blockers.append(f"Look catalog `{path.name}` has {len(looks)} Looks; the release catalog has twelve.")
         else:
             ok.append(f"Look catalog `{path.name}`: twelve non-fixture Looks.")
+            missing = sorted(l["lut"] for l in looks if l.get("lut") and not (RES / "Looks" / f"{l['lut']}.cube").exists())
+            if missing:
+                blockers.append(f"{len(missing)} Look LUT file(s) missing from RENN/Resources/Looks ({', '.join(missing)}); run scripts/install_look_luts.py.")
+            else:
+                ok.append("All catalog Look LUT files are bundled.")
+            if (RES / "Licenses" / "LookLicenses.txt").exists():
+                ok.append("Look LUT license notice bundled.")
+            else:
+                blockers.append("Look LUT license notice (RENN/Resources/Licenses/LookLicenses.txt) missing; add the pack's copyright and license text.")
+            blockers.append("Look parameters are starting values: visual review of the twelve Looks on real footage/device is still needed (M08).")
     if not catalogs:
         blockers.append("No Look catalog manifest found.")
 
