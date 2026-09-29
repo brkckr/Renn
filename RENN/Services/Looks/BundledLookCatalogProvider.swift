@@ -2,14 +2,16 @@ import Foundation
 import RENNDomain
 
 /// Loads and validates the Look catalog manifest bundled with the app.
-/// M00 ships only `DevelopmentLookCatalog.json`: one labelled diagnostic fixture. The
-/// reviewed twelve-Look manifest replaces it in M08 when the owner's assets arrive.
+/// The app uses `LookCatalog.json`: the twelve launch Looks (M08), each with a bundled `.cube`
+/// named in `scripts/look_lut_sources.json`. `DevelopmentLookCatalog.json` (one labelled
+/// diagnostic fixture with `dev_warm.cube`) stays bundled for the rendering tests only.
 struct BundledLookCatalogProvider: LookCatalogProviding {
     enum LoadError: Error {
         case missingManifest(String)
     }
 
-    static let defaultManifestName = "DevelopmentLookCatalog"
+    static let defaultManifestName = "LookCatalog"
+    static let developmentManifestName = "DevelopmentLookCatalog"
 
     let manifestName: String
 

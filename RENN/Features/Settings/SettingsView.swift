@@ -298,11 +298,17 @@ private struct SettingsRowButtonStyle: ButtonStyle {
 
 /// Third-party notices. Font and SDK notices are added when the licensed files/SDKs are
 /// bundled (08 I03, M06).
-/// Third-party notices shipped with the app (06 C07): the bundled fonts' copyright lines and the
-/// full SIL Open Font License text, shown verbatim in system type (never retro display type).
+/// Third-party notices shipped with the app (06 C07): the notices for the bundled fonts (with the full
+/// SIL Open Font License text) and Look LUTs, shown verbatim in system type (never retro display type).
 private struct LicensesView: View {
-    private static let notices: String? = Bundle.main.url(forResource: "FontLicenses", withExtension: "txt")
-        .flatMap { try? String(contentsOf: $0, encoding: .utf8) }
+    /// Font and Look LUT notices, in that order; nil only if neither file is bundled.
+    private static let notices: String? = {
+        let texts = ["FontLicenses", "LookLicenses"].compactMap { name in
+            Bundle.main.url(forResource: name, withExtension: "txt")
+                .flatMap { try? String(contentsOf: $0, encoding: .utf8) }
+        }
+        return texts.isEmpty ? nil : texts.joined(separator: "\n\n")
+    }()
 
     var body: some View {
         ScrollView {

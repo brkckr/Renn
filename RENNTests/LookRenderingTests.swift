@@ -35,10 +35,11 @@ struct LookRenderingTests {
     }
 
     @Test func bundledCatalogResolvesTheDevelopmentLUT() throws {
-        let prepared = try #require(LookLUTStore().lut(for: "dev.diagnostic"))
+        let prepared = try #require(
+            LookLUTStore(manifestName: BundledLookCatalogProvider.developmentManifestName).lut(for: "dev.diagnostic"))
         #expect(prepared.dimension == 17)
         #expect(prepared.data.count == 17 * 17 * 17 * 4 * MemoryLayout<Float>.size)
-        #expect(LookLUTStore().lut(for: "unknown.look") == nil)
+        #expect(LookLUTStore(manifestName: BundledLookCatalogProvider.developmentManifestName).lut(for: "unknown.look") == nil)
     }
 
     @Test func identityLUTLeavesColoursUnchanged() throws {
@@ -53,7 +54,7 @@ struct LookRenderingTests {
     }
 
     @Test func warmLUTShiftsBlueDownAndIntensityScalesIt() throws {
-        let engine = RenderEngine()
+        let engine = RenderEngine(luts: LookLUTStore(manifestName: BundledLookCatalogProvider.developmentManifestName))
         let grey = CIColor(red: 0.5, green: 0.5, blue: 0.5)
         let lutOnly = [LookParameter.lutMix: 1.0]
         let off = Self.centre(engine, recipe: try Self.recipe(parameters: lutOnly, intensity: 0), color: grey)

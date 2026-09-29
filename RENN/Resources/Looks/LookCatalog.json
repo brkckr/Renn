@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "1",
+  "isDevelopmentFixture": false,
+  "recommendedLookID": "renn.clean_tape",
+  "looks": [
+    {
+      "id": "renn.clean_tape",
+      "version": 1,
+      "family": "natural",
+      "nameKey": "look.clean_tape.name",
+      "descriptionKey": "look.clean_tape.description",
+      "defaultIntensity": 0.8,
+      "renderVersion": 1,
+      "isDevelopmentFixture": false,
+      "lut": "renn_clean_tape",
+      "parameters": {
+        "lutMix": 1,
+        "saturation": 0,
+        "contrast": 0.02,
+        "warmth": 0,
+        "vignette": 0.3,
+        "grain": 0.05
+      }
+    },
+    {
+      "id": "renn.sunday_polaroid",
+      "version": 1,
+      "family": "warm",
+      "nameKey": "look.sunday_polaroid.name",
+      "descriptionKey": "look.sunday_polaroid.description",
+      "defaultIntensity": 0.8,
+      "renderVersion": 1,
+      "isDevelopmentFixture": false,
+      "lut": "renn_sunday_polaroid",
+      "parameters": {
+        "lutMix": 1,
+        "saturation": -0.05,
+        "contrast": -0.02,
+        "warmth": 300,
+        "vignette": 0.6,
+        "grain": 0.1
+      }
+    },
+    {
+      "id": "renn.neon_dusk",
+      "version": 1,
+      "family": "warm",
+      "nameKey": "look.neon_dusk.name",
+      "descriptionKey": "look.neon_dusk.description",
+      "defaultIntensity": 0.8,
+      "renderVersion": 1,
+      "isDevelopmentFixture": false,
+      "lut": "renn_neon_dusk",
+      "parameters": {
+        "lutMix": 1,
+        "saturation": 0.1,
+        "contrast": 0.04,
+        "warmth": 200,
+        "vignette": 0.7,
+        "grain": 0.08
+      }
+    },
+    {
+      "id": "renn.tungsten_days",
+      "version": 1,
+      "family": "warm",
+      "nameKey": "look.tungsten_days.name",
+      "descriptionKey": "look.tungsten_days.description",
+      "defaultIntensity": 0.7,
+      "renderVersion": 1,
+      "isDevelopmentFixture": false,
+      "lut": "renn_tungsten_days",
+      "parameters": {
+        "lutMix": 1,
+        "saturation": -0.05,
+        "contrast": 0,
+        "warmth": 0,
+        "vignette": 0.8,
+        "grain": 0.14
+      }
+    },
+    {
+      "id": "renn.late_night_vhs",
+      "version": 1,
+      "family": "cool",
+      "nameKey": "look.late_night_vhs.name",
+      "descriptionKey": "look.late_night_vhs.description",
+      "defaultIntensity": 0.8,
+      "renderVersion": 1,
+      "isDevelopmentFixture": false,
+      "lut": "renn_late_night_vhs",
+      "parameters": {
+        "lutMix": 1,
+        "saturation": -0.1,
+        "contrast": 0.03,
+        "warmth": -500,
+        "vignette": 0.8,
+        "grain": 0.12
+      }
+    },
+    {
+      "id": "renn.rainy_matinee",
+      "version": 1,
+      "family": "cool",
+      "nameKey": "look.rainy_matinee.name",
+      "descriptionKey": "look.rainy_matinee.description",
+      "defaultIntensity": 0.8,
+      "renderVersion": 1,
+      "isDevelopmentFixture": false,
+      "lut": "renn_rainy_matinee",
+      "parameters": {
+        "lutMix": 1,
+        "saturation": -0.05,
+        "contrast": 0,
+        "warmth": -200,
+        "vignette": 0.6,
+        "grain": 0.1
+      }
+    },
+    {
+      "id": "renn.handycam_green",
+      "version": 1,
+      "family": "cool",
+      "nameKey": "look.handycam_green.name",
+      "descriptionKey": "look.handycam_green.description",
+      "defaultIntensity": 0.75,
+      "renderVersion": 1,
+      "isDevelopmentFixture": false,
+      "lut": "renn_handycam_green",
+      "parameters": {
+        "lutMix": 1,
+        "saturation": -0.05,
+        "contrast": 0.02,
+        "warmth": 0,
+        "vignette": 0.7,
+        "grain": 0.12
+      }
+    },
+    {
+      "id": "renn.super8_pop",
+      "version": 1,
+      "family": "pop",
+      "nameKey": "look.super8_pop.name",
+      "descriptionKey": "look.super8_pop.description",
+      "defaultIntensity": 0.8,
+      "renderVersion": 1,
+      "isDevelopmentFixture": false,
+      "lut": "renn_super8_pop",
+      "parameters": {
+        "lutMix": 1,
+        "saturation": 0.1,
+        "contrast": 0.04,
+        "warmth": 400,
+        "vignette": 0.9,
+        "grain": 0.14
+      }
+    },
+    {
+      "id": "renn.faded_summer",
+      "version": 1,
+      "family": "pop",
+      "nameKey": "look.faded_summer.name",
+      "descriptionKey": "look.faded_summer.description",
+      "defaultIntensity": 0.75,
+      "renderVersion": 1,
+      "isDevelopmentFixture": false,
+      "lut": "renn_faded_summer",
+      "parameters": {
+        "lutMix": 1,
+        "saturation": 0,
+        "contrast": -0.03,
+        "warmth": 0,
+        "vignette": 0.5,
+        "grain": 0.1
+      }
+    },
+    {
+      "id": "renn.odd_lot",
+      "version": 1,
+      "family": "pop",
+      "nameKey": "look.odd_lot.name",
+      "descriptionKey": "look.odd_lot.description",
+      "defaultIntensity": 0.65,
+      "renderVersion": 1,
+      "isDevelopmentFixture": false,
+      "lut": "renn_odd_lot",
+      "parameters": {
+        "lutMix": 1,
+        "saturation": 0,
+        "contrast": 0,
+        "warmth": 0,
+        "vignette": 0.6,
+        "grain": 0.12
+      }
+    },
+    {
+      "id": "renn.sepia_tape",
+      "version": 1,
+      "family": "mono",
+      "nameKey": "look.sepia_tape.name",
+      "descriptionKey": "look.sepia_tape.description",
+      "defaultIntensity": 0.85,
+      "renderVersion": 1,
+      "isDevelopmentFixture": false,
+      "lut": "renn_sepia_tape",
+      "parameters": {
+        "lutMix": 1,
+        "saturation": 0,
+        "contrast": 0.04,
+        "warmth": 1800,
+        "vignette": 0.9,
+        "grain": 0.15
+      }
+    },
+    {
+      "id": "renn.noir_grain",
+      "version": 1,
+      "family": "mono",
+      "nameKey": "look.noir_grain.name",
+      "descriptionKey": "look.noir_grain.description",
+      "defaultIntensity": 0.9,
+      "renderVersion": 1,
+      "isDevelopmentFixture": false,
+      "lut": "renn_noir_grain",
+      "parameters": {
+        "lutMix": 1,
+        "saturation": -1,
+        "contrast": 0.06,
+        "warmth": 0,
+        "vignette": 1.0,
+        "grain": 0.2
+      }
+    }
+  ]
+}

@@ -184,6 +184,32 @@ per motion so stale completions never act.
 - Owner steps: `docs/OWNER_SETUP_M06.md`. Not done: sandbox purchase evidence, Crashlytics dSYM upload
   phase, privacy manifest review of the pinned SDKs.
 
+## M08 Twelve launch Looks: catalog in place, LUT files and visual review pending (2026-09-30)
+
+- Source: https://github.com/YahiaAngelo/Film-Luts (296 G'MIC film-emulation `.cube` files, all 3D,
+  size 13, domain 0...1), screened on the owner's machine (format, Log detection, duplicates, colour
+  metrics, synthetic test chart). That repository is MIT licensed but disclaims ownership of the LUTs.
+  G'MIC's source credits the film categories to Pat David (RawTherapee Film Simulation), except
+  "Fuji XTrans III" (Stuart Sowerby) and "Print Films" (Juan Melara). All twelve Looks therefore use Pat
+  David LUTs only: Super 8 Pop moved to `instant_pro/polaroid_690_--` and Sepia Tape to the B&W
+  `bw/ilford_fp_4_plus_125` with warmth 1800 (a sepia tone), replacing the two X-Trans III files.
+- `RENN/Resources/Looks/LookCatalog.json` (app default manifest): twelve free Looks in five families
+  (natural, warm, cool, pop, mono), recommended `renn.clean_tape`; names/descriptions in en + tr with no
+  film-brand names. Parameters are starting values on top of the full LUT (lutMix 1) and need visual
+  review on real footage.
+- `scripts/look_lut_sources.json` maps each bundle LUT `renn_<look>.cube` to its file in the pack;
+  `scripts/install_look_luts.py <pack>` validates and copies the twelve files.
+- `DevelopmentLookCatalog.json` + `dev_warm.cube` stay bundled for the rendering tests only.
+- The twelve LUTs are bundled unmodified (renamed only) by `scripts/install_look_luts.py`.
+  `RENN/Resources/Licenses/LookLicenses.txt` (shown in Settings → Licenses after the font notices)
+  credits Pat David, RawTherapee and G'MIC, states CC BY-SA 4.0 for the upstream collection and the
+  bundled files, and carries the Film-Luts MIT notice. The CC BY-SA 4.0 statement follows RawPedia's
+  Film Simulation page as recalled; the page could not be opened from this environment, so the owner
+  confirms it before release.
+- Linux-tested: the manifest decodes/validates (twelve Looks, families, keys, LUT names) and every
+  bundled LUT parses. Simulator test: every catalog Look resolves its LUT; the notice is bundled.
+  Not done: Look posters from licensed footage, visual review on real footage/device.
+
 ## M09 Hardening: started (2026-09-28)
 
 - Privacy manifest `RENN/Resources/PrivacyInfo.xcprivacy`: no tracking; required-reason APIs used by app
