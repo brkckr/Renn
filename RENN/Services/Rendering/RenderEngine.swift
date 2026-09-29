@@ -11,9 +11,9 @@ import RENNDomain
 /// 60-ticks-per-second media clock.
 ///
 /// Render version 1 Look graph: LUT (blended by `lutMix`) → saturation/contrast → warmth →
-/// vignette → deterministic grain. Every strength comes from the recipe's snapshotted Look
-/// parameters scaled by intensity, so intensity 0 is an exact passthrough and later catalog
-/// edits never change an existing project. The only bundled Look is a DEV fixture (08 I01).
+/// tape artefacts (`rennVHS` kernel) → vignette → deterministic grain. Every strength comes from
+/// the recipe's snapshotted Look parameters scaled by intensity, so intensity 0 is an exact
+/// passthrough and later catalog edits never change an existing project.
 ///
 /// Thread safety: `CIContext` is documented as thread-safe and the engine holds no mutable
 /// state, so one instance is shared across preview and export queues.
@@ -28,8 +28,20 @@ final class RenderEngine: @unchecked Sendable {
     /// Creative LUTs are authored for gamma-encoded sRGB, not the linear working space.
     private let lutColorSpace = CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
 
+    /// The `rennVHS` Core Image kernel from the app's default.metallib (VHSKernel.ci.metal), or nil
+    /// if it failed to load (then the tape stage is skipped, never a crash). Immutable after init.
+    let tapeKernel: CIKernel?
+
+    static func loadTapeKernel() -> CIKernel? {
+        guard let url = Bundle.main.url(forResource: "default", withExtension: "metallib"),
+              let data = try? Data(contentsOf: url)
+        else { return nil }
+        return try? CIKernel(functionName: "rennVHS", fromMetalLibraryData: data)
+    }
+
     init(luts: LookLUTStore = LookLUTStore()) {
         self.luts = luts
+        tapeKernel = Self.loadTapeKernel()
         let rec709 = CGColorSpace(name: CGColorSpace.itur_709) ?? CGColorSpaceCreateDeviceRGB()
         outputColorSpace = rec709
         let options: [CIContextOption: Any] = [
@@ -244,6 +256,8 @@ final class RenderEngine: @unchecked Sendable {
             result = temperature.outputImage ?? result
         }
 
+        result = tape(result, extent: extent, artifacts: TapeArtifacts(recipe: recipe), seed: recipe.seed, time: time)
+
         let vignette = recipe.effectiveParameter(LookParameter.vignette)
         if vignette > 0 {
             let filter = CIFilter.vignette()
@@ -298,6 +312,28 @@ final class RenderEngine: @unchecked Sendable {
         blend.inputImage = grainLayer
         blend.backgroundImage = image
         return blend.outputImage?.cropped(to: extent) ?? image
+    }
+
+    /// Tape artefacts on the GPU. Core Image's software renderer cannot run Metal kernels, so a
+    /// context without a Metal device (some CI simulators) skips this stage; every iPhone has one.
+    private func tape(_ image: CIImage, extent: CGRect, artifacts: TapeArtifacts, seed: UInt64, time: RationalTime) -> CIImage {
+        guard artifacts.isActive, device != nil, let kernel = tapeKernel else { return image }
+        let reach = CGFloat(TapeArtifacts.sampleReach(shortEdge: Double(min(extent.width, extent.height))))
+        let arguments: [Any] = [
+            image.clampedToExtent(),
+            CIVector(x: extent.minX, y: extent.minY, z: extent.width, w: extent.height),
+            CIVector(
+                x: CGFloat(artifacts.chromaBleed), y: CGFloat(artifacts.softness),
+                z: CGFloat(artifacts.scanlines), w: CGFloat(artifacts.lineJitter)),
+            CIVector(
+                x: CGFloat(Self.noiseTick(time)), y: CGFloat(artifacts.tracking),
+                z: CGFloat(TapeArtifacts.seedPhase(seed)), w: 0),
+        ]
+        let output = kernel.apply(
+            extent: extent,
+            roiCallback: { _, rect in rect.insetBy(dx: -reach, dy: -1) },
+            arguments: arguments)
+        return output ?? image
     }
 
     static func noiseTick(_ time: RationalTime) -> Int64 {

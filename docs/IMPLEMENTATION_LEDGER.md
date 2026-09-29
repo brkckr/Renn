@@ -219,6 +219,19 @@ per motion so stale completions never act.
   bundled. Linux tests cover the geometry and colour weights; simulator tests check that cells grow with
   the frame and that chroma 0 keeps grey neutral.
 
+- Tape artefacts (render version 1, pre-release): `RENN/Services/Rendering/VHSKernel.ci.metal` is a Core
+  Image Metal kernel (`rennVHS`; target flags `-fcikernel` / `-cikernel` in RENN.shared.xcconfig) applied
+  after warmth and before vignette/grain: chroma bleed (colour trails right, up to 8 px at 1080), VHS
+  softness (5-tap horizontal luma blur), scanlines (about 480 tape lines on the short edge), line jitter
+  and a tracking band that rolls up every 8 s with displaced lines and tape noise. Sizes follow the
+  short edge; randomness hashes (row, media tick, seed), so exports are reproducible. New Look parameters
+  `chromaBleed`, `tapeSoftness`, `scanlines`, `lineJitter`, `tracking` (0...1, scaled by intensity,
+  `TapeArtifacts`); the twelve Looks carry starting values (mono Looks: no bleed). No new UI controls
+  (02 D05). A context without a Metal device skips the stage (Core Image's software renderer cannot run
+  Metal kernels). Linux tests cover the strength mapping and bounds; simulator tests check the kernel
+  loads from default.metallib and, with a Metal device, that bleed moves colour to the right of an edge.
+  Not done: visual tuning on device, Beat-driven glitches.
+
 ## M09 Hardening: started (2026-09-28)
 
 - Privacy manifest `RENN/Resources/PrivacyInfo.xcprivacy`: no tracking; required-reason APIs used by app

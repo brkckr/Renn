@@ -36,7 +36,14 @@ struct LaunchCatalogManifestTests {
             #expect(look.parameters[LookParameter.lutMix] == 1)
             #expect(look.parameters[LookParameter.grainSize] != nil)
             // Monochrome Looks keep monochrome grain.
-            if look.family == "mono" { #expect(look.parameters[LookParameter.grainChroma] == 0) }
+            if look.family == "mono" {
+                #expect(look.parameters[LookParameter.grainChroma] == 0)
+                #expect(look.parameters[LookParameter.chromaBleed] == 0)
+            }
+            // Every launch Look has the tape stage; strengths stay in the kernel's range.
+            let tape = [LookParameter.chromaBleed, LookParameter.tapeSoftness, LookParameter.scanlines,
+                        LookParameter.lineJitter, LookParameter.tracking]
+            #expect(tape.allSatisfy { look.parameters[$0] != nil }, "\(look.id.rawValue)")
         }
     }
 
