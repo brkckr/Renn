@@ -25,7 +25,7 @@ grants Pro only from the active `pro` entitlement and restores from Settings and
 1. In the Firebase console, add an iOS app with bundle ID `tzlapp.studio.renn` and enable
    Analytics and Crashlytics only.
 2. Download `GoogleService-Info.plist` and place it in `RENN/Resources/` (any folder under `RENN/`
-   is bundled automatically). Keep a separate Firebase project or app for development builds if
+   is bundled automatically). The file is git-ignored, so it stays on your Mac. Keep a separate Firebase project or app for development builds if
    you want development telemetry isolated (06 C01).
 3. Collection is off by default (Info.plist) and turns on only when the user enables
    "Share diagnostics" in Settings.

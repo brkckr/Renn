@@ -184,7 +184,7 @@ per motion so stale completions never act.
 - Owner steps: `docs/OWNER_SETUP_M06.md`. Not done: sandbox purchase evidence, Crashlytics dSYM upload
   phase, privacy manifest review of the pinned SDKs.
 
-## M08 Twelve launch Looks: catalog in place, LUT files and visual review pending (2026-09-30)
+## M08 Twelve launch Looks: catalog, LUTs, grain, tape stage, Beat glitch and overlays in place; device review pending (2026-09-30)
 
 - Source: https://github.com/YahiaAngelo/Film-Luts (296 G'MIC film-emulation `.cube` files, all 3D,
   size 13, domain 0...1), screened on the owner's machine (format, Log detection, duplicates, colour
@@ -230,7 +230,7 @@ per motion so stale completions never act.
   (02 D05). A context without a Metal device skips the stage (Core Image's software renderer cannot run
   Metal kernels). Linux tests cover the strength mapping and bounds; simulator tests check the kernel
   loads from default.metallib and, with a Metal device, that bleed moves colour to the right of an edge.
-  Not done: visual tuning on device, Beat-driven glitches.
+  Not done: visual tuning on device.
 
 - Beat glitch: after each onset `BeatModulation` adds a tape glitch that peaks on the hit and decays
   (time constant 80 ms, gone after 250 ms): `rgbSplit` (red/blue apart, up to 6 px at 1080) and

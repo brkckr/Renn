@@ -15,6 +15,7 @@ Packages/RENNCore/.swiftpm/
 
 # Owner configuration (never commit real values)
 Config/Secrets.xcconfig
+GoogleService-Info.plist
 
 
 # macOS
