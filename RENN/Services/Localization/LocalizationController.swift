@@ -2,7 +2,8 @@ import Foundation
 import Observation
 import RENNDomain
 
-/// Applies the System / Turkish / English choice to app-owned strings (02 D09, 06 C07).
+/// Applies the language choice (System or one of `AppLanguage`'s ten languages) to app-owned
+/// strings (02 D09, 06 C07).
 /// SwiftUI `Text` resolves catalog keys through the `locale` environment value set at the
 /// root; `string(_:)` covers the few places that need a plain `String`.
 /// The choice never affects Store currency: prices always come from the Store.
@@ -35,7 +36,7 @@ final class LocalizationController {
         bundle.localizedString(forKey: key, value: nil, table: nil)
     }
 
-    /// The effective localization in use: "en" or "tr".
+    /// The effective localization in use, e.g. "en", "tr" or "zh-Hans".
     var effectiveLocalization: String {
         Self.localizationIdentifier(for: language, mainBundle: mainBundle)
     }

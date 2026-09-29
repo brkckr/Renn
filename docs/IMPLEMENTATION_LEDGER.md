@@ -258,6 +258,20 @@ per motion so stale completions never act.
   (none on Clean Tape, Late Night VHS, Handycam Green). Simulator tests use synthetic textures. The
   release audit lists missing local textures.
 
+## Languages: extended from English and Turkish to ten (2026-09-30)
+
+- Owner decision (scope change from 01/02 "System/Turkish/English"): Spanish, Portuguese (Brazil),
+  German, French, Japanese, Korean, Chinese (Simplified) and Russian added. `AppLanguage` has the new
+  cases (raw values of existing choices unchanged) with native names; Settings uses a menu picker.
+- All 259 app strings and the four InfoPlist strings are translated by the agent; each language needs a
+  native-speaker review before release. Brand terms stay as is: Look, Beat, RENN Free/Pro, REC/PLAY,
+  "shot by RENN". Monoton and Press Start 2P only draw Latin brand text and camera indicators; Roboto
+  UI text falls back to the system fonts for Japanese, Korean, Chinese and Cyrillic.
+- `scripts/check_localization.py` (CI) requires every language with matching format arguments; the
+  project's knownRegions list them. Tests: `AppLanguageTests` (Linux) and
+  `everySupportedLanguageIsBundled` (simulator). Not done: App Store metadata in these languages,
+  layout review of longer strings (German, Russian) on device.
+
 ## M09 Hardening: started (2026-09-28)
 
 - Privacy manifest `RENN/Resources/PrivacyInfo.xcprivacy`: no tracking; required-reason APIs used by app

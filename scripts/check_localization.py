@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Checks the English/Turkish String Catalogs against the Swift sources (06 C07).
+"""Checks the String Catalogs (all app languages) against the Swift sources (06 C07).
 
 - Every localization key literal used in RENN/**/*.swift exists in Localizable.xcstrings.
 - Every Look catalog manifest key (name, description, family) exists.
-- Every catalog entry has non-empty "en" and "tr" values with matching format arguments.
+- Every catalog entry has a non-empty value in every language in LANGUAGES, with the same format
+  arguments as the key (positional order may differ between languages).
 - InfoPlist.xcstrings covers the usage descriptions declared in the xcconfig.
 
 Runs with the Python standard library only, so it works in Linux CI without Xcode.
@@ -15,6 +16,8 @@ import sys
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else "."
 errors = []
+# Must match AppLanguage.supportedLocalizations and knownRegions in scripts/generate_xcodeproj.py.
+LANGUAGES = ("en", "tr", "es", "pt-BR", "de", "fr", "ja", "ko", "zh-Hans", "ru")
 
 catalog = json.load(open(f"{ROOT}/RENN/Resources/Localizable.xcstrings", encoding="utf-8"))["strings"]
 info_catalog = json.load(open(f"{ROOT}/RENN/Resources/InfoPlist.xcstrings", encoding="utf-8"))["strings"]
@@ -67,17 +70,17 @@ for manifest in glob.glob(f"{ROOT}/RENN/Resources/Looks/*.json"):
 def check_entries(name, entries):
     for key, entry in entries.items():
         localizations = entry.get("localizations", {})
-        values = {}
-        for language in ("en", "tr"):
+        key_args = len(FORMAT.findall(key))
+        english_args = None
+        for language in LANGUAGES:
             value = localizations.get(language, {}).get("stringUnit", {}).get("value", "")
             if not value.strip():
                 errors.append(f"{name}: '{key}' has no '{language}' value")
-            values[language] = value
-        en_args = sorted(FORMAT.findall(values["en"]))
-        tr_args = sorted(FORMAT.findall(values["tr"]))
-        key_args = len(FORMAT.findall(key))
-        if len(en_args) != key_args or len(tr_args) != key_args:
-            errors.append(f"{name}: '{key}' format arguments differ (key {key_args}, en {en_args}, tr {tr_args})")
+                continue
+            args = sorted(FORMAT.findall(value))
+            english_args = args if language == "en" else english_args
+            if len(args) != key_args or (english_args is not None and args != english_args):
+                errors.append(f"{name}: '{key}' format arguments differ in '{language}' (key {key_args}, {language} {args})")
 
 
 check_entries("Localizable.xcstrings", catalog)
@@ -95,4 +98,4 @@ if unused:
 if errors:
     print("\n".join(errors))
     sys.exit(1)
-print(f"Localization OK: {len(used)} keys used, {len(catalog)} catalog entries, en+tr complete.")
+print(f"Localization OK: {len(used)} keys used, {len(catalog)} catalog entries, {len(LANGUAGES)} languages complete.")

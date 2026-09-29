@@ -22,7 +22,7 @@ RENN/                    App target: SwiftUI views, composition root, platform a
   Features/              SwiftUI screens per feature
   Services/              Platform adapters (preferences, purchases, capture, localization, fonts)
   DesignSystem/          Tokens, glass surfaces, typography, placeholders
-  Resources/             Asset catalog, String Catalogs (en, tr), Look catalog manifest
+  Resources/             Asset catalog, String Catalogs (10 languages), Looks, overlays, fonts
 RENNTests/               App-bundle tests (configuration, persistence, media pipeline, Look rendering)
 RENNUITests/             Simulator UI smoke flows (onboarding, tabs, creation menu, Dual-Cam fallback)
 Packages/RENNCore/       Swift package, platform independent
@@ -41,7 +41,7 @@ docs/                    Ledger, architecture decisions, development-asset repor
 # Pure layers: runs on macOS or Linux with Swift 6
 swift test --package-path Packages/RENNCore
 
-# Localization completeness (en + tr)
+# Localization completeness (en, tr, es, pt-BR, de, fr, ja, ko, zh-Hans, ru)
 python3 scripts/check_localization.py
 
 # What still blocks a release (owner assets, configuration, evidence)

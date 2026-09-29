@@ -99,6 +99,18 @@ struct AppBundleTests {
         #expect(controller.string("tab.home") == "Home")
     }
 
+    @Test func everySupportedLanguageIsBundled() {
+        let expected: [AppLanguage: String] = [
+            .spanish: "Inicio", .portugueseBrazil: "Início", .german: "Start", .french: "Accueil",
+            .japanese: "ホーム", .korean: "홈", .chineseSimplified: "首页", .russian: "Главная",
+        ]
+        for (language, home) in expected {
+            let controller = LocalizationController(language: language)
+            #expect(controller.effectiveLocalization == language.localizationIdentifier)
+            #expect(controller.string("tab.home") == home, "\(language)")
+        }
+    }
+
     @Test func unconfiguredPurchasesNeverGrantPro() async {
         let service = UnconfiguredPurchaseService()
         #expect(await service.currentAccess().effectiveTier == .free)

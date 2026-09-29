@@ -94,12 +94,14 @@ struct SettingsView: View {
                 selection: Binding(get: { viewModel.language }, set: { viewModel.setLanguage($0) })
             ) {
                 Text("settings.language.system").tag(AppLanguage.system)
-                Text(verbatim: "Türkçe").tag(AppLanguage.turkish)
-                Text(verbatim: "English").tag(AppLanguage.english)
+                ForEach(AppLanguage.allCases.filter { $0 != .system }, id: \.self) { language in
+                    Text(verbatim: language.nativeName ?? "").tag(language)
+                }
             } label: {
                 Text("settings.language")
             }
-            .pickerStyle(.segmented)
+            // Eleven choices do not fit a segmented control.
+            .pickerStyle(.menu)
             Text("settings.language.footer")
                 .font(RENNFont.secondary)
                 .foregroundStyle(RENNColor.textSecondary)
