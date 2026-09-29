@@ -53,6 +53,69 @@ struct LookRenderingTests {
         }
     }
 
+    /// RGBA8 pixels of a `window`×`window` crop at the centre of a flat grey frame rendered at
+    /// `side`×`side`. Core Image renders only the crop, so large outputs stay cheap.
+    static func greyWindow(_ engine: RenderEngine, recipe: Recipe, side: Int, window: Int = 96) -> [UInt8] {
+        let frame = CGRect(x: 0, y: 0, width: side, height: side)
+        let image = engine.image(for: RenderEngine.FrameRequest(
+            source: CIImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5)).cropped(to: frame), orientation: .up,
+            recipe: recipe, time: .zero, outputSize: frame.size, watermark: nil, watermarkFrame: nil))
+        var bytes = [UInt8](repeating: 0, count: window * window * 4)
+        let origin = (side - window) / 2
+        engine.context.render(
+            image, toBitmap: &bytes, rowBytes: window * 4,
+            bounds: CGRect(x: origin, y: origin, width: window, height: window), format: .RGBA8,
+            colorSpace: engine.outputColorSpace)
+        return bytes
+    }
+
+    /// Correlation between horizontally adjacent red values: near 0 for per-pixel noise, higher for
+    /// grain cells spanning several pixels.
+    static func neighbourCorrelation(_ bytes: [UInt8], window: Int = 96) -> Double {
+        var a: [Double] = [], b: [Double] = []
+        for y in 0..<window {
+            for x in 0..<(window - 1) {
+                a.append(Double(bytes[(y * window + x) * 4]))
+                b.append(Double(bytes[(y * window + x + 1) * 4]))
+            }
+        }
+        let ma = a.reduce(0, +) / Double(a.count), mb = b.reduce(0, +) / Double(b.count)
+        var cov = 0.0, va = 0.0, vb = 0.0
+        for (x, y) in zip(a, b) {
+            cov += (x - ma) * (y - mb)
+            va += (x - ma) * (x - ma)
+            vb += (y - mb) * (y - mb)
+        }
+        return cov / max(1e-9, (va * vb).squareRoot())
+    }
+
+    @Test func grainCellsScaleWithTheFrameNotOutputPixels() throws {
+        let engine = RenderEngine(luts: LookLUTStore(preloaded: [:]))
+        let recipe = try Self.recipe(parameters: [LookParameter.grain: 0.3, LookParameter.grainSize: 1.4], intensity: 1)
+        let small = Self.neighbourCorrelation(Self.greyWindow(engine, recipe: recipe, side: 540))
+        let large = Self.neighbourCorrelation(Self.greyWindow(engine, recipe: recipe, side: 2160))
+        // 2160 px frames get 4× larger cells than 540 px frames, so neighbours agree much more.
+        #expect(large > small + 0.2, "neighbour correlation 540 px: \(small), 2160 px: \(large)")
+    }
+
+    @Test func grainChromaControlsColourGrain() throws {
+        let engine = RenderEngine(luts: LookLUTStore(preloaded: [:]))
+        func channelSpread(_ chroma: Double) throws -> Double {
+            let recipe = try Self.recipe(
+                parameters: [LookParameter.grain: 0.3, LookParameter.grainChroma: chroma], intensity: 1)
+            let bytes = Self.greyWindow(engine, recipe: recipe, side: 1080)
+            var total = 0
+            for pixel in stride(from: 0, to: bytes.count, by: 4) {
+                total += abs(Int(bytes[pixel]) - Int(bytes[pixel + 1])) + abs(Int(bytes[pixel + 1]) - Int(bytes[pixel + 2]))
+            }
+            return Double(total) / Double(bytes.count / 4)
+        }
+        let mono = try channelSpread(0)
+        let colour = try channelSpread(1)
+        #expect(mono <= 1, "monochrome grain keeps grey neutral (\(mono))")
+        #expect(colour > 2, "colour grain separates the channels (\(colour))")
+    }
+
     @Test func warmLUTShiftsBlueDownAndIntensityScalesIt() throws {
         let engine = RenderEngine(luts: LookLUTStore(manifestName: BundledLookCatalogProvider.developmentManifestName))
         let grey = CIColor(red: 0.5, green: 0.5, blue: 0.5)

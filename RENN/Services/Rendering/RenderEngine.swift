@@ -255,30 +255,45 @@ final class RenderEngine: @unchecked Sendable {
 
         return grain(
             over: result.cropped(to: extent), extent: extent,
-            amount: Float(recipe.effectiveParameter(LookParameter.grain)), seed: recipe.seed, time: time)
+            amount: Float(recipe.effectiveParameter(LookParameter.grain)),
+            size: recipe.shapeParameter(LookParameter.grainSize, fallback: FilmGrain.defaultSize),
+            chroma: recipe.shapeParameter(LookParameter.grainChroma, fallback: FilmGrain.defaultChroma),
+            seed: recipe.seed, time: time)
     }
 
-    /// Deterministic grain: the infinite random field is offset by (seed, media tick), so the
-    /// same recipe and media time reproduce the same pixels at any export frame rate.
-    private func grain(over image: CIImage, extent: CGRect, amount: Float, seed: UInt64, time: RationalTime) -> CIImage {
+    /// Deterministic film grain: the infinite random field is offset by (seed, media tick), so the
+    /// same recipe and media time reproduce the same pixels at any export frame rate. Cells are sized
+    /// relative to the frame's short edge (`FilmGrain.cellScale`) and sampled linearly for soft clumps;
+    /// `chroma` mixes in per-channel colour grain. The overlay blend keeps deep shadows and highlights
+    /// cleaner than midtones, as film grain does.
+    private func grain(
+        over image: CIImage, extent: CGRect, amount: Float, size: Double, chroma: Double, seed: UInt64, time: RationalTime
+    ) -> CIImage {
         guard amount > 0, let noise = CIFilter.randomGenerator().outputImage else { return image }
         let tick = Self.noiseTick(time)
         var mixer = seed &+ UInt64(bitPattern: tick) &* 0x9E37_79B9_7F4A_7C15
         mixer ^= mixer >> 31
         let offsetX = CGFloat(mixer % 4096)
         let offsetY = CGFloat((mixer >> 16) % 4096)
+        let scale = CGFloat(FilmGrain.cellScale(shortEdge: Double(min(extent.width, extent.height)), grainSize: size))
 
-        let mono = CIFilter.colorMatrix()
-        mono.inputImage = noise.transformed(by: CGAffineTransform(translationX: -offsetX, y: -offsetY))
-        // Luma-only noise around mid-grey, alpha = grain strength.
-        let weight = CIVector(x: 0.33, y: 0.33, z: 0.33, w: 0)
-        mono.rVector = weight
-        mono.gVector = weight
-        mono.bVector = weight
-        mono.aVector = CIVector(x: 0, y: 0, z: 0, w: 0)
-        mono.biasVector = CIVector(x: 0, y: 0, z: 0, w: CGFloat(amount))
+        let colour = CIFilter.colorMatrix()
+        colour.inputImage = noise
+            .transformed(by: CGAffineTransform(translationX: -offsetX, y: -offsetY))
+            .samplingLinear()
+            .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+            .transformed(by: CGAffineTransform(translationX: extent.minX, y: extent.minY))
+        // Noise around mid-grey (rows sum to 1), alpha = grain strength.
+        let rows = FilmGrain.channelWeights(chroma: chroma).map { row in
+            CIVector(x: CGFloat(row[0]), y: CGFloat(row[1]), z: CGFloat(row[2]), w: 0)
+        }
+        colour.rVector = rows[0]
+        colour.gVector = rows[1]
+        colour.bVector = rows[2]
+        colour.aVector = CIVector(x: 0, y: 0, z: 0, w: 0)
+        colour.biasVector = CIVector(x: 0, y: 0, z: 0, w: CGFloat(amount))
 
-        guard let grainLayer = mono.outputImage?.cropped(to: extent) else { return image }
+        guard let grainLayer = colour.outputImage?.cropped(to: extent) else { return image }
         let blend = CIFilter.overlayBlendMode()
         blend.inputImage = grainLayer
         blend.backgroundImage = image
