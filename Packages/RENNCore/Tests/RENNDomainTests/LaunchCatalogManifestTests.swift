@@ -34,6 +34,9 @@ struct LaunchCatalogManifestTests {
             #expect(look.nameKey == "look.\(short).name")
             #expect(look.descriptionKey == "look.\(short).description")
             #expect(look.parameters[LookParameter.lutMix] == 1)
+            #expect(look.parameters[LookParameter.grainSize] != nil)
+            // Monochrome Looks keep monochrome grain.
+            if look.family == "mono" { #expect(look.parameters[LookParameter.grainChroma] == 0) }
         }
     }
 

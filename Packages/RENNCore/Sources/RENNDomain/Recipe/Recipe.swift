@@ -95,6 +95,12 @@ public struct Recipe: Sendable, Equatable, Codable {
         (lookParameters[key] ?? 0) * intensity.value
     }
 
+    /// A shape parameter (`LookParameter.unscaled`), independent of intensity, or `fallback` when the
+    /// Look does not set it.
+    public func shapeParameter(_ key: String, fallback: Double) -> Double {
+        lookParameters[key] ?? fallback
+    }
+
     public func validate() throws(ValidationError) {
         guard (1...Recipe.currentVersion).contains(version) else { throw .unsupportedVersion(version) }
         guard renderVersion > 0, beatAlgorithmVersion > 0, lookVersion.map({ $0 > 0 }) ?? true else {

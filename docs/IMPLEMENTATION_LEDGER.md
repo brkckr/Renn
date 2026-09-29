@@ -210,6 +210,15 @@ per motion so stale completions never act.
   bundled LUT parses. Simulator test: every catalog Look resolves its LUT; the notice is bundled.
   Not done: Look posters from licensed footage, visual review on real footage/device.
 
+- Film grain (render version 1, pre-release change): grain cells are sized relative to the frame's short
+  edge (`FilmGrain.cellScale`: `grainSize` px at 1080, linear sampling for soft clumps), so preview,
+  720p, 1080p and 4K show the same structure; before, grain was one sample per output pixel and nearly
+  vanished at 4K. `grainChroma` mixes per-channel colour grain (0 for the mono family). Both are shape
+  parameters (`LookParameter.unscaled`, `Recipe.shapeParameter`) that intensity does not scale. Grain
+  stays procedural, deterministic per (seed, media tick) and moving; no texture or overlay video is
+  bundled. Linux tests cover the geometry and colour weights; simulator tests check that cells grow with
+  the frame and that chroma 0 keeps grey neutral.
+
 ## M09 Hardening: started (2026-09-28)
 
 - Privacy manifest `RENN/Resources/PrivacyInfo.xcprivacy`: no tracking; required-reason APIs used by app
