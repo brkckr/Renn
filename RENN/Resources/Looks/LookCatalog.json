@@ -22,7 +22,12 @@
         "vignette": 0.3,
         "grain": 0.05,
         "grainSize": 1.2,
-        "grainChroma": 0.2
+        "grainChroma": 0.2,
+        "chromaBleed": 0.15,
+        "tapeSoftness": 0.2,
+        "scanlines": 0.1,
+        "lineJitter": 0.1,
+        "tracking": 0
       }
     },
     {
@@ -43,7 +48,12 @@
         "vignette": 0.6,
         "grain": 0.1,
         "grainSize": 1.6,
-        "grainChroma": 0.3
+        "grainChroma": 0.3,
+        "chromaBleed": 0.3,
+        "tapeSoftness": 0.35,
+        "scanlines": 0.15,
+        "lineJitter": 0.2,
+        "tracking": 0.1
       }
     },
     {
@@ -64,7 +74,12 @@
         "vignette": 0.7,
         "grain": 0.08,
         "grainSize": 1.4,
-        "grainChroma": 0.3
+        "grainChroma": 0.3,
+        "chromaBleed": 0.45,
+        "tapeSoftness": 0.3,
+        "scanlines": 0.25,
+        "lineJitter": 0.25,
+        "tracking": 0.15
       }
     },
     {
@@ -85,7 +100,12 @@
         "vignette": 0.8,
         "grain": 0.14,
         "grainSize": 1.8,
-        "grainChroma": 0.35
+        "grainChroma": 0.35,
+        "chromaBleed": 0.35,
+        "tapeSoftness": 0.4,
+        "scanlines": 0.2,
+        "lineJitter": 0.3,
+        "tracking": 0.2
       }
     },
     {
@@ -106,7 +126,12 @@
         "vignette": 0.8,
         "grain": 0.12,
         "grainSize": 1.5,
-        "grainChroma": 0.3
+        "grainChroma": 0.3,
+        "chromaBleed": 0.7,
+        "tapeSoftness": 0.5,
+        "scanlines": 0.35,
+        "lineJitter": 0.45,
+        "tracking": 0.45
       }
     },
     {
@@ -127,7 +152,12 @@
         "vignette": 0.6,
         "grain": 0.1,
         "grainSize": 1.5,
-        "grainChroma": 0.25
+        "grainChroma": 0.25,
+        "chromaBleed": 0.35,
+        "tapeSoftness": 0.4,
+        "scanlines": 0.2,
+        "lineJitter": 0.25,
+        "tracking": 0.15
       }
     },
     {
@@ -148,7 +178,12 @@
         "vignette": 0.7,
         "grain": 0.12,
         "grainSize": 1.6,
-        "grainChroma": 0.3
+        "grainChroma": 0.3,
+        "chromaBleed": 0.6,
+        "tapeSoftness": 0.5,
+        "scanlines": 0.3,
+        "lineJitter": 0.4,
+        "tracking": 0.35
       }
     },
     {
@@ -169,7 +204,12 @@
         "vignette": 0.9,
         "grain": 0.14,
         "grainSize": 2.0,
-        "grainChroma": 0.3
+        "grainChroma": 0.3,
+        "chromaBleed": 0.2,
+        "tapeSoftness": 0.3,
+        "scanlines": 0,
+        "lineJitter": 0.3,
+        "tracking": 0
       }
     },
     {
@@ -190,7 +230,12 @@
         "vignette": 0.5,
         "grain": 0.1,
         "grainSize": 1.6,
-        "grainChroma": 0.3
+        "grainChroma": 0.3,
+        "chromaBleed": 0.4,
+        "tapeSoftness": 0.35,
+        "scanlines": 0.2,
+        "lineJitter": 0.25,
+        "tracking": 0.2
       }
     },
     {
@@ -211,7 +256,12 @@
         "vignette": 0.6,
         "grain": 0.12,
         "grainSize": 1.6,
-        "grainChroma": 0.35
+        "grainChroma": 0.35,
+        "chromaBleed": 0.5,
+        "tapeSoftness": 0.4,
+        "scanlines": 0.25,
+        "lineJitter": 0.35,
+        "tracking": 0.3
       }
     },
     {
@@ -232,7 +282,12 @@
         "vignette": 0.9,
         "grain": 0.15,
         "grainSize": 1.8,
-        "grainChroma": 0.0
+        "grainChroma": 0.0,
+        "chromaBleed": 0,
+        "tapeSoftness": 0.4,
+        "scanlines": 0.2,
+        "lineJitter": 0.3,
+        "tracking": 0.25
       }
     },
     {
@@ -253,7 +308,12 @@
         "vignette": 1.0,
         "grain": 0.2,
         "grainSize": 2.2,
-        "grainChroma": 0.0
+        "grainChroma": 0.0,
+        "chromaBleed": 0,
+        "tapeSoftness": 0.3,
+        "scanlines": 0.15,
+        "lineJitter": 0.2,
+        "tracking": 0.15
       }
     }
   ]

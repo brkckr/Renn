@@ -116,6 +116,41 @@ struct LookRenderingTests {
         #expect(colour > 2, "colour grain separates the channels (\(colour))")
     }
 
+    @Test func tapeKernelIsCompiledIntoTheApp() {
+        // Needs the -fcikernel / -cikernel build settings; a plain Metal library would not load.
+        #expect(RenderEngine.loadTapeKernel() != nil)
+    }
+
+    @Test func chromaBleedTrailsColourToTheRight() throws {
+        let engine = RenderEngine(luts: LookLUTStore(preloaded: [:]))
+        // Core Image's software renderer cannot run Metal kernels; the engine skips the tape stage
+        // without a Metal device, which the pixel check below requires.
+        guard engine.device != nil else { return }
+        // 1080 px short edge: the full 8 px bleed reach (only single pixels are rendered).
+        let side = 1080
+        let frame = CGRect(x: 0, y: 0, width: side, height: side)
+        // Left half red, right half blue.
+        let red = CIImage(color: CIColor(red: 0.8, green: 0.1, blue: 0.1)).cropped(to: CGRect(x: 0, y: 0, width: side / 2, height: side))
+        let blue = CIImage(color: CIColor(red: 0.1, green: 0.1, blue: 0.8)).cropped(to: frame)
+        let source = red.composited(over: blue)
+        func pixel(_ parameters: [String: Double], x: Int) throws -> [Int] {
+            let image = engine.image(for: RenderEngine.FrameRequest(
+                source: source, orientation: .up, recipe: try Self.recipe(parameters: parameters, intensity: 1),
+                time: .zero, outputSize: frame.size, watermark: nil, watermarkFrame: nil))
+            var bytes = [UInt8](repeating: 0, count: 4)
+            engine.context.render(
+                image, toBitmap: &bytes, rowBytes: 4, bounds: CGRect(x: x, y: side / 2, width: 1, height: 1),
+                format: .RGBA8, colorSpace: engine.outputColorSpace)
+            return bytes[0..<3].map(Int.init)
+        }
+        let justRight = side / 2 + 1
+        let plain = try pixel([:], x: justRight)
+        let bled = try pixel([LookParameter.chromaBleed: 1], x: justRight)
+        #expect(bled[0] > plain[0] + 5, "red trails into the blue half: \(plain) → \(bled)")
+        let far = try pixel([LookParameter.chromaBleed: 1], x: side - 8)
+        #expect(abs(far[0] - plain[0]) <= 3, "far from the edge the colour is unchanged: \(far)")
+    }
+
     @Test func warmLUTShiftsBlueDownAndIntensityScalesIt() throws {
         let engine = RenderEngine(luts: LookLUTStore(manifestName: BundledLookCatalogProvider.developmentManifestName))
         let grey = CIColor(red: 0.5, green: 0.5, blue: 0.5)
