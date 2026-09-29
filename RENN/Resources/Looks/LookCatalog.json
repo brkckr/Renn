@@ -149,9 +149,9 @@
       "lut": "renn_super8_pop",
       "parameters": {
         "lutMix": 1,
-        "saturation": 0.2,
-        "contrast": 0.06,
-        "warmth": 300,
+        "saturation": 0.1,
+        "contrast": 0.04,
+        "warmth": 400,
         "vignette": 0.9,
         "grain": 0.14
       }
@@ -208,7 +208,7 @@
         "lutMix": 1,
         "saturation": 0,
         "contrast": 0.04,
-        "warmth": 0,
+        "warmth": 1800,
         "vignette": 0.9,
         "grain": 0.15
       }

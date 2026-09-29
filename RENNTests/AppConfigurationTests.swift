@@ -55,6 +55,20 @@ struct AppBundleTests {
         }
     }
 
+    @Test func launchLookLUTsAreBundledWithTheirLicense() throws {
+        let catalog = try BundledLookCatalogProvider.load(bundle: .main, manifestName: BundledLookCatalogProvider.defaultManifestName)
+        let store = LookLUTStore()
+        for look in catalog.looks {
+            let lut = try #require(store.lut(for: look.id), "\(look.id.rawValue) must resolve its bundled LUT")
+            #expect(lut.dimension == 13)
+        }
+        let url = try #require(Bundle.main.url(forResource: "LookLicenses", withExtension: "txt"))
+        let notices = try String(contentsOf: url, encoding: .utf8)
+        for required in ["Pat David", "Attribution-ShareAlike 4.0", "MIT License", "Copyright (c) 2024 Yahia"] {
+            #expect(notices.contains(required))
+        }
+    }
+
     @Test func unconfiguredProvidersAreReportedAsPlaceholders() {
         let configuration = AppConfiguration.load()
         // No owner configuration is committed to the repository.
