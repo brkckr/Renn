@@ -63,6 +63,11 @@ public struct BeatTimeline: Sendable, Equatable, Codable {
 
     /// The latest frame at or before `time` (causal); silence before the first frame.
     public func frame(at time: RationalTime) -> BeatFrame? {
+        frameIndex(at: time).map { frames[$0] }
+    }
+
+    /// Index of `frame(at:)`, or nil before the first frame.
+    func frameIndex(at time: RationalTime) -> Int? {
         let local = time.approximateSeconds - startOffset.approximateSeconds
         guard local >= 0, !frames.isEmpty else { return nil }
         // Small tolerance so a time that is exactly a window end maps to that window.
@@ -70,7 +75,22 @@ public struct BeatTimeline: Sendable, Equatable, Codable {
         // Frames end at windowSize - 1 + k * hop.
         let k = (index - (configuration.windowSize - 1)) / configuration.hopSize
         guard index >= configuration.windowSize - 1 else { return nil }
-        return frames[min(frames.count - 1, max(0, k))]
+        return min(frames.count - 1, max(0, k))
+    }
+
+    /// The latest onset at or before `time` and no older than `window` seconds (causal).
+    public func recentOnset(at time: RationalTime, within window: Double) -> (strength: Float, age: Double, index: Int)? {
+        guard let current = frameIndex(at: time) else { return nil }
+        let now = time.approximateSeconds
+        var index = current
+        while index >= 0 {
+            let frame = frames[index]
+            let age = now - self.time(of: frame)
+            if age > window { return nil }
+            if frame.onset > 0 { return (frame.onset, max(0, age), index) }
+            index -= 1
+        }
+        return nil
     }
 }
 
@@ -344,20 +364,40 @@ struct StableHasher {
     }
 }
 
-/// Bounded Beat modulation for one frame (05 V04): pulse from onsets, sway from energy. Both
-/// are zero when Beat is not effective or intensity is zero, so intensity 0 equals Beat off.
+/// Bounded Beat modulation for one frame (05 V04): pulse from onsets, sway from energy, and a
+/// short tape glitch after each onset. All are zero when Beat is not effective or intensity is
+/// zero, so intensity 0 equals Beat off.
+///
+/// The glitch never changes brightness (no flashes): it displaces a few horizontal blocks and
+/// splits red/blue sideways, peaks on the onset and decays within `glitchWindow`.
 public struct BeatModulation: Sendable, Equatable {
     /// Brightness lift, at most 0.06 (no full-frame strobing).
     public let brightness: Double
     /// Scale above 1, at most 1.5% (no uncontrolled shake).
     public let zoom: Double
+    /// Red/blue horizontal split, 0...1 (the kernel maps 1 to 6 px at a 1080 px short edge).
+    public let rgbSplit: Double
+    /// Sideways displacement of a few horizontal blocks, 0...1 (1 = 24 px at 1080).
+    public let blockShift: Double
+    /// Identifies the onset that caused the glitch, so its blocks stay put while it decays and
+    /// the next hit picks different ones.
+    public let glitchSeed: Double
 
     public static let none = BeatModulation(brightness: 0, zoom: 0)
+    /// Glitch decay time constant and the age after which it is gone.
+    public static let glitchDecay = 0.08
+    public static let glitchWindow = 0.25
 
-    public init(brightness: Double, zoom: Double) {
+    public init(brightness: Double, zoom: Double, rgbSplit: Double = 0, blockShift: Double = 0, glitchSeed: Double = 0) {
         self.brightness = brightness
         self.zoom = zoom
+        self.rgbSplit = rgbSplit
+        self.blockShift = blockShift
+        self.glitchSeed = glitchSeed
     }
+
+    /// The glitch stage is skipped when both strengths are 0.
+    public var hasGlitch: Bool { rgbSplit > 0 || blockShift > 0 }
 
     public static func at(
         _ time: RationalTime, timeline: BeatTimeline?, beat: BeatSettings, audioMuted: Bool
@@ -369,8 +409,17 @@ public struct BeatModulation: Sendable, Equatable {
         else { return .none }
         let intensity = beat.intensity
         let pulse = Double(max(frame.onset, frame.low * 0.5))
+        var glitch = 0.0
+        var glitchSeed = 0.0
+        if let hit = timeline.recentOnset(at: time, within: glitchWindow) {
+            glitch = min(1, Double(hit.strength) * intensity * exp(-hit.age / glitchDecay))
+            glitchSeed = Double(hit.index % 4096)
+        }
         return BeatModulation(
             brightness: min(0.06, 0.06 * intensity * pulse),
-            zoom: min(0.015, 0.015 * intensity * Double(frame.energy) * pulse))
+            zoom: min(0.015, 0.015 * intensity * Double(frame.energy) * pulse),
+            rgbSplit: glitch,
+            blockShift: glitch * 0.8,
+            glitchSeed: glitchSeed)
     }
 }

@@ -28,20 +28,23 @@ final class RenderEngine: @unchecked Sendable {
     /// Creative LUTs are authored for gamma-encoded sRGB, not the linear working space.
     private let lutColorSpace = CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
 
-    /// The `rennVHS` Core Image kernel from the app's default.metallib (VHSKernel.ci.metal), or nil
-    /// if it failed to load (then the tape stage is skipped, never a crash). Immutable after init.
+    /// Core Image kernels from the app's default.metallib (VHSKernel.ci.metal): `rennVHS` (tape
+    /// stage) and `rennBeatGlitch`. Nil if loading failed; that stage is then skipped, never a
+    /// crash. Immutable after init.
     let tapeKernel: CIKernel?
+    let glitchKernel: CIKernel?
 
-    static func loadTapeKernel() -> CIKernel? {
+    static func loadKernel(_ functionName: String) -> CIKernel? {
         guard let url = Bundle.main.url(forResource: "default", withExtension: "metallib"),
               let data = try? Data(contentsOf: url)
         else { return nil }
-        return try? CIKernel(functionName: "rennVHS", fromMetalLibraryData: data)
+        return try? CIKernel(functionName: functionName, fromMetalLibraryData: data)
     }
 
     init(luts: LookLUTStore = LookLUTStore()) {
         self.luts = luts
-        tapeKernel = Self.loadTapeKernel()
+        tapeKernel = Self.loadKernel("rennVHS")
+        glitchKernel = Self.loadKernel("rennBeatGlitch")
         let rec709 = CGColorSpace(name: CGColorSpace.itur_709) ?? CGColorSpaceCreateDeviceRGB()
         outputColorSpace = rec709
         let options: [CIContextOption: Any] = [
@@ -211,6 +214,19 @@ final class RenderEngine: @unchecked Sendable {
             controls.saturation = 1
             controls.contrast = 1
             result = controls.outputImage ?? result
+        }
+        if beat.hasGlitch, device != nil, let kernel = glitchKernel {
+            // Block shift 24 px + split 6 px at 1080, plus a margin.
+            let reach = CGFloat(30 * max(0.25, min(extent.width, extent.height) / 1080) + 2)
+            let glitched = kernel.apply(
+                extent: extent,
+                roiCallback: { _, rect in rect.insetBy(dx: -reach, dy: 0) },
+                arguments: [
+                    result.clampedToExtent(),
+                    CIVector(x: extent.minX, y: extent.minY, z: extent.width, w: extent.height),
+                    CIVector(x: CGFloat(beat.rgbSplit), y: CGFloat(beat.blockShift), z: CGFloat(beat.glitchSeed), w: 0),
+                ])
+            result = glitched ?? result
         }
         return result
     }

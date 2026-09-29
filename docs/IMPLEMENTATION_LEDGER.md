@@ -232,6 +232,17 @@ per motion so stale completions never act.
   loads from default.metallib and, with a Metal device, that bleed moves colour to the right of an edge.
   Not done: visual tuning on device, Beat-driven glitches.
 
+- Beat glitch: after each onset `BeatModulation` adds a tape glitch that peaks on the hit and decays
+  (time constant 80 ms, gone after 250 ms): `rgbSplit` (red/blue apart, up to 6 px at 1080) and
+  `blockShift` (about 15% of 24 horizontal blocks shift sideways, up to 24 px), scaled by Beat
+  intensity and onset strength. `glitchSeed` is the onset's frame index, so a hit's blocks stay put
+  while it decays and the next hit picks others. The glitch never changes brightness (no flashes; the
+  existing 0.06 lift cap still applies) and is off when Beat is off, muted or at intensity 0. Kernel
+  `rennBeatGlitch` in VHSKernel.ci.metal, applied after zoom/brightness; skipped without a Metal device.
+  No new controls (02 D05: one Beat intensity). Linux tests: peak/decay/seed/off/bounds; simulator
+  tests: both kernels load, and with a Metal device the split moves red at an edge and leaves flat
+  areas unchanged.
+
 ## M09 Hardening: started (2026-09-28)
 
 - Privacy manifest `RENN/Resources/PrivacyInfo.xcprivacy`: no tracking; required-reason APIs used by app
