@@ -30,8 +30,8 @@ struct LookPosterPlaceholder: View {
     }
 }
 
-/// PLACEHOLDER upright VHS case shell (02 D08). Final case/sleeve art, the processed-frame
-/// print and the player insertion motion arrive with M05/M07. The print color follows the
+/// Upright VHS case shell (02 D08): RENN's own vector art, approved by the owner as final
+/// (08 I02). The print window shows the project's processed frame; the print color follows the
 /// deterministic per-project variant.
 struct VHSCaseShell: View {
     let name: String

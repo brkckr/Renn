@@ -7,7 +7,7 @@ import RENNFeatures
 /// on every case, not solely long-press. Opening a ready project plays the insertion motion
 /// (03 M05): the case lifts, travels along a curve to the slot and slides behind the player's
 /// front plate (real occlusion, not shrinking away), then the preview is presented once. The
-/// player is layered vector development art until the owner's layers arrive (08 I02).
+/// player is RENN's own layered vector art, approved by the owner as final (08 I02).
 struct ProjectsView: View {
     let viewModel: ProjectsViewModel
 
@@ -344,9 +344,8 @@ private struct RenameProjectSheet: View {
     }
 }
 
-/// PLACEHOLDER vector player. Final original/licensed rear/front/slot layers are an
-/// outstanding owner input (08 I02). Decorative buttons have no function. The slot reports its
-/// frame so the insertion motion targets it.
+/// RENN's own vector player, approved by the owner as final art (08 I02). Decorative buttons
+/// have no function. The slot reports its frame so the insertion motion targets it.
 private struct PlayerArt: View {
     let onSlotFrame: ((CGRect) -> Void)?
 
@@ -384,7 +383,6 @@ private struct PlayerArt: View {
         }
         .aspectRatio(1.25, contentMode: .fit)
         .frame(maxWidth: .infinity)
-        .overlay(alignment: .topLeading) { DevelopmentFixtureBadge().padding(10) }
         .accessibilityHidden(true)
     }
 }
