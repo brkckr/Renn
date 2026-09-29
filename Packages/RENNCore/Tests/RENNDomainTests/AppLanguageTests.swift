@@ -4,8 +4,10 @@ import Testing
 
 @Suite("App languages")
 struct AppLanguageTests {
-    @Test func tenLanguagesPlusSystem() {
-        #expect(AppLanguage.supportedLocalizations == ["en", "tr", "es", "pt-BR", "de", "fr", "ja", "ko", "zh-Hans", "ru"])
+    @Test func thirteenLanguagesPlusSystem() {
+        #expect(AppLanguage.supportedLocalizations == [
+            "en", "tr", "es", "pt-BR", "de", "fr", "ja", "ko", "zh-Hans", "ru", "th", "vi", "id",
+        ])
         #expect(AppLanguage.system.localizationIdentifier == nil && AppLanguage.system.nativeName == nil)
         for language in AppLanguage.allCases where language != .system {
             #expect(language.nativeName?.isEmpty == false, "\(language) needs its own name for the picker")

@@ -17,7 +17,7 @@ import sys
 ROOT = sys.argv[1] if len(sys.argv) > 1 else "."
 errors = []
 # Must match AppLanguage.supportedLocalizations and knownRegions in scripts/generate_xcodeproj.py.
-LANGUAGES = ("en", "tr", "es", "pt-BR", "de", "fr", "ja", "ko", "zh-Hans", "ru")
+LANGUAGES = ("en", "tr", "es", "pt-BR", "de", "fr", "ja", "ko", "zh-Hans", "ru", "th", "vi", "id")
 
 catalog = json.load(open(f"{ROOT}/RENN/Resources/Localizable.xcstrings", encoding="utf-8"))["strings"]
 info_catalog = json.load(open(f"{ROOT}/RENN/Resources/InfoPlist.xcstrings", encoding="utf-8"))["strings"]
