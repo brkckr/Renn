@@ -11,7 +11,8 @@ import RENNDomain
 /// 60-ticks-per-second media clock.
 ///
 /// Render version 1 Look graph: LUT (blended by `lutMix`) → saturation/contrast → warmth →
-/// tape artefacts (`rennVHS` kernel) → vignette → deterministic grain. Every strength comes from
+/// tape artefacts (`rennVHS` kernel) → film overlays (light leak, dust, burnt edges) → vignette →
+/// deterministic grain. Every strength comes from
 /// the recipe's snapshotted Look parameters scaled by intensity, so intensity 0 is an exact
 /// passthrough and later catalog edits never change an existing project.
 ///
@@ -25,23 +26,28 @@ final class RenderEngine: @unchecked Sendable {
     /// Shared GPU device for preview drawables (04 A03 app-lifetime GPU context).
     let device: MTLDevice?
     let luts: LookLUTStore
+    let overlays: OverlayTextureStore
     /// Creative LUTs are authored for gamma-encoded sRGB, not the linear working space.
     private let lutColorSpace = CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
 
-    /// The `rennVHS` Core Image kernel from the app's default.metallib (VHSKernel.ci.metal), or nil
-    /// if it failed to load (then the tape stage is skipped, never a crash). Immutable after init.
+    /// Core Image kernels from the app's default.metallib (VHSKernel.ci.metal): `rennVHS` (tape
+    /// stage) and `rennBeatGlitch`. Nil if loading failed; that stage is then skipped, never a
+    /// crash. Immutable after init.
     let tapeKernel: CIKernel?
+    let glitchKernel: CIKernel?
 
-    static func loadTapeKernel() -> CIKernel? {
+    static func loadKernel(_ functionName: String) -> CIKernel? {
         guard let url = Bundle.main.url(forResource: "default", withExtension: "metallib"),
               let data = try? Data(contentsOf: url)
         else { return nil }
-        return try? CIKernel(functionName: "rennVHS", fromMetalLibraryData: data)
+        return try? CIKernel(functionName: functionName, fromMetalLibraryData: data)
     }
 
-    init(luts: LookLUTStore = LookLUTStore()) {
+    init(luts: LookLUTStore = LookLUTStore(), overlays: OverlayTextureStore = OverlayTextureStore()) {
         self.luts = luts
-        tapeKernel = Self.loadTapeKernel()
+        self.overlays = overlays
+        tapeKernel = Self.loadKernel("rennVHS")
+        glitchKernel = Self.loadKernel("rennBeatGlitch")
         let rec709 = CGColorSpace(name: CGColorSpace.itur_709) ?? CGColorSpaceCreateDeviceRGB()
         outputColorSpace = rec709
         let options: [CIContextOption: Any] = [
@@ -212,6 +218,19 @@ final class RenderEngine: @unchecked Sendable {
             controls.contrast = 1
             result = controls.outputImage ?? result
         }
+        if beat.hasGlitch, device != nil, let kernel = glitchKernel {
+            // Block shift 24 px + split 6 px at 1080, plus a margin.
+            let reach = CGFloat(30 * max(0.25, min(extent.width, extent.height) / 1080) + 2)
+            let glitched = kernel.apply(
+                extent: extent,
+                roiCallback: { _, rect in rect.insetBy(dx: -reach, dy: 0) },
+                arguments: [
+                    result.clampedToExtent(),
+                    CIVector(x: extent.minX, y: extent.minY, z: extent.width, w: extent.height),
+                    CIVector(x: CGFloat(beat.rgbSplit), y: CGFloat(beat.blockShift), z: CGFloat(beat.glitchSeed), w: 0),
+                ])
+            result = glitched ?? result
+        }
         return result
     }
 
@@ -257,6 +276,7 @@ final class RenderEngine: @unchecked Sendable {
         }
 
         result = tape(result, extent: extent, artifacts: TapeArtifacts(recipe: recipe), seed: recipe.seed, time: time)
+        result = filmOverlays(result, extent: extent, overlays: FilmOverlays(recipe: recipe, time: time))
 
         let vignette = recipe.effectiveParameter(LookParameter.vignette)
         if vignette > 0 {
@@ -334,6 +354,95 @@ final class RenderEngine: @unchecked Sendable {
             roiCallback: { _, rect in rect.insetBy(dx: -reach, dy: -1) },
             arguments: arguments)
         return output ?? image
+    }
+
+    /// Still textures animated by `FilmOverlays`: a light leak (screen), dust and scratches (screen)
+    /// and burnt edges (multiply). A missing texture skips its layer. Built-in filters only, so this
+    /// also runs on Core Image's software renderer.
+    private func filmOverlays(_ image: CIImage, extent: CGRect, overlays plan: FilmOverlays) -> CIImage {
+        guard plan.isActive else { return image }
+        var result = image
+        if let leak = plan.leak, leak.opacity > 0,
+           let texture = overlays.texture(leak.cool ? .leakCool : .leakWarm) {
+            let layer = Self.cover(
+                texture, extent: extent, zoom: 1.25, offsetX: 0.5 - leak.drift / 0.25 * 0.5, offsetY: 0.5,
+                flipX: leak.mirrored, flipY: false)
+            result = Self.screen(Self.scaledRGB(layer, by: leak.opacity), over: result)
+        }
+        if let dust = plan.dust, let texture = overlays.texture(.dust, variant: dust.variant) {
+            let layer = Self.cover(
+                texture, extent: extent, zoom: dust.zoom, offsetX: dust.offsetX, offsetY: dust.offsetY,
+                flipX: dust.flipX, flipY: dust.flipY)
+            result = Self.screen(Self.scaledRGB(layer, by: dust.strength), over: result)
+        }
+        if plan.burn > 0, let texture = overlays.texture(.burn) {
+            let layer = Self.cover(texture, extent: extent, stretch: true)
+            // Toward white as the strength drops, so multiply fades the burn out.
+            let faded = CIFilter.colorMatrix()
+            faded.inputImage = layer
+            let s = CGFloat(plan.burn)
+            faded.rVector = CIVector(x: s, y: 0, z: 0, w: 0)
+            faded.gVector = CIVector(x: 0, y: s, z: 0, w: 0)
+            faded.bVector = CIVector(x: 0, y: 0, z: s, w: 0)
+            faded.aVector = CIVector(x: 0, y: 0, z: 0, w: 1)
+            faded.biasVector = CIVector(x: 1 - s, y: 1 - s, z: 1 - s, w: 0)
+            let multiply = CIFilter.multiplyBlendMode()
+            multiply.inputImage = faded.outputImage ?? layer
+            multiply.backgroundImage = result
+            result = multiply.outputImage?.cropped(to: extent) ?? result
+        }
+        return result
+    }
+
+    /// Places `texture` over `extent`: turned to the frame's orientation, flipped, then scaled to
+    /// cover it (times `zoom`, positioned by the offsets in the spare area) or stretched to fill it.
+    static func cover(
+        _ texture: CIImage, extent: CGRect, zoom: Double = 1, offsetX: Double = 0.5, offsetY: Double = 0.5,
+        flipX: Bool = false, flipY: Bool = false, stretch: Bool = false
+    ) -> CIImage {
+        func atOrigin(_ image: CIImage) -> CIImage {
+            image.transformed(by: CGAffineTransform(translationX: -image.extent.minX, y: -image.extent.minY))
+        }
+        var layer = atOrigin(texture)
+        if (layer.extent.height > layer.extent.width) != (extent.height > extent.width) {
+            layer = atOrigin(layer.oriented(.right))
+        }
+        if flipX { layer = atOrigin(layer.oriented(.upMirrored)) }
+        if flipY { layer = atOrigin(layer.oriented(.downMirrored)) }
+        let size = layer.extent.size
+        guard size.width > 0, size.height > 0 else { return texture }
+        let sx = extent.width / size.width
+        let sy = extent.height / size.height
+        let transform: CGAffineTransform
+        if stretch {
+            transform = CGAffineTransform(scaleX: sx, y: sy).concatenating(
+                CGAffineTransform(translationX: extent.minX, y: extent.minY))
+        } else {
+            let scale = max(sx, sy) * CGFloat(zoom)
+            let spareX = size.width * scale - extent.width
+            let spareY = size.height * scale - extent.height
+            transform = CGAffineTransform(scaleX: scale, y: scale).concatenating(CGAffineTransform(
+                translationX: extent.minX - spareX * CGFloat(offsetX), y: extent.minY - spareY * CGFloat(offsetY)))
+        }
+        return layer.transformed(by: transform).cropped(to: extent)
+    }
+
+    private static func scaledRGB(_ image: CIImage, by amount: Double) -> CIImage {
+        let filter = CIFilter.colorMatrix()
+        filter.inputImage = image
+        let a = CGFloat(amount)
+        filter.rVector = CIVector(x: a, y: 0, z: 0, w: 0)
+        filter.gVector = CIVector(x: 0, y: a, z: 0, w: 0)
+        filter.bVector = CIVector(x: 0, y: 0, z: a, w: 0)
+        filter.aVector = CIVector(x: 0, y: 0, z: 0, w: 1)
+        return filter.outputImage ?? image
+    }
+
+    private static func screen(_ layer: CIImage, over background: CIImage) -> CIImage {
+        let filter = CIFilter.screenBlendMode()
+        filter.inputImage = layer
+        filter.backgroundImage = background
+        return filter.outputImage?.cropped(to: background.extent) ?? background
     }
 
     static func noiseTick(_ time: RationalTime) -> Int64 {

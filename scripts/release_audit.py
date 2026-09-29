@@ -38,6 +38,13 @@ def check_catalog(blockers, ok):
             else:
                 blockers.append("Look LUT license notice (RENN/Resources/Licenses/LookLicenses.txt) missing; add the pack's copyright and license text.")
             blockers.append("Look parameters are starting values: visual review of the twelve Looks on real footage/device is still needed (M08).")
+            overlay_dir = RES / "Overlays"
+            wanted = sorted(json.loads((ROOT / "scripts" / "overlay_sources.json").read_text())["textures"])
+            missing_overlays = [n for n in wanted if not (overlay_dir / f"{n}.jpg").exists()]
+            if missing_overlays:
+                blockers.append(f"{len(missing_overlays)} film overlay texture(s) not installed locally ({', '.join(missing_overlays)}); add them to RENN/Resources/Overlays (scripts/install_overlays.py).")
+            else:
+                ok.append("Film overlay textures installed locally.")
     if not catalogs:
         blockers.append("No Look catalog manifest found.")
 

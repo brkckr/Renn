@@ -349,6 +349,14 @@ out = f"""// !$*UTF8*$!
 			knownRegions = (
 				en,
 				tr,
+				es,
+				"pt-BR",
+				de,
+				fr,
+				ja,
+				ko,
+				"zh-Hans",
+				ru,
 				Base,
 			);
 			mainGroup = {I['mainGroup']};

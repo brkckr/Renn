@@ -168,7 +168,40 @@ struct BeatModulationTests {
             let modulation = BeatModulation.at(time, timeline: timeline, beat: BeatSettings(isEnabled: true, intensity: 1), audioMuted: false)
             #expect(modulation.brightness <= 0.06 && modulation.brightness >= 0)
             #expect(modulation.zoom <= 0.015 && modulation.zoom >= 0)
+            #expect((0...1).contains(modulation.rgbSplit) && (0...1).contains(modulation.blockShift))
         }
+    }
+
+    @Test func glitchPeaksOnTheOnsetAndDecaysWithoutFlashing() throws {
+        let timeline = timeline()
+        let beat = BeatSettings(isEnabled: true, intensity: 1)
+        let peakIndex = try #require(timeline.frames.indices.max { timeline.frames[$0].onset < timeline.frames[$1].onset })
+        let onsetTime = timeline.time(of: timeline.frames[peakIndex])
+        func glitch(after seconds: Double) throws -> BeatModulation {
+            let time = try RationalTime(value: Int64(((onsetTime + seconds) * 48_000).rounded()), timescale: 48_000)
+            return BeatModulation.at(time, timeline: timeline, beat: beat, audioMuted: false)
+        }
+        let atHit = try glitch(after: 0)
+        let later = try glitch(after: 0.1)
+        let gone = try glitch(after: BeatModulation.glitchWindow + 0.05)
+        #expect(atHit.hasGlitch && atHit.rgbSplit > later.rgbSplit && later.rgbSplit > 0)
+        #expect(atHit.blockShift == atHit.rgbSplit * 0.8)
+        #expect(later.glitchSeed == atHit.glitchSeed, "one hit keeps its blocks while it decays")
+        #expect(!gone.hasGlitch)
+        let half = BeatModulation.at(
+            try RationalTime(value: Int64((onsetTime * 48_000).rounded()), timescale: 48_000),
+            timeline: timeline, beat: BeatSettings(isEnabled: true, intensity: 0.5), audioMuted: false)
+        #expect(abs(half.rgbSplit - atHit.rgbSplit / 2) < 1e-9 || atHit.rgbSplit == 1)
+    }
+
+    @Test func glitchIsOffWhenBeatIsOff() throws {
+        let timeline = timeline()
+        let peak = try #require(timeline.frames.max { $0.onset < $1.onset })
+        let time = try RationalTime(value: peak.endSample, timescale: 48_000)
+        for settings in [BeatSettings(isEnabled: false, intensity: 1), BeatSettings(isEnabled: true, intensity: 0)] {
+            #expect(!BeatModulation.at(time, timeline: timeline, beat: settings, audioMuted: false).hasGlitch)
+        }
+        #expect(!BeatModulation.at(time, timeline: timeline, beat: BeatSettings(isEnabled: true, intensity: 1), audioMuted: true).hasGlitch)
     }
 
     @Test func cacheKeyDependsOnSourceAndConstantsOnly() throws {

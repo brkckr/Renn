@@ -116,9 +116,10 @@ struct LookRenderingTests {
         #expect(colour > 2, "colour grain separates the channels (\(colour))")
     }
 
-    @Test func tapeKernelIsCompiledIntoTheApp() {
+    @Test func tapeAndGlitchKernelsAreCompiledIntoTheApp() {
         // Needs the -fcikernel / -cikernel build settings; a plain Metal library would not load.
-        #expect(RenderEngine.loadTapeKernel() != nil)
+        #expect(RenderEngine.loadKernel("rennVHS") != nil)
+        #expect(RenderEngine.loadKernel("rennBeatGlitch") != nil)
     }
 
     @Test func chromaBleedTrailsColourToTheRight() throws {
@@ -149,6 +150,34 @@ struct LookRenderingTests {
         #expect(bled[0] > plain[0] + 5, "red trails into the blue half: \(plain) → \(bled)")
         let far = try pixel([LookParameter.chromaBleed: 1], x: side - 8)
         #expect(abs(far[0] - plain[0]) <= 3, "far from the edge the colour is unchanged: \(far)")
+    }
+
+    @Test func beatGlitchSplitsRedAndBlueWithoutChangingFlatAreas() throws {
+        let engine = RenderEngine(luts: LookLUTStore(preloaded: [:]))
+        // Needs a Metal device, like the tape stage (see chromaBleedTrailsColourToTheRight).
+        guard engine.device != nil else { return }
+        let side = 1080
+        let frame = CGRect(x: 0, y: 0, width: side, height: side)
+        let red = CIImage(color: CIColor(red: 0.8, green: 0.1, blue: 0.1)).cropped(to: CGRect(x: 0, y: 0, width: side / 2, height: side))
+        let source = red.composited(over: CIImage(color: CIColor(red: 0.1, green: 0.1, blue: 0.8)).cropped(to: frame))
+        func pixel(_ beat: BeatModulation, x: Int) throws -> [Int] {
+            var request = RenderEngine.FrameRequest(
+                source: source, orientation: .up, recipe: try Self.recipe(parameters: [:], intensity: 1),
+                time: .zero, outputSize: frame.size, watermark: nil, watermarkFrame: nil)
+            request.beat = beat
+            var bytes = [UInt8](repeating: 0, count: 4)
+            engine.context.render(
+                engine.image(for: request), toBitmap: &bytes, rowBytes: 4,
+                bounds: CGRect(x: x, y: side / 2, width: 1, height: 1), format: .RGBA8, colorSpace: engine.outputColorSpace)
+            return bytes[0..<3].map(Int.init)
+        }
+        let split = BeatModulation(brightness: 0, zoom: 0, rgbSplit: 1, blockShift: 0, glitchSeed: 3)
+        let edge = side / 2 - 2
+        let plain = try pixel(.none, x: edge)
+        let glitched = try pixel(split, x: edge)
+        #expect(glitched[0] < plain[0] - 20, "red is taken from the blue side next to the edge: \(plain) → \(glitched)")
+        let flat = try pixel(split, x: 40)
+        #expect(zip(flat, try pixel(.none, x: 40)).allSatisfy { abs($0 - $1) <= 1 }, "flat colour is unchanged")
     }
 
     @Test func warmLUTShiftsBlueDownAndIntensityScalesIt() throws {

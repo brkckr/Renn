@@ -184,7 +184,7 @@ per motion so stale completions never act.
 - Owner steps: `docs/OWNER_SETUP_M06.md`. Not done: sandbox purchase evidence, Crashlytics dSYM upload
   phase, privacy manifest review of the pinned SDKs.
 
-## M08 Twelve launch Looks: catalog in place, LUT files and visual review pending (2026-09-30)
+## M08 Twelve launch Looks: catalog, LUTs, grain, tape stage, Beat glitch and overlays in place; device review pending (2026-09-30)
 
 - Source: https://github.com/YahiaAngelo/Film-Luts (296 G'MIC film-emulation `.cube` files, all 3D,
   size 13, domain 0...1), screened on the owner's machine (format, Log detection, duplicates, colour
@@ -230,7 +230,47 @@ per motion so stale completions never act.
   (02 D05). A context without a Metal device skips the stage (Core Image's software renderer cannot run
   Metal kernels). Linux tests cover the strength mapping and bounds; simulator tests check the kernel
   loads from default.metallib and, with a Metal device, that bleed moves colour to the right of an edge.
-  Not done: visual tuning on device, Beat-driven glitches.
+  Not done: visual tuning on device.
+
+- Beat glitch: after each onset `BeatModulation` adds a tape glitch that peaks on the hit and decays
+  (time constant 80 ms, gone after 250 ms): `rgbSplit` (red/blue apart, up to 6 px at 1080) and
+  `blockShift` (about 15% of 24 horizontal blocks shift sideways, up to 24 px), scaled by Beat
+  intensity and onset strength. `glitchSeed` is the onset's frame index, so a hit's blocks stay put
+  while it decays and the next hit picks others. The glitch never changes brightness (no flashes; the
+  existing 0.06 lift cap still applies) and is off when Beat is off, muted or at intensity 0. Kernel
+  `rennBeatGlitch` in VHSKernel.ci.metal, applied after zoom/brightness; skipped without a Metal device.
+  No new controls (02 D05: one Beat intensity). Linux tests: peak/decay/seed/off/bounds; simulator
+  tests: both kernels load, and with a Metal device the split moves red at an edge and leaves flat
+  areas unchanged.
+
+- Film overlays: dust/scratches, a light leak and burnt edges from the owner's Resource Boy texture
+  pack. The seven chosen JPEGs (screened on the owner's machine: black-background dust 026/032/003/007,
+  warm leak 035, cool leak 072, burnt edge 038) go into `RENN/Resources/Overlays/`, renamed per
+  `scripts/overlay_sources.json` (`scripts/install_overlays.py` copies them); a build without them
+  renders every Look without overlays. License: use inside apps is allowed; redistributing the files
+  "on their own or as a separate attachment" is not. The agent flagged that a public repository makes
+  the files individually downloadable and suggested asking Resource Boy or a private assets repo; after
+  reading the license text the owner decided to keep them in this repository as part of the app. `OverlayTextureStore` decodes them once to at most 2048 px. Motion comes
+  from `FilmOverlays` (pure, Linux-tested): dust picks a texture, flip, zoom and offset 20 times a second;
+  the leak drifts in and fades once per 6 s cycle (dark 40% of it); the burn breathes within 5%. Blends:
+  leak and dust screen, burn multiply, after the tape stage. New Look parameters `dust`, `lightLeak`,
+  `burnEdges` (0...1, scaled by intensity) and `lightLeakCool` (tone, unscaled); nine Looks use them
+  (none on Clean Tape, Late Night VHS, Handycam Green). Simulator tests use synthetic textures. The
+  release audit lists missing local textures.
+
+## Languages: extended from English and Turkish to ten (2026-09-30)
+
+- Owner decision (scope change from 01/02 "System/Turkish/English"): Spanish, Portuguese (Brazil),
+  German, French, Japanese, Korean, Chinese (Simplified) and Russian added. `AppLanguage` has the new
+  cases (raw values of existing choices unchanged) with native names; Settings uses a menu picker.
+- All 259 app strings and the four InfoPlist strings are translated by the agent; each language needs a
+  native-speaker review before release. Brand terms stay as is: Look, Beat, RENN Free/Pro, REC/PLAY,
+  "shot by RENN". Monoton and Press Start 2P only draw Latin brand text and camera indicators; Roboto
+  UI text falls back to the system fonts for Japanese, Korean, Chinese and Cyrillic.
+- `scripts/check_localization.py` (CI) requires every language with matching format arguments; the
+  project's knownRegions list them. Tests: `AppLanguageTests` (Linux) and
+  `everySupportedLanguageIsBundled` (simulator). Not done: App Store metadata in these languages,
+  layout review of longer strings (German, Russian) on device.
 
 ## M09 Hardening: started (2026-09-28)
 

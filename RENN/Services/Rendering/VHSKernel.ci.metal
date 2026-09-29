@@ -1,5 +1,5 @@
-// Core Image kernel for render version 1 tape artefacts (05 V04, 08 I01): chroma bleed, VHS
-// softness, scanlines, line jitter and a rolling tracking band. Compiled with -fcikernel and
+// Core Image kernels for render version 1: tape artefacts (05 V04, 08 I01: chroma bleed, VHS
+// softness, scanlines, line jitter and a rolling tracking band) and the Beat glitch. Compiled with -fcikernel and
 // linked with -cikernel (Config/RENN.shared.xcconfig) into the app's default.metallib.
 //
 // Deterministic: every random value is a hash of (row, media tick, seed); nothing reads the clock.
@@ -87,5 +87,28 @@ extern "C" { namespace coreimage {
         float phase = 0.5 - 0.5 * cos(6.2831853 * local.y / lineHeight);
         rgb *= 1.0 - strengths.z * 0.35 * phase;
         return float4(rgb, centre.a);
+    }
+
+    /// Beat glitch after an onset (BeatModulation): about 15% of 24 horizontal blocks shift
+    /// sideways (up to 24 px at 1080) and red/blue split apart (up to 6 px). Brightness is
+    /// untouched, so a hit never flashes.
+    /// glitch: (rgb split 0...1, block shift 0...1, hit seed, unused).
+    float4 rennBeatGlitch(sampler src, float4 frame, float4 glitch, destination dest) {
+        float2 p = dest.coord();
+        float2 local = p - frame.xy;
+        float scale = max(0.25, min(frame.z, frame.w) / 1080.0);
+        float seed = glitch.z;
+
+        float block = floor(local.y / max(1.0, frame.w / 24.0));
+        float pick = renn::hash(float2(block + 17.0, seed));
+        float direction = renn::hash(float2(block + 91.0, seed + 5.0)) - 0.5;
+        float shift = pick > 0.85 ? direction * 2.0 * glitch.y * 24.0 * scale : 0.0;
+
+        float split = glitch.x * 6.0 * scale;
+        float2 q = float2(p.x + shift, p.y);
+        float4 g = src.sample(src.transform(q));
+        float r = src.sample(src.transform(q + float2(split, 0.0))).r;
+        float b = src.sample(src.transform(q - float2(split, 0.0))).b;
+        return float4(r, g.g, b, g.a);
     }
 }}

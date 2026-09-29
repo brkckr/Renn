@@ -15,6 +15,54 @@
             "state": "translated",
             "value": "RENN"
           }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN"
+          }
         }
       }
     },
@@ -31,6 +79,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "RENN, retro kasetlere dönüştüreceğin videoları çekmek için kamerayı kullanır."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN usa la cámara para grabar videos que conviertes en cintas retro."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O RENN usa a câmera para gravar vídeos que você transforma em fitas retrô."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN nutzt die Kamera, um Videos aufzunehmen, die du in Retro-Tapes verwandelst."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN utilise l'appareil photo pour filmer des vidéos que vous transformez en cassettes rétro."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENNはカメラを使ってビデオを録画し、レトロなテープに仕上げます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN은 카메라로 비디오를 녹화해 레트로 테이프로 만듭니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN 使用相机录制视频，并把它们变成复古录像带。"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN использует камеру, чтобы записывать видео, которые вы превращаете в ретро-кассеты."
           }
         }
       }
@@ -49,6 +145,54 @@
             "state": "translated",
             "value": "RENN videolarınla birlikte ses kaydeder. Kaydedilen ses Beat efektlerini yönlendirebilir."
           }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN graba sonido con tus videos. El sonido grabado puede activar los efectos de Beat."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O RENN grava o som com seus vídeos. O som gravado pode acionar os efeitos do Beat."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN nimmt Ton mit deinen Videos auf. Der aufgenommene Ton kann Beat-Effekte steuern."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN enregistre le son avec vos vidéos. Le son enregistré peut piloter les effets Beat."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENNはビデオと一緒に音声を録音します。録音した音声でBeatエフェクトを動かせます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN은 비디오와 함께 소리를 녹음합니다. 녹음된 소리로 Beat 효과를 움직일 수 있습니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN 会随视频录制声音。录制的声音可以驱动 Beat 效果。"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN записывает звук вместе с видео. Записанный звук может управлять эффектами Beat."
+          }
         }
       }
     },
@@ -65,6 +209,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "RENN bitmiş videolarını Fotoğraflar'a kaydeder."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN guarda tus videos terminados en Fotos."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O RENN salva seus vídeos prontos no Fotos."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN sichert deine fertigen Videos in Fotos."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN enregistre vos vidéos terminées dans Photos."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENNは完成したビデオを写真に保存します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN은 완성된 비디오를 사진에 저장합니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN 会将完成的视频保存到“照片”。"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RENN сохраняет готовые видео в Фото."
           }
         }
       }
