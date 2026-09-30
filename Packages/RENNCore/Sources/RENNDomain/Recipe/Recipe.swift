@@ -115,6 +115,28 @@ public struct Recipe: Sendable, Equatable, Codable {
     }
 }
 
+/// Where the user dragged one indicator (owner-approved free placement, 2026-09-30): the centre of
+/// the indicator in the upright output, as fractions of its width and height (0...1), so the
+/// same choice holds for preview, camera and every export size.
+public struct IndicatorPosition: Sendable, Equatable, Codable, Hashable {
+    public let x: Double
+    public let y: Double
+
+    /// Non-finite values fall back to the centre; everything is clamped to 0...1.
+    public init(x: Double, y: Double) {
+        self.x = x.isFinite ? Swift.min(1, Swift.max(0, x)) : 0.5
+        self.y = y.isFinite ? Swift.min(1, Swift.max(0, y)) : 0.5
+    }
+
+    private enum CodingKeys: String, CodingKey { case x, y }
+
+    /// Decoding goes through the clamping initializer, so stored values are always valid.
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(x: try container.decode(Double.self, forKey: .x), y: try container.decode(Double.self, forKey: .y))
+    }
+}
+
 /// Independent REC / PLAY / Battery / Date indicators (01 P07). Baseline: all off.
 public struct IndicatorSettings: Sendable, Equatable, Codable {
     public static let currentVersion = 1
@@ -126,6 +148,9 @@ public struct IndicatorSettings: Sendable, Equatable, Codable {
     public var showsDate: Bool
     /// Kept when Date is turned off, so turning it back on restores the selection.
     public var stampDate: StampDate
+    /// Dragged positions by `IndicatorLayout.Kind` raw value. A missing kind uses its baseline
+    /// anchor; recipes saved before free placement decode with none (02 D06 baseline unchanged).
+    public var positions: [String: IndicatorPosition]
 
     public init(
         version: Int = IndicatorSettings.currentVersion,
@@ -133,7 +158,8 @@ public struct IndicatorSettings: Sendable, Equatable, Codable {
         showsPlay: Bool = false,
         showsBattery: Bool = false,
         showsDate: Bool = false,
-        stampDate: StampDate
+        stampDate: StampDate,
+        positions: [String: IndicatorPosition] = [:]
     ) {
         self.version = version
         self.showsRec = showsRec
@@ -141,6 +167,34 @@ public struct IndicatorSettings: Sendable, Equatable, Codable {
         self.showsBattery = showsBattery
         self.showsDate = showsDate
         self.stampDate = stampDate
+        self.positions = positions
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case version, showsRec, showsPlay, showsBattery, showsDate, stampDate, positions
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        version = try container.decode(Int.self, forKey: .version)
+        showsRec = try container.decode(Bool.self, forKey: .showsRec)
+        showsPlay = try container.decode(Bool.self, forKey: .showsPlay)
+        showsBattery = try container.decode(Bool.self, forKey: .showsBattery)
+        showsDate = try container.decode(Bool.self, forKey: .showsDate)
+        stampDate = try container.decode(StampDate.self, forKey: .stampDate)
+        positions = try container.decodeIfPresent([String: IndicatorPosition].self, forKey: .positions) ?? [:]
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(version, forKey: .version)
+        try container.encode(showsRec, forKey: .showsRec)
+        try container.encode(showsPlay, forKey: .showsPlay)
+        try container.encode(showsBattery, forKey: .showsBattery)
+        try container.encode(showsDate, forKey: .showsDate)
+        try container.encode(stampDate, forKey: .stampDate)
+        // Omitted when empty, so recipes without dragged indicators encode exactly as before.
+        if !positions.isEmpty { try container.encode(positions, forKey: .positions) }
     }
 }
 
