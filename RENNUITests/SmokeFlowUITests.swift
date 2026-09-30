@@ -70,7 +70,7 @@ final class SmokeFlowUITests: XCTestCase {
     func testCreationMenuOpensWithThreeRowsAndCloses() {
         let app = launchAtHome()
         app.buttons["creation.toggle"].tap()
-        XCTAssertTrue(app.buttons["creation.recordVideo"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["creation.recordVideo"].waitForExistence(timeout: 5), "One tap on + opens the creation menu")
         XCTAssertTrue(app.buttons["creation.recordWithBothCameras"].exists)
         XCTAssertTrue(app.buttons["creation.importVideo"].exists)
         app.buttons["creation.toggle"].tap()
@@ -84,7 +84,7 @@ final class SmokeFlowUITests: XCTestCase {
         let app = launchAtHome()
         app.buttons["creation.toggle"].tap()
         let dual = app.buttons["creation.recordWithBothCameras"]
-        XCTAssertTrue(dual.waitForExistence(timeout: 5))
+        XCTAssertTrue(dual.waitForExistence(timeout: 5), "One tap on + opens the creation menu")
         dual.tap()
         XCTAssertTrue(app.buttons["dual.unavailable.oneCamera"].waitForExistence(timeout: 10))
     }

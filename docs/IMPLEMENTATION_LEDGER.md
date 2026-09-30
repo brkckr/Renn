@@ -168,6 +168,13 @@ per motion so stale completions never act.
   unchanged: + only on Home in the same place, same capsule/panel morph and timings. Labels have a
   fixed size like the system bar; large text shows the large content viewer. Written and built in
   CI only; the iOS 26 glass morph and the + transition need a device check.
+- 2026-09-30: the + no longer uses the interactive Liquid Glass variant. A CI UI test tapped + once
+  and the menu stayed closed (the button still read "Create"; the navigation model has no path
+  that refuses an open on Home and no overlay covered it). The + was the only interactive glass
+  and the tab buttons on plain glass never missed a tap, so the interactive glass's own touch
+  tracking competing with the Button is the likely cause. The contract's press motion (scale to
+  0.94, 03 M03) is unchanged. Not reproduced locally (no macOS here); the failure was rare, so
+  one green run does not prove the fix.
 
 ## Showcase: demo clips, Look posters, onboarding scenes and Home (2026-09-30)
 
