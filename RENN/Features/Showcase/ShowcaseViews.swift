@@ -77,6 +77,8 @@ struct DemoVideoView: UIViewRepresentable {
     let recipe: Recipe?
     var beatTimeline: BeatTimeline? = nil
     var reveal: DemoReveal? = nil
+    /// Before/after comparison (paywall): clean left of this fraction of the width, the recipe right.
+    var compareSplit: Double? = nil
     var isActive = true
 
     func makeCoordinator() -> DemoVideoRenderer {
@@ -102,6 +104,7 @@ struct DemoVideoView: UIViewRepresentable {
         renderer.source = player
         renderer.recipe = recipe
         renderer.beatTimeline = beatTimeline
+        renderer.compareSplit = compareSplit
         if renderer.reveal != reveal {
             renderer.reveal = reveal
             renderer.revealStart = nil
@@ -123,6 +126,7 @@ final class DemoVideoRenderer: NSObject, @preconcurrency MTKViewDelegate {
     var recipe: Recipe?
     var beatTimeline: BeatTimeline?
     var reveal: DemoReveal?
+    var compareSplit: Double?
     /// Host time of the first drawn frame of the current reveal.
     var revealStart: CFTimeInterval?
 
@@ -130,6 +134,8 @@ final class DemoVideoRenderer: NSObject, @preconcurrency MTKViewDelegate {
     private var lastTime = RationalTime.zero
     /// A frame whose graph has not been drawn yet.
     private var hasNewFrame = false
+    /// Split of the last rendered frame, so moving the divider redraws a paused frame.
+    private var renderedSplit: Double?
     /// One frame in flight at a time; later ticks are dropped rather than queued.
     private let gate = RenderGate()
     /// Graph building, first-use kernel compilation and GPU encoding run here, never on the main
@@ -158,9 +164,10 @@ final class DemoVideoRenderer: NSObject, @preconcurrency MTKViewDelegate {
         let progress = reveal.flatMap { reveal in revealStart.map { reveal.progress(elapsed: CACurrentMediaTime() - $0) } }
         let isRevealing = progress.map { $0 < 1 } ?? false
         // Nothing changed since the last drawn frame: keep it on screen.
-        guard hasNewFrame || isRevealing else { return }
+        guard hasNewFrame || isRevealing || compareSplit != renderedSplit else { return }
         guard let drawable = view.currentDrawable, let commandBuffer = commandQueue?.makeCommandBuffer() else { return }
         hasNewFrame = false
+        renderedSplit = compareSplit
         let recipe = recipe ?? ShowcaseMedia.recipe(for: nil)
         let job = DemoRenderJob(
             engine: engine, drawable: drawable, commandBuffer: commandBuffer, size: size,
@@ -169,7 +176,8 @@ final class DemoVideoRenderer: NSObject, @preconcurrency MTKViewDelegate {
                 orientation: source.frameOrientation, recipe: recipe, time: lastTime, outputSize: size,
                 watermark: nil, watermarkFrame: nil,
                 beat: BeatModulation.at(lastTime, timeline: beatTimeline, beat: recipe.beat, audioMuted: recipe.audioMuted)),
-            revealProgress: isRevealing ? progress : nil)
+            revealProgress: isRevealing ? progress : nil,
+            compareSplit: compareSplit)
         let gate = gate
         guard gate.enter() else { return }
         renderQueue.async {
@@ -208,11 +216,23 @@ private struct DemoRenderJob: @unchecked Sendable {
     let request: RenderEngine.FrameRequest
     /// Sweep progress while the reveal runs; nil renders the treated frame only.
     let revealProgress: Double?
+    /// Clean left of this fraction, treated right (before/after).
+    let compareSplit: Double?
 
     func run() {
         let bounds = CGRect(origin: .zero, size: size)
         var frame = engine.image(for: request)
-        if let progress = revealProgress {
+        if let split = compareSplit {
+            var cleanRequest = request
+            cleanRequest.bypassCreative = true
+            let edge = (size.width * min(1, max(0, split))).rounded()
+            let blend = CIFilter.blendWithMask()
+            blend.inputImage = frame
+            blend.backgroundImage = engine.image(for: cleanRequest)
+            blend.maskImage = CIImage(color: .white)
+                .cropped(to: CGRect(x: edge, y: 0, width: max(0, size.width - edge), height: size.height))
+            frame = blend.outputImage ?? frame
+        } else if let progress = revealProgress {
             var cleanRequest = request
             cleanRequest.bypassCreative = true
             let edge = (size.width * progress).rounded()

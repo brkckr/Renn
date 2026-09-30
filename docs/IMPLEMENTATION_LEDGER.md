@@ -154,8 +154,8 @@ per motion so stale completions never act.
 - VHS insertion (03 M05): lift / curved travel / slide behind the front plate / present once at 700 ms;
   real occlusion by re-drawing the player's upper part above the travelling case; cancel on tab change,
   background, inactivity. Player and case art is RENN's own vector art, approved by the owner as final (08 I02).
-- Paywall selection stage (03 M04): passive pose → selected pose in 320 ms, halo 0.12 → 0.28 → 0.20,
-  billing data independent of motion. Stage objects are RENN's own simple cassette shapes, pending the owner's review.
+- Paywall selection stage (03 M04): replaced on 2026-09-30 by the owner-approved paywall below (the
+  cassette stage was reviewed and rejected by the owner).
 - Export completion (03 M06): 6 pt / opacity settle over 240 ms and one light haptic, once per output.
 - Already present since M00: splash ribbons (03 M01) and the glass bar morph (03 M03).
 - Not done: visual comparison against the reference videos, 60/120 Hz device recordings.
@@ -238,6 +238,22 @@ Owner-approved (2026-09-30) scope, from the owner's chosen demo footage:
 - Tests (Linux): centring, margins, watermark/indicator avoidance, resolution independence,
   unchanged encoding without positions, clamped decoding, draft move/reset.
 - Not verified yet: iOS compile in CI, drag feel and snapping on device.
+
+## Paywall redesign (owner-approved deviation from 03 M04, 2026-09-30)
+
+- Owner reviewed several concepts and chose: a full-width before/after hero over the street demo,
+  rendered by the same graph as export (clean left of a divider, the Look right); the user drags
+  the divider; swiping elsewhere on the hero changes the Look (Super 8 Pop, Late Night VHS, Noir
+  Grain, Sunday Polaroid; name chip and dots). The hero fades into the brown page.
+- Close: small translucent blurred ✕ at the top leading corner (owner's option B), 44 pt target.
+- Benefits as four ✓ rows (Looks stay free, longer videos, supported quality, no watermark), three
+  stacked plan rows (Store-localized price, period, selected row yellow), fixed yellow Continue ›,
+  the auto-renewal disclosure, and centred Restore · Terms · Privacy. No trial, no "best offer" or
+  per-week price (01/06 rules). The cassette plan stage (`PaywallStage`) is removed.
+- Selection, purchase, restore, pending/cancel/failure states and the unavailable/not-configured
+  paths are unchanged (PaywallViewModel); the selection updates at once, no motion gates it.
+- Not verified yet: iOS compile in CI, device look, divider/swipe feel, the hero under Reduce Motion
+  (the clip still plays; it is content, not an animation).
 
 ## M06 Commerce/telemetry: adapters in place, owner configuration pending (2026-09-28)
 
