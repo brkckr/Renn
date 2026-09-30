@@ -24,8 +24,8 @@ struct PaywallView: View {
             RENNColor.backgroundBase.ignoresSafeArea()
             VStack(spacing: 0) {
                 HStack {
-                    Spacer()
                     CloseButton { viewModel.close() }
+                    Spacer()
                 }
                 .padding(.horizontal, RENNMetrics.sideMargin)
 

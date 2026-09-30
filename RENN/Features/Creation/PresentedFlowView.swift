@@ -61,8 +61,8 @@ struct DualCameraUnavailableView: View {
             RENNColor.backgroundBase.ignoresSafeArea()
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    Spacer()
                     CloseButton(action: onClose)
+                    Spacer()
                 }
                 Spacer()
                 RENNIcon.recordBothCameras.image
@@ -90,6 +90,8 @@ struct DualCameraUnavailableView: View {
     }
 }
 
+/// The one close control of every RENN modal: glass circle ✕ at the top leading corner, in
+/// full-screen flows and bottom sheets alike (owner-approved consistency).
 struct CloseButton: View {
     let action: () -> Void
 

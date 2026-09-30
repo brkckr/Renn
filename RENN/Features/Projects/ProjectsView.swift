@@ -286,37 +286,30 @@ private struct RenameProjectSheet: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("projects.rename.title")
-                .font(RENNFont.heading)
-                .foregroundStyle(RENNColor.textPrimary)
-                .accessibilityAddTraits(.isHeader)
-            TextField(text: $text) { Text("projects.rename.placeholder") }
-                .font(RENNFont.body)
-                .foregroundStyle(RENNColor.textPrimary)
-                .padding(12)
-                .frame(minHeight: RENNMetrics.minimumTouchTarget)
-                .glassBackground(cornerRadius: RENNMetrics.cardRadius)
-                .focused($focused)
-                .submitLabel(.done)
-                .onSubmit { save() }
-            if let error {
-                Text(message(for: error))
-                    .font(RENNFont.secondary)
-                    .foregroundStyle(RENNColor.brandRed)
+        RENNSheet("projects.rename.title", size: .form, onClose: { dismiss() }) {
+            VStack(alignment: .leading, spacing: 12) {
+                TextField(text: $text) { Text("projects.rename.placeholder") }
+                    .font(RENNFont.body)
+                    .foregroundStyle(RENNColor.textPrimary)
+                    .padding(12)
+                    .frame(minHeight: RENNMetrics.minimumTouchTarget)
+                    .glassBackground(cornerRadius: RENNMetrics.cardRadius)
+                    .focused($focused)
+                    .submitLabel(.done)
+                    .onSubmit { save() }
+                if let error {
+                    Text(message(for: error))
+                        .font(RENNFont.secondary)
+                        .foregroundStyle(RENNColor.brandRed)
+                }
             }
-            HStack(spacing: 12) {
-                Button("common.cancel") { dismiss() }
-                    .buttonStyle(.rennSecondary)
-                Button("common.save") { save() }
-                    .buttonStyle(.rennPrimary)
-                    .disabled(isSaving)
-            }
-            Spacer(minLength: 0)
+            .padding(.horizontal, RENNMetrics.sideMargin)
+            .padding(.top, 8)
+        } actions: {
+            Button("common.save") { save() }
+                .buttonStyle(.rennPrimary)
+                .disabled(isSaving)
         }
-        .padding(RENNMetrics.sideMargin)
-        .presentationDetents([.medium])
-        .presentationBackground(RENNColor.backgroundBase)
         .onAppear { focused = true }
     }
 
