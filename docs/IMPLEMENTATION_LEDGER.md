@@ -223,6 +223,22 @@ Owner-approved (2026-09-30) scope, from the owner's chosen demo footage:
   from one source and both stuttered. Look posters are decoded off the main thread.
 - Not verified yet: iOS compile in CI, device look and frame timing (Instruments).
 
+## Free indicator placement (owner-approved deviation from 02 D06, 2026-09-30)
+
+- `IndicatorSettings.positions`: a dragged indicator's centre as fractions of the upright output,
+  by kind. Omitted from the encoding when empty, so existing recipes encode and render exactly as
+  before (baseline anchors REC top-left, battery top-right, PLAY bottom-left, date bottom-right).
+- `IndicatorLayout.resolve`: a dragged indicator is centred on its position at baseline size, kept
+  inside the 5% margins and moved to the nearest clear spot (half-margin rings) when it would cover
+  the Free watermark, the Dual-Cam inset or an indicator placed before it; none is dropped. Preview,
+  camera and export share the resolver, so all three draw the same place.
+- Indicators panel (preview and camera): dashed handles on the preview, drag with snapping to the
+  margin edges and centre lines (selection haptic, centre guides), "Reset positions", VoiceOver
+  Move up/down/left/right actions (5% steps). Turning indicators off keeps positions.
+- Tests (Linux): centring, margins, watermark/indicator avoidance, resolution independence,
+  unchanged encoding without positions, clamped decoding, draft move/reset.
+- Not verified yet: iOS compile in CI, drag feel and snapping on device.
+
 ## M06 Commerce/telemetry: adapters in place, owner configuration pending (2026-09-28)
 
 - SPM: RevenueCat `purchases-ios` from 5.91.0 and `firebase-ios-sdk` from 12.19.2: **FirebaseAnalyticsCore**

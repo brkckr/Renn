@@ -164,7 +164,9 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
     private func indicatorOverlays(
         _ settings: IndicatorSettings, output: PixelDimensions, reserved: [WatermarkLayout.Rect]
     ) -> [IndicatorRenderer.Overlay] {
-        let key = "\(output)-\(settings.showsRec)\(settings.showsPlay)\(settings.showsBattery)\(settings.showsDate)-\(settings.stampDate.text)-\(reserved)"
+        // Dragged positions change the frames, so they are part of the key (free placement).
+        let positions = settings.positions.sorted { $0.key < $1.key }.map { "\($0.key):\($0.value.x),\($0.value.y)" }
+        let key = "\(output)-\(settings.showsRec)\(settings.showsPlay)\(settings.showsBattery)\(settings.showsDate)-\(settings.stampDate.text)-\(reserved)-\(positions)"
         if let cached = indicatorCache, cached.key == key { return cached.overlays }
         let layout = IndicatorLayout.resolve(output: output, settings: settings, reserved: reserved)
         let overlays = IndicatorRenderer.overlays(for: layout, settings: settings)

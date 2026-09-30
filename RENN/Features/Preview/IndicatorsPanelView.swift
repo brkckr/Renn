@@ -4,6 +4,7 @@ import RENNFeatures
 
 /// On-screen Indicators panel (02 D06): aspect-correct preview up to 240 pt, four rows,
 /// Gregorian date-only picker when Date is on, Turn all off, staged Apply (✕ or swipe cancels).
+/// Indicators can be dragged on the preview (owner-approved free placement) and reset.
 struct IndicatorsPanelView: View {
     let engine: RenderEngine
     let source: any PreviewFrameSource
@@ -36,9 +37,27 @@ struct IndicatorsPanelView: View {
                     MetalPreviewView(
                         engine: engine, source: source, recipe: stagedRecipe, sourceDimensions: sourceDimensions,
                         showsWatermark: showsWatermark, bypassCreative: false)
-                        .frame(height: 240)
-                        .clipShape(RoundedRectangle(cornerRadius: RENNMetrics.cardRadius, style: .continuous))
                         .accessibilityHidden(true)
+                        .frame(height: 240)
+                        // Owner-approved free placement: drag the indicators on the preview.
+                        .overlay {
+                            IndicatorDragLayer(
+                                draft: $draft, baseSettings: recipe.indicators, sourceDimensions: sourceDimensions,
+                                showsWatermark: showsWatermark,
+                                dualCorner: (source as? any DualPreviewFrameSource)?.insetCorner)
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: RENNMetrics.cardRadius, style: .continuous))
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        Text("indicators.dragHint")
+                            .font(RENNFont.secondary)
+                            .foregroundStyle(RENNColor.textSecondary)
+                        Spacer(minLength: 0)
+                        Button("indicators.resetPositions") { draft.resetPositions() }
+                            .font(RENNFont.roboto(13, medium: true, relativeTo: .footnote))
+                            .foregroundStyle(draft.hasCustomPositions ? RENNColor.brandYellow : RENNColor.textSecondary)
+                            .disabled(!draft.hasCustomPositions)
+                            .frame(minHeight: RENNMetrics.minimumTouchTarget)
+                    }
                     row("indicators.rec", isOn: $draft.showsRec)
                     row("indicators.play", isOn: $draft.showsPlay)
                     row("indicators.battery", isOn: $draft.showsBattery)
