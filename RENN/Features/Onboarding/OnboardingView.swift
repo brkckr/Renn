@@ -4,8 +4,9 @@ import RENNFeatures
 
 /// Four onboarding pages (02 D03) with the curved colour wipe (03 M02): brown background →
 /// page scene and copy → moving curved mask → navigation. The page swaps while fully covered.
-/// Reduce Motion uses a 120 ms dissolve. Scene areas are labelled placeholders until the owner's
-/// licensed demo scenes arrive, never fake user projects.
+/// Reduce Motion uses a 120 ms dissolve. Scenes play the bundled demo clips (OnboardingScenes).
+/// Owner-approved colours: each wipe carries the colour of the page it leaves (yellow, amber,
+/// orange) and Get started leaves page 4 under a red wipe that finishes over Home.
 struct OnboardingView: View {
     @State private var viewModel: OnboardingViewModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -15,6 +16,9 @@ struct OnboardingView: View {
     @State private var transition: Transition?
     /// Page shown when no transition is running.
     @State private var settledIndex = 0
+    /// Get started: the red wipe's covering half; RootView reveals Home with the other half.
+    @State private var exit: Exit?
+    private let onExitCovered: @MainActor () -> Void
 
     private struct Transition: Equatable {
         let id = UUID()
@@ -23,8 +27,14 @@ struct OnboardingView: View {
         let start: Date
     }
 
-    init(viewModel: @autoclosure () -> OnboardingViewModel) {
+    private struct Exit: Equatable {
+        let id = UUID()
+        let start: Date
+    }
+
+    init(viewModel: @autoclosure () -> OnboardingViewModel, onExitCovered: @escaping @MainActor () -> Void = {}) {
         _viewModel = State(initialValue: viewModel())
+        self.onExitCovered = onExitCovered
     }
 
     private static let pages: [(heading: String, body: String?)] = [
@@ -35,7 +45,7 @@ struct OnboardingView: View {
     ]
 
     var body: some View {
-        TimelineView(.animation(paused: transition == nil)) { context in
+        TimelineView(.animation(paused: transition == nil && exit == nil)) { context in
             let frame = transition.map { OnboardingWipe.frame(at: context.date.timeIntervalSince($0.start)) }
             let shownIndex = transition.map { (frame?.showsTarget ?? true) ? $0.to : $0.from } ?? settledIndex
             let copyOpacity = frame.map { $0.showsTarget ? $0.newCopyOpacity : $0.oldCopyOpacity } ?? 1
@@ -43,7 +53,16 @@ struct OnboardingView: View {
                 page(shownIndex, copyOpacity: copyOpacity)
                 if let transition, let frame {
                     CurvedWipeShape(cover: frame.cover, reveal: frame.reveal)
-                        .fill(RENNColor.brandSequence[transition.to % 4])
+                        .fill(RENNColor.brandSequence[OnboardingWipe.colorIndex(leaving: transition.from)])
+                        .ignoresSafeArea()
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
+                }
+                if let exit {
+                    let covering = OnboardingWipe.frame(
+                        at: min(OnboardingWipe.coverDuration, context.date.timeIntervalSince(exit.start)))
+                    CurvedWipeShape(cover: covering.cover, reveal: 0)
+                        .fill(RENNColor.brandSequence[OnboardingWipe.colorIndex(leaving: viewModel.pageCount - 1)])
                         .ignoresSafeArea()
                         .allowsHitTesting(false)
                         .accessibilityHidden(true)
@@ -76,6 +95,28 @@ struct OnboardingView: View {
         transition = nil
         settledIndex = viewModel.pageIndex
         headingFocused = true
+        // Inactivity during Get started finishes without the wipe, routing Home once.
+        if exit != nil {
+            exit = nil
+            viewModel.next()
+        }
+    }
+
+    /// Get started: cover with the red wipe, then finish (which routes Home once) while covered.
+    private func getStarted() {
+        guard !reduceMotion else {
+            viewModel.next()
+            return
+        }
+        let started = Exit(start: .now)
+        exit = started
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(OnboardingWipe.coverDuration))
+            guard exit?.id == started.id else { return }
+            exit = nil
+            onExitCovered()
+            viewModel.next()
+        }
     }
 
     @ViewBuilder
@@ -85,6 +126,7 @@ struct OnboardingView: View {
             HStack {
                 Spacer()
                 Button("onboarding.skip") { viewModel.skip() }
+                    .disabled(transition != nil || exit != nil)
                     .accessibilityIdentifier("onboarding.skip")
                     .font(RENNFont.bodyMedium)
                     .foregroundStyle(RENNColor.textSecondary)
@@ -95,7 +137,7 @@ struct OnboardingView: View {
             }
             .padding(.horizontal, RENNMetrics.sideMargin)
 
-            OnboardingScenePlaceholder(pageIndex: index)
+            OnboardingScene(pageIndex: index)
                 .padding(.horizontal, RENNMetrics.sideMargin)
                 .padding(.top, 8)
 
@@ -121,7 +163,9 @@ struct OnboardingView: View {
             HStack(spacing: 8) {
                 ForEach(0..<viewModel.pageCount, id: \.self) { dot in
                     Capsule()
-                        .fill(dot == index ? RENNColor.brandYellow : RENNColor.textSecondary.opacity(0.35))
+                        .fill(dot == index
+                              ? RENNColor.brandSequence[OnboardingWipe.dotColorIndex(page: index)]
+                              : RENNColor.textSecondary.opacity(0.35))
                         .frame(width: dot == index ? 20 : 8, height: 8)
                 }
             }
@@ -130,14 +174,18 @@ struct OnboardingView: View {
             .padding(.bottom, 20)
 
             Button {
-                viewModel.next()
+                if viewModel.isLastPage {
+                    getStarted()
+                } else {
+                    viewModel.next()
+                }
             } label: {
                 Text(viewModel.isLastPage ? LocalizedStringKey("onboarding.getStarted") : LocalizedStringKey("onboarding.next"))
             }
             .accessibilityIdentifier("onboarding.next")
             .buttonStyle(.rennPrimary)
             // A running transition serializes navigation so a double tap cannot skip a page.
-            .disabled(transition != nil)
+            .disabled(transition != nil || exit != nil)
             .padding(.horizontal, RENNMetrics.sideMargin)
             .padding(.bottom, 16)
         }
@@ -147,7 +195,7 @@ struct OnboardingView: View {
 /// The moving band between a leading and a trailing curved edge (03 M02). Each edge is a
 /// quadratic curve from top to bottom whose middle bulges left by `OnboardingWipe.deflection`·W,
 /// so full coverage at `cover == 1` includes every corner.
-private struct CurvedWipeShape: Shape {
+struct CurvedWipeShape: Shape {
     var cover: Double
     var reveal: Double
 
@@ -169,29 +217,5 @@ private struct CurvedWipeShape: Shape {
         path.addQuadCurve(to: CGPoint(x: trail, y: rect.minY), control: CGPoint(x: trail - bulge, y: rect.midY))
         path.closeSubpath()
         return path
-    }
-}
-
-/// PLACEHOLDER scene: owned/licensed demo clips are an outstanding owner input (02 D03).
-private struct OnboardingScenePlaceholder: View {
-    let pageIndex: Int
-
-    var body: some View {
-        ZStack(alignment: .topLeading) {
-            RoundedRectangle(cornerRadius: RENNMetrics.panelRadius, style: .continuous)
-                .fill(LinearGradient(
-                    colors: [RENNColor.brandSequence[pageIndex % 4].opacity(0.55), RENNColor.glassOpaqueFallback],
-                    startPoint: .topLeading, endPoint: .bottomTrailing))
-            VStack(alignment: .leading, spacing: 6) {
-                DevelopmentFixtureBadge()
-                Text("onboarding.scenePlaceholder")
-                    .font(RENNFont.secondary)
-                    .foregroundStyle(RENNColor.textPrimary.opacity(0.8))
-            }
-            .padding(16)
-        }
-        .aspectRatio(4 / 5, contentMode: .fit)
-        .frame(maxWidth: .infinity)
-        .accessibilityElement(children: .combine)
     }
 }

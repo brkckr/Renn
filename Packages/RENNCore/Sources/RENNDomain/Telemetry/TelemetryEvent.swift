@@ -6,7 +6,7 @@ public enum TelemetryEvent: Sendable, Equatable {
     public enum QualityBucket: String, Sendable { case sd, hd720, hd1080, uhd4k }
     public enum ExportStage: String, Sendable { case validating, preparing, rendering, finalizing, saving }
     public enum PurchaseResult: String, Sendable { case granted, pending, cancelled, failed }
-    public enum PaywallPlacement: String, Sendable { case settings, exportUpgrade, freeDurationLimit }
+    public enum PaywallPlacement: String, Sendable { case settings, exportUpgrade, freeDurationLimit, home }
 
     case creationStarted(mode: CreationMode)
     case sourceReady(mode: CreationMode, duration: DurationBucket)

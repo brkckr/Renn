@@ -49,6 +49,15 @@ def check_catalog(blockers, ok):
         blockers.append("No Look catalog manifest found.")
 
 
+def check_demo_clips(blockers, ok):
+    missing = [n for n in ("renn_demo_street", "renn_demo_dance") if not (RES / "Demo" / f"{n}.mp4").exists()]
+    if missing:
+        blockers.append(f"Demo clip(s) missing from RENN/Resources/Demo ({', '.join(missing)}); onboarding, Home and Look posters use them.")
+    else:
+        ok.append("Demo clips bundled (street, dance with generated beat).")
+    blockers.append("Onboarding scenes, Home hero and Look posters need a visual/performance review on device.")
+
+
 def check_fonts(blockers, ok):
     fonts = [p for p in RES.rglob("*") if p.suffix.lower() in (".ttf", ".otf")]
     names = " ".join(p.name.lower() for p in fonts)
@@ -99,7 +108,7 @@ def check_privacy_and_packages(blockers, ok):
 
 def main():
     blockers, ok = [], []
-    for check in (check_catalog, check_fonts, check_app_icon, check_providers, check_privacy_and_packages):
+    for check in (check_catalog, check_demo_clips, check_fonts, check_app_icon, check_providers, check_privacy_and_packages):
         check(blockers, ok)
     print("# RENN release audit\n")
     print(f"## Blockers ({len(blockers)})\n")

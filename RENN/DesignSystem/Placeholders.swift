@@ -3,9 +3,9 @@ import UIKit
 import RENNDomain
 import RENNFeatures
 
-/// PLACEHOLDER poster for a Look until licensed comparison-scene posters exist (02 D05,
-/// 08 I02). Deterministic per Look ID; always carries the fixture badge when the Look
-/// is a development fixture.
+/// Loading/failure state of a Look poster (`LookPoster` renders the real one from the street
+/// demo). Deterministic per Look ID; always carries the fixture badge when the Look is a
+/// development fixture.
 struct LookPosterPlaceholder: View {
     let look: LookDefinition
 
@@ -40,6 +40,8 @@ struct VHSCaseShell: View {
     var status: LocalizedStringKey? = nil
     /// The project's own processed frame; nil shows the empty print window.
     var poster: UIImage? = nil
+    /// Localized label instead of `name` (the onboarding demo tape shows its Look's name).
+    var localizedName: LocalizedStringKey? = nil
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -63,7 +65,9 @@ struct VHSCaseShell: View {
                     }
                     .clipped()
                     .padding(8)
-                Text(verbatim: name)
+                Group {
+                    if let localizedName { Text(localizedName) } else { Text(verbatim: name) }
+                }
                     .font(RENNFont.roboto(12, medium: true, relativeTo: .caption))
                     .foregroundStyle(RENNColor.textPrimary)
                     .lineLimit(2)
