@@ -50,7 +50,7 @@ Firebase/RevenueCat SDKs and `Package.resolved` (M06), final motion (M07).
 | V07 layout | `Application Support/RENN/Projects/<UUID>/sources|outputs`, metadata at `Application Support/RENN/Metadata/RENN.store`, per-launch `tmp/RENN/Staging|Jobs/<launch>` | Tested (Linux) with real directories |
 | V08 commit / recovery | `ProjectLibrary`: `.preparing` → adopt → verify → `.ready`; reconciliation completes/interrupts, finishes deletions, flags missing sources, removes orphans only when metadata is readable | 14 crash-window and boundary tests (Linux) |
 | V08 delete / leases / no external deletion | Delete refuses while leased; removes only the project directory; external files and other projects untouched; traversal paths rejected on creation and decode | Tested (Linux) |
-| P03 rename / delete UI | `ProjectsViewModel.rename/requestDelete/confirmDelete`; Projects case action menu (and VoiceOver actions), rename sheet with validation, destructive confirmation, in-use error, status labels | VM tested (Linux); UI written, pending CI compile |
+| P03 rename / delete UI | `ProjectsViewModel.rename/requestDelete/confirmDelete`; Select mode with multi-delete and a styled long-press menu replace the per-case action menu (owner-approved, see "Projects shelf select mode"); VoiceOver actions, rename sheet with validation, destructive confirmation, in-use error, status labels | VM tested (Linux); UI written, pending CI compile |
 | P04 favorites / recents persistence | `SwiftDataLookPreferencesStore` | App test written, pending CI simulator |
 | Revisions | `updateRecipe(expectedRevision:)` rejects stale and invalid recipes; concurrent writers commit once | Tested (Linux) |
 
@@ -254,6 +254,23 @@ Owner-approved (2026-09-30) scope, from the owner's chosen demo footage:
   paths are unchanged (PaywallViewModel); the selection updates at once, no motion gates it.
 - Not verified yet: iOS compile in CI, device look, divider/swipe feel, the hero under Reduce Motion
   (the clip still plays; it is content, not an animation).
+
+## Projects shelf select mode (owner-approved deviation from 02 D08, 2026-09-30)
+
+- The per-case ⋯ action menu is removed. A Select button above the shelf enters select mode:
+  tapping a case toggles it (yellow ring and check), the tab bar gives way to a selection bar in
+  the same glass capsule with Rename (exactly one tape) and Delete, and Done or leaving the tab
+  ends it. Delete asks once, natively, for every selected tape; a tape in use stays (and stays
+  selected) while the others are removed, and the in-use error is shown.
+- Long-press keeps the iOS context menu (Rename, Delete) with a RENN preview: the case large on the
+  brown background with its name and last change. In select mode there is no menu.
+- The preview screen's title is a button that opens the same rename sheet (same validation).
+- VoiceOver keeps named Rename/Delete actions on every case; in select mode cases report the
+  selected trait.
+- Tested on Linux: selection, multi-delete with one confirmation, partial failure, rename from the
+  selection and from the preview header, selection pruned when tapes disappear.
+- Not verified yet: iOS compile in CI, device feel, whether the context menu stays fully silent in
+  select mode (it has no items there), the preview's look on device.
 
 ## M06 Commerce/telemetry: adapters in place, owner configuration pending (2026-09-28)
 

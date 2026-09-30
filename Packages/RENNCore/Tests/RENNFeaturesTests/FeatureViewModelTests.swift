@@ -422,10 +422,10 @@ struct ProjectsActionsTests {
         #expect(await eventually { viewModel.projects.count == 1 })
 
         viewModel.requestDelete(project.id)
-        #expect(viewModel.pendingDeletion?.id == project.id)
+        #expect(viewModel.pendingDeletion.map(\.id) == [project.id])
         #expect(try await store.projects().count == 1, "Nothing is deleted before confirmation")
         viewModel.cancelDelete()
-        #expect(viewModel.pendingDeletion == nil)
+        #expect(viewModel.pendingDeletion.isEmpty)
 
         viewModel.requestDelete(project.id)
         async let first: Void = viewModel.confirmDelete()
@@ -449,6 +449,99 @@ struct ProjectsActionsTests {
         #expect(viewModel.actionError == .projectInUse)
         #expect(try await store.projects().count == 1)
         await store.releaseLease(lease)
+    }
+
+    @Test func selectModeDeletesSelectionAfterOneConfirmation() async throws {
+        let a = makeProject("A", minutesAgo: 3)
+        let b = makeProject("B", minutesAgo: 2)
+        let c = makeProject("C", minutesAgo: 1)
+        let store = InMemoryProjectStore(projects: [a, b, c])
+        let viewModel = makeViewModel(store)
+        let task = Task { await viewModel.observe() }
+        defer { task.cancel() }
+        #expect(await eventually { viewModel.projects.count == 3 })
+
+        viewModel.toggleSelection(a.id)
+        #expect(viewModel.selection.isEmpty, "Tapping selects only in select mode")
+        viewModel.beginSelection()
+        viewModel.toggleSelection(a.id)
+        viewModel.toggleSelection(c.id)
+        viewModel.toggleSelection(b.id)
+        viewModel.toggleSelection(b.id)
+        #expect(viewModel.selection == [a.id, c.id])
+        #expect(!viewModel.canRenameSelection)
+
+        viewModel.requestDeleteSelection()
+        #expect(Set(viewModel.pendingDeletion.map(\.id)) == [a.id, c.id])
+        #expect(try await store.projects().count == 3, "Nothing is deleted before confirmation")
+        await viewModel.confirmDelete()
+        #expect(try await store.projects().map(\.id) == [b.id])
+        #expect(viewModel.actionError == nil)
+        #expect(!viewModel.isSelecting && viewModel.selection.isEmpty, "A completed delete leaves select mode")
+        #expect(viewModel.pendingDeletion.isEmpty)
+    }
+
+    @Test func selectionDeleteKeepsTapesInUse() async throws {
+        let a = makeProject("A", minutesAgo: 2)
+        let b = makeProject("B", minutesAgo: 1)
+        let store = InMemoryProjectStore(projects: [a, b])
+        let viewModel = makeViewModel(store)
+        let task = Task { await viewModel.observe() }
+        defer { task.cancel() }
+        #expect(await eventually { viewModel.projects.count == 2 })
+        let lease = try await store.acquireLease(a.id, purpose: .share)
+        viewModel.beginSelection()
+        viewModel.toggleSelection(a.id)
+        viewModel.toggleSelection(b.id)
+        viewModel.requestDeleteSelection()
+        await viewModel.confirmDelete()
+        #expect(viewModel.actionError == .projectInUse)
+        #expect(try await store.projects().map(\.id) == [a.id], "The free tape is still deleted")
+        #expect(viewModel.isSelecting && viewModel.selection == [a.id], "The tape in use stays selected")
+        await store.releaseLease(lease)
+    }
+
+    @Test func renameFromSelectionWorksOnExactlyOne() async throws {
+        let a = makeProject("A", minutesAgo: 2)
+        let b = makeProject("B", minutesAgo: 1)
+        let store = InMemoryProjectStore(projects: [a, b])
+        let viewModel = makeViewModel(store)
+        let task = Task { await viewModel.observe() }
+        defer { task.cancel() }
+        #expect(await eventually { viewModel.projects.count == 2 })
+        viewModel.beginSelection()
+        viewModel.toggleSelection(a.id)
+        viewModel.toggleSelection(b.id)
+        viewModel.renameSelection()
+        #expect(viewModel.renaming == nil)
+        viewModel.toggleSelection(b.id)
+        viewModel.renameSelection()
+        #expect(viewModel.renaming?.id == a.id)
+        #expect(await viewModel.renameResult(a.id, to: "Beach") == nil)
+        #expect(try await store.project(a.id).name.value == "Beach")
+        #expect(!viewModel.isSelecting, "A rename from select mode completes it")
+    }
+
+    @Test func selectionFollowsTheShelf() async throws {
+        let a = makeProject("A", minutesAgo: 2)
+        let b = makeProject("B", minutesAgo: 1)
+        let store = InMemoryProjectStore(projects: [a, b])
+        let viewModel = makeViewModel(store)
+        let task = Task { await viewModel.observe() }
+        defer { task.cancel() }
+        #expect(await eventually { viewModel.projects.count == 2 })
+        viewModel.beginSelection()
+        viewModel.toggleSelection(a.id)
+        viewModel.toggleSelection(b.id)
+        viewModel.requestRename(a.id)
+        try await store.delete(a.id)
+        #expect(await eventually { viewModel.selection == [b.id] })
+        #expect(viewModel.renaming == nil, "A deleted tape's rename sheet closes")
+        try await store.delete(b.id)
+        #expect(await eventually { viewModel.isEmpty })
+        #expect(!viewModel.isSelecting, "An empty shelf leaves select mode")
+        viewModel.beginSelection()
+        #expect(!viewModel.isSelecting)
     }
 
     @Test func unavailableMetadataIsReported() async {

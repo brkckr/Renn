@@ -3,7 +3,8 @@ import Observation
 import RENNDomain
 
 /// Projects tab: the VHS shelf collection (01 P03, 02 D08) with rename and confirmed delete.
-/// The insertion motion arrives with M05/M07.
+/// Select mode (owner-approved 2026-09-30): tapping a case toggles it, Delete removes every
+/// selected tape after one confirmation and Rename works on exactly one.
 @MainActor
 @Observable
 public final class ProjectsViewModel {
@@ -29,8 +30,12 @@ public final class ProjectsViewModel {
 
     public private(set) var projects: [ProjectSummary] = []
     public private(set) var loadState: LoadState = .loading
-    /// Project awaiting explicit deletion confirmation (01 P03).
-    public private(set) var pendingDeletion: ProjectSummary?
+    /// Projects awaiting explicit deletion confirmation (01 P03); one confirmation covers them all.
+    public private(set) var pendingDeletion: [ProjectSummary] = []
+    /// Project whose rename sheet is open.
+    public private(set) var renaming: ProjectSummary?
+    public private(set) var isSelecting = false
+    public private(set) var selection: Set<ProjectID> = []
     public private(set) var isDeleting = false
     public private(set) var actionError: ActionError?
 
@@ -66,6 +71,11 @@ public final class ProjectsViewModel {
         for await updated in await projectStore.projectUpdates() {
             projects = updated
             loadState = .loaded
+            // Tapes removed elsewhere leave the selection and close their rename sheet.
+            let ids = Set(updated.map(\.id))
+            selection.formIntersection(ids)
+            if let renaming, !ids.contains(renaming.id) { self.renaming = nil }
+            if updated.isEmpty { isSelecting = false }
         }
     }
 
@@ -77,11 +87,52 @@ public final class ProjectsViewModel {
     }
     public func createFirstTape() { onCreateFirst() }
 
-    /// Validates and renames. Names are labels only; nothing is re-rendered (05 V07).
-    public func rename(_ id: ProjectID, to text: String) async throws(RenameError) {
-        let name: ProjectName
+    // MARK: Select mode
+
+    /// Selected tapes in shelf order.
+    public var selectedProjects: [ProjectSummary] { projects.filter { selection.contains($0.id) } }
+    public var canRenameSelection: Bool { selection.count == 1 }
+
+    public func beginSelection() {
+        guard !projects.isEmpty else { return }
+        isSelecting = true
+    }
+
+    public func endSelection() {
+        isSelecting = false
+        selection = []
+    }
+
+    public func toggleSelection(_ id: ProjectID) {
+        guard isSelecting, projects.contains(where: { $0.id == id }) else { return }
+        if selection.remove(id) == nil { selection.insert(id) }
+    }
+
+    public func renameSelection() {
+        guard canRenameSelection, let id = selection.first else { return }
+        requestRename(id)
+    }
+
+    public func requestDeleteSelection() {
+        guard !isDeleting, !selection.isEmpty else { return }
+        actionError = nil
+        pendingDeletion = selectedProjects
+    }
+
+    // MARK: Rename
+
+    public func requestRename(_ id: ProjectID) {
+        renaming = projects.first { $0.id == id }
+    }
+
+    public func dismissRename() {
+        renaming = nil
+    }
+
+    /// The trimmed name, or why it cannot be used (80 characters, single line, not empty).
+    public static func validatedName(_ text: String) throws(RenameError) -> ProjectName {
         do {
-            name = try ProjectName(text)
+            return try ProjectName(text)
         } catch {
             switch error {
             case .empty: throw .empty
@@ -89,6 +140,11 @@ public final class ProjectsViewModel {
             case .tooLong(let maximum): throw .tooLong(maximum: maximum)
             }
         }
+    }
+
+    /// Validates and renames. Names are labels only; nothing is re-rendered (05 V07).
+    public func rename(_ id: ProjectID, to text: String) async throws(RenameError) {
+        let name = try Self.validatedName(text)
         do {
             try await projectStore.rename(id, to: name)
         } catch {
@@ -100,6 +156,8 @@ public final class ProjectsViewModel {
     public func renameResult(_ id: ProjectID, to text: String) async -> RenameError? {
         do {
             try await rename(id, to: text)
+            // A rename from select mode completes it.
+            if isSelecting, selection == [id] { endSelection() }
             return nil
         } catch {
             return error
@@ -107,31 +165,39 @@ public final class ProjectsViewModel {
     }
 
     public func requestDelete(_ id: ProjectID) {
-        guard !isDeleting else { return }
+        guard !isDeleting, let project = projects.first(where: { $0.id == id }) else { return }
         actionError = nil
-        pendingDeletion = projects.first { $0.id == id }
+        pendingDeletion = [project]
     }
 
     public func cancelDelete() {
         guard !isDeleting else { return }
-        pendingDeletion = nil
+        pendingDeletion = []
     }
 
-    /// Deletes the confirmed project once, even if confirmation is tapped repeatedly.
+    /// Deletes the confirmed projects once, even if confirmation is tapped repeatedly. A tape
+    /// that cannot be deleted stays (and stays selected); the others are still removed.
     public func confirmDelete() async {
-        guard let project = pendingDeletion, !isDeleting else { return }
+        guard !pendingDeletion.isEmpty, !isDeleting else { return }
+        let targets = pendingDeletion
         isDeleting = true
         defer {
             isDeleting = false
-            pendingDeletion = nil
+            pendingDeletion = []
         }
-        do {
-            try await projectStore.delete(project.id)
-        } catch .leased {
-            actionError = .projectInUse
-        } catch {
-            actionError = .deleteFailed
+        var failure: ActionError?
+        for project in targets {
+            do {
+                try await projectStore.delete(project.id)
+                selection.remove(project.id)
+            } catch .leased {
+                failure = .projectInUse
+            } catch {
+                failure = failure ?? .deleteFailed
+            }
         }
+        actionError = failure
+        if isSelecting, failure == nil { endSelection() }
     }
 
     public func dismissError() {

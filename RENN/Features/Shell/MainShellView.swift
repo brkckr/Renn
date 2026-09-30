@@ -47,21 +47,22 @@ struct MainShellView: View {
                     .transition(.opacity)
             }
 
-            GlassNavigationBar(
-                selectedTab: router.selectedTab,
-                isMenuOpen: router.isCreationMenuOpen,
-                dualCameraAvailability: router.dualCameraAvailability,
-                onSelect: { router.select($0) },
-                onToggleMenu: {
-                    if router.isCreationMenuOpen {
-                        router.dismissCreationMenu()
-                    } else {
-                        router.openCreationMenu()
-                    }
-                },
-                onChoose: { router.choose($0) })
+            if router.selectedTab == .projects && projectsViewModel.isSelecting {
+                // Select mode on the shelf: its actions take the tab bar's place (like Photos).
+                ProjectsSelectionBar(viewModel: projectsViewModel)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            } else {
+                navigationBar
+            }
         }
         .animation(reduceMotion ? RENNMotion.reducedDissolve : .easeOut(duration: 0.18), value: router.isCreationMenuOpen)
+        .animation(
+            reduceMotion ? RENNMotion.reducedDissolve : RENNMotion.emphasized,
+            value: router.selectedTab == .projects && projectsViewModel.isSelecting)
+        // Leaving the shelf (e.g. a flow that switches tabs) ends select mode.
+        .onChange(of: router.selectedTab) { _, tab in
+            if tab != .projects { projectsViewModel.endSelection() }
+        }
         .fullScreenCover(item: $router.presentedFlow) { flow in
             PresentedFlowView(flow: flow, composition: composition)
                 .environment(\.locale, composition.localization.locale)
@@ -72,6 +73,23 @@ struct MainShellView: View {
                 .environment(\.locale, composition.localization.locale)
                 .environment(\.showcase, composition.showcase)
         }
+    }
+
+    private var navigationBar: some View {
+        let router = composition.router
+        return GlassNavigationBar(
+            selectedTab: router.selectedTab,
+            isMenuOpen: router.isCreationMenuOpen,
+            dualCameraAvailability: router.dualCameraAvailability,
+            onSelect: { router.select($0) },
+            onToggleMenu: {
+                if router.isCreationMenuOpen {
+                    router.dismissCreationMenu()
+                } else {
+                    router.openCreationMenu()
+                }
+            },
+            onChoose: { router.choose($0) })
     }
 
     private func tabContent<Content: View>(_ tab: AppTab, @ViewBuilder content: () -> Content) -> some View {

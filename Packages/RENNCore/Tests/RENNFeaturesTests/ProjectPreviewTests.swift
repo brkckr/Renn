@@ -69,6 +69,19 @@ struct ProjectPreviewTests {
                 "Unmute restores the previous Beat choice")
     }
 
+    @Test func renameFromHeaderValidatesAndKeepsTheRecipe() async throws {
+        let (viewModel, store, id, _) = try await setup()
+        await viewModel.load()
+        #expect(await viewModel.rename(to: " ") == .empty)
+        #expect(await viewModel.rename(to: "a\nb") == .multiline)
+        #expect(viewModel.name == "Tape")
+        #expect(await viewModel.rename(to: "  Beach day ") == nil)
+        #expect(viewModel.name == "Beach day")
+        let stored = try await store.project(id)
+        #expect(stored.name.value == "Beach day")
+        #expect(stored.recipeRevision == 1, "A rename is not a recipe revision")
+    }
+
     @Test func beforeAfterAndLoopNeverTouchTheRecipe() async throws {
         let (viewModel, store, id, _) = try await setup()
         await viewModel.load()

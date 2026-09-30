@@ -105,6 +105,24 @@ public final class ProjectPreviewViewModel {
     }
     public var name: String { record?.name.value ?? "" }
 
+    /// Renames from the preview header (owner-approved 2026-09-30); same rules as the shelf.
+    /// Returns the error to show, or nil on success. Nothing is re-rendered (05 V07).
+    public func rename(to text: String) async -> ProjectsViewModel.RenameError? {
+        let name: ProjectName
+        do {
+            name = try ProjectsViewModel.validatedName(text)
+        } catch {
+            return error
+        }
+        do {
+            try await projects.rename(projectID, to: name)
+        } catch {
+            return .failed
+        }
+        record?.name = name
+        return nil
+    }
+
     private var presentedCompletions: Set<OutputID> = []
 
     /// True the first time a verified output's completion is shown: the settle motion and its one
