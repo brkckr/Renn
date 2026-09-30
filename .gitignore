@@ -20,3 +20,6 @@ GoogleService-Info.plist
 
 # macOS
 .DS_Store
+
+# Swift packages cloned by CI (cached between runs)
+SourcePackages/
