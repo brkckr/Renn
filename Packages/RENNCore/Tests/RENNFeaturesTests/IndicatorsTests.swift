@@ -26,6 +26,19 @@ struct IndicatorsDraftTests {
         #expect(draft.stampDate.text == "1998.10.19")
     }
 
+    @Test func draggedPositionsAreStagedAndReset() {
+        var draft = IndicatorsDraft(original)
+        #expect(!draft.hasCustomPositions)
+        draft.move(.rec, to: IndicatorPosition(x: 0.5, y: 0.2))
+        #expect(draft.position(of: .rec) == IndicatorPosition(x: 0.5, y: 0.2))
+        #expect(original.positions.isEmpty, "Nothing changes until Apply")
+        #expect(draft.applied(to: original).positions == ["rec": IndicatorPosition(x: 0.5, y: 0.2)])
+        draft.turnAllOff()
+        #expect(draft.hasCustomPositions, "Turning indicators off keeps where they were")
+        draft.resetPositions()
+        #expect(draft.applied(to: original).positions.isEmpty)
+    }
+
     @Test func leapDayAndRangeValidation() {
         var draft = IndicatorsDraft(original)
         do { let changed = draft.setDate(year: 2024, month: 2, day: 29); #expect(changed) }

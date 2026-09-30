@@ -9,6 +9,8 @@ public struct IndicatorsDraft: Sendable, Equatable {
     public var showsBattery: Bool
     public var showsDate: Bool
     public private(set) var stampDate: StampDate
+    /// Dragged positions by indicator kind; empty keeps every baseline anchor.
+    public private(set) var positions: [String: IndicatorPosition]
 
     public init(_ settings: IndicatorSettings) {
         showsRec = settings.showsRec
@@ -16,6 +18,24 @@ public struct IndicatorsDraft: Sendable, Equatable {
         showsBattery = settings.showsBattery
         showsDate = settings.showsDate
         stampDate = settings.stampDate
+        positions = settings.positions
+    }
+
+    public var hasCustomPositions: Bool { !positions.isEmpty }
+
+    public func position(of kind: IndicatorLayout.Kind) -> IndicatorPosition? {
+        positions[kind.rawValue]
+    }
+
+    /// Owner-approved free placement: the indicator's centre, as fractions of the output.
+    public mutating func move(_ kind: IndicatorLayout.Kind, to position: IndicatorPosition) {
+        positions[kind.rawValue] = position
+    }
+
+    /// Back to the baseline anchors (REC top-left, battery top-right, PLAY bottom-left, date
+    /// bottom-right). Turning indicators off keeps positions; this is the only reset.
+    public mutating func resetPositions() {
+        positions = [:]
     }
 
     public var anyOn: Bool { showsRec || showsPlay || showsBattery || showsDate }
@@ -50,6 +70,7 @@ public struct IndicatorsDraft: Sendable, Equatable {
         result.showsBattery = showsBattery
         result.showsDate = showsDate
         result.stampDate = stampDate
+        result.positions = positions
         return result
     }
 }

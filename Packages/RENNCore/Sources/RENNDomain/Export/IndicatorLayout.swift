@@ -5,6 +5,10 @@
 /// top indicators move down, bottom indicators move up, until they are clear. If that is not
 /// possible within the frame, the indicator is drawn smaller (not below 70%) and the layout is
 /// flagged for visual review. A selected indicator is never silently omitted.
+///
+/// Owner-approved free placement (2026-09-30): an indicator with a dragged position is centred
+/// there instead, kept inside the margins, and nudged to the nearest clear spot when it would
+/// cover a reserved rectangle or an indicator placed before it.
 public enum IndicatorLayout {
     public enum Kind: String, Sendable, CaseIterable {
         case rec, battery, play, date
@@ -57,6 +61,12 @@ public enum IndicatorLayout {
         ].compactMap { $0 }
 
         for kind in selected {
+            if let position = settings.positions[kind.rawValue],
+               let frame = free(kind, at: position, width: width, height: height, short: short, margin: margin,
+                                obstacles: reserved + placed.map(\.frame)) {
+                placed.append(Placed(kind: kind, frame: frame, scale: 1))
+                continue
+            }
             var scale = 1.0
             var result: WatermarkLayout.Rect?
             while result == nil {
@@ -92,6 +102,43 @@ public enum IndicatorLayout {
             placed.append(Placed(kind: kind, frame: result!, scale: scale))
         }
         return Result(indicators: placed, needsVisualReview: needsReview)
+    }
+
+    /// Size of an indicator at the baseline scale in this output.
+    public static func size(_ kind: Kind, output: PixelDimensions) -> (width: Double, height: Double) {
+        let h = (Double(output.shortEdge) * heightFraction).rounded()
+        return (width: (h * aspect(kind)).rounded(), height: h)
+    }
+
+    /// A dragged indicator at baseline size: centred on its position, clamped inside the margins,
+    /// then moved to the closest clear candidate (rings of half-margin steps around the target).
+    /// Nil when nothing within the frame is clear; the caller then uses the baseline anchor.
+    private static func free(
+        _ kind: Kind, at position: IndicatorPosition, width: Double, height: Double, short: Double,
+        margin: Double, obstacles: [WatermarkLayout.Rect]
+    ) -> WatermarkLayout.Rect? {
+        let h = (short * heightFraction).rounded()
+        let w = (h * aspect(kind)).rounded()
+        guard w + 2 * margin <= width, h + 2 * margin <= height else { return nil }
+        func clamped(_ x: Double, _ y: Double) -> WatermarkLayout.Rect {
+            WatermarkLayout.Rect(
+                x: min(max(margin, x.rounded()), width - margin - w),
+                y: min(max(margin, y.rounded()), height - margin - h),
+                width: w, height: h)
+        }
+        let target = clamped(position.x * width - w / 2, position.y * height - h / 2)
+        let clear: (WatermarkLayout.Rect) -> Bool = { candidate in !obstacles.contains { intersects($0, candidate) } }
+        if clear(target) { return target }
+        let step = max(1, (margin / 2).rounded())
+        let rings = Int((max(width, height) / step).rounded(.up))
+        for ring in 1...max(1, rings) {
+            let d = Double(ring) * step
+            // Vertical moves first (indicators read as rows), then horizontal, then diagonals.
+            let offsets: [(Double, Double)] = [(0, -d), (0, d), (-d, 0), (d, 0), (-d, -d), (d, -d), (-d, d), (d, d)]
+            let candidates = offsets.map { clamped(target.x + $0.0, target.y + $0.1) }
+            if let hit = candidates.first(where: clear) { return hit }
+        }
+        return nil
     }
 
     static func intersects(_ a: WatermarkLayout.Rect, _ b: WatermarkLayout.Rect) -> Bool {
