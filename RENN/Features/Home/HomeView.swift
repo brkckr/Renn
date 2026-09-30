@@ -84,6 +84,7 @@ struct HomeView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityHint(Text("home.recommended.hint"))
+                .coachTarget(.homeHero)
             }
         }
     }

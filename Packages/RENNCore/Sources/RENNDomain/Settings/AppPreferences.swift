@@ -69,19 +69,51 @@ public enum DiagnosticsConsent: String, Sendable, Codable {
     public var allowsCollection: Bool { self == .granted }
 }
 
+/// Screens with a one-time coach-mark tour (owner-approved 2026-09-30). Settings has none.
+public enum CoachTour: String, Sendable, Codable, CaseIterable {
+    case home
+    case looks
+    case projects
+    case preview
+}
+
 /// Small app-wide preferences. Never used for purchase unlocks (06 C03).
 public struct AppPreferences: Sendable, Equatable, Codable {
     public var hasCompletedOnboarding: Bool
     public var language: AppLanguage
     public var diagnosticsConsent: DiagnosticsConsent
+    /// Tours finished once; they never show again unless the user asks in Settings.
+    public var seenCoachTours: Set<CoachTour>
+    /// Skip on any tour turns every remaining tour off.
+    public var coachMarksSkipped: Bool
 
     public init(
         hasCompletedOnboarding: Bool = false,
         language: AppLanguage = .system,
-        diagnosticsConsent: DiagnosticsConsent = .notAsked
+        diagnosticsConsent: DiagnosticsConsent = .notAsked,
+        seenCoachTours: Set<CoachTour> = [],
+        coachMarksSkipped: Bool = false
     ) {
         self.hasCompletedOnboarding = hasCompletedOnboarding
         self.language = language
         self.diagnosticsConsent = diagnosticsConsent
+        self.seenCoachTours = seenCoachTours
+        self.coachMarksSkipped = coachMarksSkipped
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case hasCompletedOnboarding, language, diagnosticsConsent, seenCoachTours, coachMarksSkipped
+    }
+
+    /// Preferences saved before coach marks existed decode with none seen; unknown tour names
+    /// (from a newer version) are ignored instead of failing the whole record.
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        hasCompletedOnboarding = try container.decode(Bool.self, forKey: .hasCompletedOnboarding)
+        language = try container.decode(AppLanguage.self, forKey: .language)
+        diagnosticsConsent = try container.decode(DiagnosticsConsent.self, forKey: .diagnosticsConsent)
+        let tours = try container.decodeIfPresent([String].self, forKey: .seenCoachTours) ?? []
+        seenCoachTours = Set(tours.compactMap(CoachTour.init(rawValue:)))
+        coachMarksSkipped = try container.decodeIfPresent(Bool.self, forKey: .coachMarksSkipped) ?? false
     }
 }

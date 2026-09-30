@@ -12,6 +12,7 @@ struct MainShellView: View {
     @State private var projectsViewModel: ProjectsViewModel
     @State private var settingsViewModel: SettingsViewModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.scenePhase) private var scenePhase
 
     init(composition: AppComposition) {
         self.composition = composition
@@ -55,6 +56,10 @@ struct MainShellView: View {
                 navigationBar
             }
         }
+        .environment(\.coachMarks, composition.coachMarks)
+        // Tips spotlight tab content and the bar alike, so the host sits above both.
+        .coachMarkHost(composition.coachMarks)
+        .task(id: coachMoment) { await startCoachTour(coachMoment) }
         .animation(reduceMotion ? RENNMotion.reducedDissolve : .easeOut(duration: 0.18), value: router.isCreationMenuOpen)
         .animation(
             reduceMotion ? RENNMotion.reducedDissolve : RENNMotion.emphasized,
@@ -67,12 +72,44 @@ struct MainShellView: View {
             PresentedFlowView(flow: flow, composition: composition)
                 .environment(\.locale, composition.localization.locale)
                 .environment(\.showcase, composition.showcase)
+                .environment(\.coachMarks, composition.coachMarks)
         }
         .sheet(item: $router.inspectedLookID) { lookID in
             LookInspectionView(viewModel: composition.makeLookInspectionViewModel(lookID: lookID))
                 .environment(\.locale, composition.localization.locale)
                 .environment(\.showcase, composition.showcase)
         }
+    }
+
+    // MARK: Coach marks
+
+    /// The tab whose tour may start now: its content is ready and nothing covers it (no flow,
+    /// menu, Look sheet or select mode). Nil when no tour may start.
+    private var coachMoment: CoachTour? {
+        let router = composition.router
+        guard scenePhase == .active, router.presentedFlow == nil, !router.isCreationMenuOpen,
+              router.inspectedLookID == nil
+        else { return nil }
+        switch router.selectedTab {
+        case .home:
+            return homeViewModel.catalogState == .loaded && homeViewModel.recommendedLook != nil ? .home : nil
+        case .looks:
+            return looksViewModel.loadState == .loaded && !looksViewModel.visibleLooks.isEmpty ? .looks : nil
+        case .projects:
+            return projectsViewModel.hasLoaded && !projectsViewModel.projects.isEmpty
+                && !projectsViewModel.isSelecting ? .projects : nil
+        case .settings:
+            return nil
+        }
+    }
+
+    /// Waits for the screen to settle (tab switch, onboarding hand-off), then starts its tour
+    /// once. A change of moment cancels the wait.
+    private func startCoachTour(_ tour: CoachTour?) async {
+        guard let tour, composition.coachMarks.isPending(tour) else { return }
+        try? await Task.sleep(for: .milliseconds(700))
+        guard !Task.isCancelled else { return }
+        composition.coachMarks.start(tour, steps: tour.steps.count)
     }
 
     private var navigationBar: some View {

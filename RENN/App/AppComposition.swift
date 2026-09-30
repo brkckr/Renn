@@ -22,6 +22,8 @@ final class AppComposition {
     let posters: PosterProvider
     /// Look posters and demo clips for Home and onboarding (owner-approved).
     let showcase: ShowcaseMedia
+    /// One-time tips on Home, Looks, Projects and the preview (owner-approved).
+    let coachMarks: CoachMarks
 
     private let preferencesStore: any AppPreferencesStoring
     private let purchases: any Purchasing
@@ -38,7 +40,8 @@ final class AppComposition {
         projectStore: any ProjectStoring,
         lookCatalog: any LookCatalogProviding,
         lookPreferencesStore: any LookPreferencesStoring,
-        captureCapabilities: any CaptureCapabilityProviding
+        captureCapabilities: any CaptureCapabilityProviding,
+        coachMarksEnabled: Bool = true
     ) {
         self.configuration = configuration
         self.preferencesStore = preferencesStore
@@ -47,6 +50,7 @@ final class AppComposition {
         self.lookCatalog = lookCatalog
         self.lookPreferencesStore = lookPreferencesStore
         router = AppRouter(captureCapabilities: captureCapabilities)
+        coachMarks = CoachMarks(preferencesStore: preferencesStore, isEnabled: coachMarksEnabled)
         localization = LocalizationController(language: preferencesStore.load().language)
         // Consent is read at send time, so turning diagnostics off stops the next event.
         let telemetry = ConsentGatedTelemetry(
@@ -92,8 +96,11 @@ final class AppComposition {
         #if DEBUG
         // UI tests: fresh, isolated state every launch (never used by a Release build).
         let uiTesting = ProcessInfo.processInfo.arguments.contains("-RENNUITestFreshState")
+        // UI tests of other flows turn the tips off so no tour covers their taps.
+        let coachMarksEnabled = !ProcessInfo.processInfo.arguments.contains("-RENNUITestNoCoachMarks")
         #else
         let uiTesting = false
+        let coachMarksEnabled = true
         #endif
         let storage = uiTesting ? makeUITestStorage() : makeStorage()
         let preferencesStore = uiTesting ? freshUITestPreferences() : UserDefaultsAppPreferencesStore()
@@ -107,7 +114,8 @@ final class AppComposition {
             projectStore: storage.projects,
             lookCatalog: BundledLookCatalogProvider(),
             lookPreferencesStore: storage.lookPreferences,
-            captureCapabilities: DeviceCaptureCapabilities())
+            captureCapabilities: DeviceCaptureCapabilities(),
+            coachMarksEnabled: coachMarksEnabled)
     }
 
     /// SwiftData metadata + owned files under Application Support/RENN (05 V07).

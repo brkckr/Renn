@@ -3,19 +3,21 @@ import XCTest
 /// Simulator smoke flows through the real app UI (07 test level 4). Each test launches with
 /// `-RENNUITestFreshState` (DEBUG only): empty in-memory projects and fresh preferences, so
 /// onboarding shows and no state leaks between tests. Elements are found by accessibility
-/// identifiers, not by display text, so the checks hold in both languages.
+/// identifiers, not by display text, so the checks hold in both languages. Coach marks are off
+/// (`-RENNUITestNoCoachMarks`) except in the test that covers them.
 final class SmokeFlowUITests: XCTestCase {
     @MainActor
-    private func launch() -> XCUIApplication {
+    private func launch(coachMarks: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments += ["-RENNUITestFreshState"]
+        if !coachMarks { app.launchArguments += ["-RENNUITestNoCoachMarks"] }
         app.launch()
         return app
     }
 
     @MainActor
-    private func launchAtHome() -> XCUIApplication {
-        let app = launch()
+    private func launchAtHome(coachMarks: Bool = false) -> XCUIApplication {
+        let app = launch(coachMarks: coachMarks)
         let skip = app.buttons["onboarding.skip"]
         XCTAssertTrue(skip.waitForExistence(timeout: 20), "Onboarding follows the splash on a fresh install")
         skip.tap()
@@ -87,5 +89,24 @@ final class SmokeFlowUITests: XCTestCase {
         XCTAssertTrue(dual.waitForExistence(timeout: 5), "One tap on + opens the creation menu")
         dual.tap()
         XCTAssertTrue(app.buttons["dual.unavailable.oneCamera"].waitForExistence(timeout: 10))
+    }
+
+    /// Coach marks (owner-approved): Home's tips appear once on the first visit, Next walks them,
+    /// Skip closes them and turns the other screens' tips off, and Home works normally after.
+    @MainActor
+    func testHomeCoachMarksWalkAndSkip() {
+        let app = launchAtHome(coachMarks: true)
+        let next = app.buttons["coach.next"]
+        XCTAssertTrue(next.waitForExistence(timeout: 10), "Home tips appear on the first visit")
+        next.tap()
+        let skip = app.buttons["coach.skip"]
+        XCTAssertTrue(skip.waitForExistence(timeout: 5), "The second tip still offers Skip")
+        skip.tap()
+        XCTAssertTrue(waitUntilGone(app.buttons["coach.next"]), "Skip closes the tips")
+        app.buttons["tab.looks"].tap()
+        XCTAssertFalse(app.buttons["coach.next"].waitForExistence(timeout: 3), "Skip turned the other tips off")
+        app.buttons["tab.home"].tap()
+        app.buttons["creation.toggle"].tap()
+        XCTAssertTrue(app.buttons["creation.recordVideo"].waitForExistence(timeout: 5), "+ works after the tips")
     }
 }

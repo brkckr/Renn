@@ -12,6 +12,8 @@ struct ProjectPreviewView: View {
     @State private var dualSource: DualPlaybackFrameSource?
     @State private var showsIndicators = false
     @State private var showsRename = false
+    @Environment(\.coachMarks) private var coachMarks
+    @Environment(\.scenePhase) private var scenePhase
     let engine: RenderEngine
 
     init(viewModel: @autoclosure () -> ProjectPreviewViewModel, engine: RenderEngine) {
@@ -48,6 +50,14 @@ struct ProjectPreviewView: View {
             }
         }
         .task { await viewModel.observeAccess() }
+        .coachMarkHost(coachMarks)
+        .task(id: coachReady) {
+            // First visit to a ready preview with nothing on top: its tips, once.
+            guard coachReady, let coachMarks, coachMarks.isPending(.preview) else { return }
+            try? await Task.sleep(for: .milliseconds(900))
+            guard !Task.isCancelled else { return }
+            coachMarks.start(.preview, steps: CoachTour.preview.steps.count)
+        }
         .onChange(of: viewModel.isMuted) { _, muted in player.setMuted(muted) }
         .onChange(of: viewModel.isLooping) { _, looping in player.isLooping = looping }
         .onDisappear {
@@ -98,6 +108,11 @@ struct ProjectPreviewView: View {
         .fullScreenCover(isPresented: statusBinding) {
             ExportStatusView(viewModel: viewModel)
         }
+    }
+
+    private var coachReady: Bool {
+        viewModel.loadState == .ready && scenePhase == .active && !showsIndicators && !showsRename
+            && viewModel.lookSelection == nil && viewModel.exportEntry == .none && viewModel.exportState == .idle
     }
 
     private var frameSource: any PreviewFrameSource {
@@ -169,9 +184,11 @@ struct ProjectPreviewView: View {
                 controlButton("sparkles", label: "lookSelector.title", isOn: false) {
                     Task { await viewModel.openLookSelector() }
                 }
+                .coachTarget(.previewLook)
                 controlButton("calendar.badge.clock", label: "indicators.title", isOn: indicatorsOn) {
                     showsIndicators = true
                 }
+                .coachTarget(.previewIndicators)
             }
 
             VStack(alignment: .leading, spacing: 6) {
@@ -200,6 +217,7 @@ struct ProjectPreviewView: View {
             }
             .buttonStyle(.rennPrimary)
             .disabled(viewModel.exportState != .idle && isExportRunning)
+            .coachTarget(.previewExport)
             .padding(.horizontal, RENNMetrics.sideMargin)
             .padding(.bottom, 8)
         }

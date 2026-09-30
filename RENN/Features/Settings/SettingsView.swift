@@ -10,6 +10,8 @@ struct SettingsView: View {
     let effectiveLocalization: String
 
     @Environment(\.openURL) private var openURL
+    @Environment(\.coachMarks) private var coachMarks
+    @State private var tipsReset = false
 
     var body: some View {
         // The stack only hosts the Licenses subpage; the tab root shows no navigation bar.
@@ -198,6 +200,14 @@ struct SettingsView: View {
             linkRow("settings.terms", url: configuration.termsURL)
             NavigationLink("settings.licenses") { LicensesView() }
                 .buttonStyle(SettingsRowButtonStyle())
+            // Coach marks come back on each screen's next visit (Settings itself has none).
+            Button(tipsReset ? LocalizedStringKey("settings.showTips.done") : LocalizedStringKey("settings.showTips")) {
+                coachMarks?.resetAll()
+                tipsReset = true
+            }
+            .buttonStyle(SettingsRowButtonStyle())
+            .disabled(tipsReset || coachMarks == nil)
+            .accessibilityIdentifier("settings.showTips")
             HStack {
                 Text("settings.version")
                 Spacer()
