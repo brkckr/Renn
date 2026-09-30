@@ -17,7 +17,7 @@ struct LookInspectionView: View {
                 CloseButton { viewModel.close() }
             }
             if let look = viewModel.look {
-                LookPosterPlaceholder(look: look)
+                LookPoster(look: look)
                     .frame(height: 180)
                     .clipShape(RoundedRectangle(cornerRadius: RENNMetrics.cardRadius, style: .continuous))
                 Text(LocalizedStringKey(look.nameKey))

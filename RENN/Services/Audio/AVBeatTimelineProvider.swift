@@ -33,6 +33,23 @@ actor AVBeatTimelineProvider: BeatTimelineProviding {
         return timeline
     }
 
+    /// Timeline of a bundled demo clip's own audio (owner-approved onboarding Beat scene), cached
+    /// like a source's under `key` and the analysis version. Never a project and never the microphone.
+    func bundledTimeline(for url: URL, key: String) async throws -> BeatTimeline? {
+        let cacheKey = "\(key)-v\(configuration.version)"
+        if let cached = loadCached(cacheKey) { return cached }
+        if let running = inFlight[cacheKey] { return try await running.value }
+        let configuration = configuration
+        let task = Task<BeatTimeline?, any Error>.detached(priority: .utility) {
+            try await Self.analyze(url, configuration: configuration, startOffset: .zero)
+        }
+        inFlight[cacheKey] = task
+        defer { inFlight[cacheKey] = nil }
+        let timeline = try await task.value
+        if let timeline { store(timeline, key: cacheKey) }
+        return timeline
+    }
+
     private static func analyze(
         _ url: URL, configuration: BeatAnalysisConfiguration, startOffset: RationalTime
     ) async throws -> BeatTimeline? {

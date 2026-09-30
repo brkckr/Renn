@@ -164,6 +164,7 @@ extension PaywallReason {
         case .settings: .settings
         case .exportUpgrade: .exportUpgrade
         case .freeDurationLimit: .freeDurationLimit
+        case .home: .home
         }
     }
 }

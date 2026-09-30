@@ -64,7 +64,7 @@ struct LookSelectorSheet: View {
             onSelect(look.id)
         } label: {
             VStack(alignment: .leading, spacing: 6) {
-                LookPosterPlaceholder(look: look)
+                LookPoster(look: look)
                     .aspectRatio(3 / 4, contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                     // Selected: 2 pt yellow inner outline + check, never a coloured cover (02 D05).

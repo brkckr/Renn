@@ -169,7 +169,40 @@ per motion so stale completions never act.
   fixed size like the system bar; large text shows the large content viewer. Written and built in
   CI only; the iOS 26 glass morph and the + transition need a device check.
 
-## M06 Commerce/telemetry: adapters in place, owner configuration pending (2026-09-28)
+## Showcase: demo clips, Look posters, onboarding scenes and Home (2026-09-30)
+
+Owner-approved (2026-09-30) scope, from the owner's chosen demo footage:
+- Demo clips in `RENN/Resources/Demo/`. Street: Pexels city street at sunset (owner upload
+  `74859086-12362251_1080_1920_30fps.mp4`), cropped `880:1564:200:356` and scaled to 1080×1920 so
+  the top-left sign is out of frame, 8.3 s, no audio. Dance: Pexels dancing silhouettes (owner upload
+  `700fa7cf-8695010-hd_1080_2048_24fps.mp4`), cropped to 1080×1920 at y 64, 11.8 s, muxed with
+  RENN's own synthesized house beat (`scripts/generate_demo_beat.py`, 124 BPM, reproduces the
+  approved file byte for byte). Pexels license: free use/modification, no attribution; no
+  endorsement implied, not redistributed standalone.
+- `ShowcaseMedia` (composition root, SwiftUI environment): catalog lookup, Look posters and the
+  dance clip's Beat timeline (same analyser as sources, cached under Caches). `LookPoster` renders
+  each Look over the street frame at 2 s through the shared RenderEngine at its default intensity,
+  replacing the placeholder posters on Home, Looks, inspection and the Look selector.
+- `DemoVideoView`: a bundled clip through the same graph as preview/export, centre-cropped to its
+  frame, optional one-shot clean-to-Look sweep, optional Beat; paused on hidden tabs, under
+  full-screen flows and in the background; torn down on disappear.
+- Onboarding scenes (03 M02): p1 street clean → Super 8 Pop sweep; p2 Sunday Polaroid, Rainy Matinee
+  and Noir Grain cards come forward in turn and rest; p3 dance clip with Late Night VHS and Beat 0.9,
+  energy bars from the clip's own audio, muted by default with an opt-in speaker button; p4 the
+  treated frame becomes a VHS case and settles on a shelf with empty slots (no fake tapes). Reduce
+  Motion shows static posters.
+- Wipe colours: each wipe carries the colour of the page it leaves (1→2 yellow, 2→3 amber, 3→4
+  orange); Get started covers with red and `RootView` reveals Home with the same wipe's second half.
+  Progress dots use the same page colours. Skip keeps the plain route Home.
+- Home: live hero (street clip with the recommended Look, PLAY and date OSD; still poster under
+  Reduce Motion), poster rail of recent Looks or, before any use, four catalog Looks ("Try a
+  Look"), tapes on a shelf plank with an empty first-tape slot pointing to +, PRO badge beside the
+  wordmark (Free: opens the paywall with placement `home`; Pro: status only).
+- Tests (Linux): wipe/dot colour order, Home showcase rules, PRO badge Free/Pro behaviour.
+- Not verified yet: iOS compile in CI, simulator and device look/performance of the live scenes,
+  audio behaviour of the sound toggle, poster render quality.
+
+: adapters in place, owner configuration pending (2026-09-28)
 
 - SPM: RevenueCat `purchases-ios` from 5.91.0 and `firebase-ios-sdk` from 12.19.2: **FirebaseAnalyticsCore**
   + FirebaseCrashlytics. Correction: the plain `FirebaseAnalytics` product (first used) links

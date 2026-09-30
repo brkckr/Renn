@@ -75,6 +75,52 @@ struct HomeViewModelTests {
         #expect(await eventually { viewModel.recentLooks.map(\.id) == ["b", "c", "a"] })
     }
 
+    @Test func showcaseOffersCatalogLooksUntilALookIsUsed() async throws {
+        let catalog = try LookCatalog(
+            catalogVersion: "t", isDevelopmentFixture: false, recommendedLookID: "b",
+            looks: ["a", "b", "c", "d", "e", "f"].map { makeLook($0) })
+        let preferences = InMemoryLookPreferencesStore()
+        let viewModel = HomeViewModel(
+            projectStore: InMemoryProjectStore(),
+            lookCatalog: StaticLookCatalogProvider(catalog),
+            lookPreferencesStore: preferences,
+            onSeeAll: {}, onInspectLook: { _ in }, onOpenProject: { _ in })
+        let task = Task { await viewModel.observe() }
+        defer { task.cancel() }
+
+        // Catalog order, without the recommended Look, at most four; no fake history.
+        #expect(await eventually { viewModel.showcaseLooks.map(\.id) == ["a", "c", "d", "e"] })
+        #expect(viewModel.recentLooks.isEmpty)
+
+        await preferences.recordUse(of: "f")
+        #expect(await eventually { viewModel.recentLooks.map(\.id) == ["f"] })
+        #expect(viewModel.showcaseLooks.isEmpty, "Real history replaces the showcase")
+    }
+
+    @Test func proBadgeOpensThePaywallOnlyForFreeUsers() async {
+        let log = CallLog()
+        let purchases = FakePurchaseService()
+        let viewModel = HomeViewModel(
+            projectStore: InMemoryProjectStore(),
+            lookCatalog: StaticLookCatalogProvider(StaticLookCatalogProvider.developmentCatalog),
+            lookPreferencesStore: InMemoryLookPreferencesStore(),
+            access: purchases,
+            onShowPaywall: { log.record("paywall") },
+            onSeeAll: {}, onInspectLook: { _ in }, onOpenProject: { _ in })
+        let task = Task { await viewModel.observe() }
+        defer { task.cancel() }
+
+        #expect(await eventually { viewModel.hasLoadedProjects })
+        #expect(!viewModel.isPro)
+        viewModel.showPaywall()
+        #expect(log.entries == ["paywall"])
+
+        _ = await purchases.purchase(productID: "dev.fixture.monthly")
+        #expect(await eventually { viewModel.isPro })
+        viewModel.showPaywall()
+        #expect(log.entries == ["paywall"], "Pro sees a status badge, not an upsell")
+    }
+
     @Test func catalogFailureIsReported() async {
         let viewModel = HomeViewModel(
             projectStore: InMemoryProjectStore(),

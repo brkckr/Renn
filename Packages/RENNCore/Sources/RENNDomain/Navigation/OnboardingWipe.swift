@@ -41,6 +41,17 @@ public enum OnboardingWipe {
         (1 + deflection) * (1 - progress)
     }
 
+    /// Brand color index of the wipe that leaves `page` (owner-approved): leaving page 1 is
+    /// yellow, 2 amber, 3 orange and leaving page 4 for Home red, in splash order.
+    public static func colorIndex(leaving page: Int) -> Int {
+        ((page % 4) + 4) % 4
+    }
+
+    /// Brand color index of a page's progress dot: the same color its outgoing wipe carries.
+    public static func dotColorIndex(page: Int) -> Int {
+        colorIndex(leaving: page)
+    }
+
     /// Starting curve `cubic-bezier(0.22, 1, 0.36, 1)` (03 M02).
     public static func ease(_ x: Double) -> Double {
         Easing.cubicBezier(x, 0.22, 1, 0.36, 1)

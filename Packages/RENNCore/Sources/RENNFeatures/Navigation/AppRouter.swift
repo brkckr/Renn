@@ -6,6 +6,8 @@ public enum PaywallReason: Hashable, Sendable, Identifiable {
     case settings
     case exportUpgrade
     case freeDurationLimit
+    /// The PRO badge next to the Home wordmark (owner-approved).
+    case home
 
     public var id: Self { self }
 }

@@ -17,8 +17,8 @@ the results into `docs/IMPLEMENTATION_LEDGER.md`. A step not run stays "not run"
 
 | # | Scenario | Expected | Evidence to capture |
 |---|---|---|---|
-| 1 | First launch | Splash → 4 onboarding pages → Home; no permission prompt | Screen recording |
-| 2 | + → Record video, allow camera + mic | Portrait live preview with the DEV Look; REC pill with real timer | Screenshot |
+| 1 | First launch | Splash → 4 onboarding pages → Home; no permission prompt. Scenes: street turns into a Look (p1), three Look cards come forward (p2), dance demo moves with the beat and is silent until the speaker button (p3), demo tape settles on the shelf (p4). Wipes yellow → amber → orange, Get started red into Home. | Screen recording |
+| 2 | + → Record video, allow camera + mic | Portrait live preview with the chosen Look; REC pill with real timer | Screenshot |
 | 3 | Record ~10 s, stop | Preview opens; the take plays with sound; Look visible | Note A/V sync by eye |
 | 4 | Record and let it run | Stops by itself at 0:30 (Free); preview opens | Recorded duration in export summary |
 | 5 | Front camera, record | Mirrored like the viewfinder; text in the scene not flipped in the export | Exported file |

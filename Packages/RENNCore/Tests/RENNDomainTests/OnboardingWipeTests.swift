@@ -44,4 +44,10 @@ struct OnboardingWipeTests {
         #expect(OnboardingWipe.ease(0.5) > 0.85, "(0.22,1,0.36,1) front-loads motion")
         #expect(abs(Easing.cubicBezier(0.3, 0.25, 0.25, 0.75, 0.75) - 0.3) < 1e-4, "Linear control points")
     }
+
+    @Test func wipesCarryTheBrandColorsInSplashOrder() {
+        // Leaving page 1 yellow, 2 amber, 3 orange, 4 (Get started into Home) red.
+        #expect((0..<4).map { OnboardingWipe.colorIndex(leaving: $0) } == [0, 1, 2, 3])
+        #expect((0..<4).map { OnboardingWipe.dotColorIndex(page: $0) } == [0, 1, 2, 3])
+    }
 }

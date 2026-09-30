@@ -20,6 +20,8 @@ final class AppComposition {
     let beatTimelines: AVBeatTimelineProvider
     /// Processed-frame posters for VHS cases (01 P03).
     let posters: PosterProvider
+    /// Look posters and demo clips for Home and onboarding (owner-approved).
+    let showcase: ShowcaseMedia
 
     private let preferencesStore: any AppPreferencesStoring
     private let purchases: any Purchasing
@@ -60,6 +62,7 @@ final class AppComposition {
         posters = PosterProvider(
             projects: projectStore, engine: engine,
             cacheDirectory: Self.cacheRoot.appendingPathComponent("Posters", isDirectory: true))
+        showcase = ShowcaseMedia(engine: engine, lookCatalog: lookCatalog, beatTimelines: timelines)
         exportCoordinator = ExportCoordinator(
             projects: projectStore, access: purchases,
             renderer: AVExportRenderer(engine: engine, beatTimelines: timelines),
@@ -171,6 +174,8 @@ final class AppComposition {
             lookCatalog: lookCatalog,
             lookPreferencesStore: lookPreferencesStore,
             posters: posters,
+            access: purchases,
+            onShowPaywall: { [router] in router.showPaywall(.home) },
             onSeeAll: { [router] in router.showAllProjects() },
             onInspectLook: { [router] in router.inspectLook($0) },
             onOpenProject: { [router] in router.openProject($0) })

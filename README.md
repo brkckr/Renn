@@ -22,7 +22,7 @@ RENN/                    App target: SwiftUI views, composition root, platform a
   Features/              SwiftUI screens per feature
   Services/              Platform adapters (preferences, purchases, capture, localization, fonts)
   DesignSystem/          Tokens, glass surfaces, typography, placeholders
-  Resources/             Asset catalog, String Catalogs (10 languages), Looks, overlays, fonts
+  Resources/             Asset catalog, String Catalogs (13 languages), Looks, overlays, demo clips, fonts
 RENNTests/               App-bundle tests (configuration, persistence, media pipeline, Look rendering)
 RENNUITests/             Simulator UI smoke flows (onboarding, tabs, creation menu, Dual-Cam fallback)
 Packages/RENNCore/       Swift package, platform independent
@@ -31,7 +31,7 @@ Packages/RENNCore/       Swift package, platform independent
   RENNStorage            ProjectLibrary (commit/delete/recovery ordering) and owned file store
   RENNFakes              In-memory fakes for tests, previews and development only
 Config/                  xcconfig files and Info.plist additions
-scripts/                 Project generator, String Catalog check, release audit, DEV LUT generator
+scripts/                 Project generator, String Catalog check, release audit, LUT/overlay installers, demo beat generator
 docs/                    Ledger, architecture decisions, development-asset report
 ```
 

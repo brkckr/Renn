@@ -65,16 +65,20 @@ struct MainShellView: View {
         .fullScreenCover(item: $router.presentedFlow) { flow in
             PresentedFlowView(flow: flow, composition: composition)
                 .environment(\.locale, composition.localization.locale)
+                .environment(\.showcase, composition.showcase)
         }
         .sheet(item: $router.inspectedLookID) { lookID in
             LookInspectionView(viewModel: composition.makeLookInspectionViewModel(lookID: lookID))
                 .environment(\.locale, composition.localization.locale)
+                .environment(\.showcase, composition.showcase)
         }
     }
 
     private func tabContent<Content: View>(_ tab: AppTab, @ViewBuilder content: () -> Content) -> some View {
         let isSelected = composition.router.selectedTab == tab
         return content()
+            // Decorative playback runs only on the visible tab with no flow above it.
+            .environment(\.showcaseIsActive, isSelected && composition.router.presentedFlow == nil)
             .opacity(isSelected ? 1 : 0)
             .allowsHitTesting(isSelected)
             .accessibilityHidden(!isSelected)
