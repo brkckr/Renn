@@ -3,15 +3,17 @@ import RENNDomain
 import RENNFeatures
 
 /// Projects tab: upper retro player, shelf divider and a three-column collection of
-/// upright VHS cases (02 D08). Rename/Delete are in a discoverable, accessible action menu
-/// on every case, not solely long-press. Opening a ready project plays the insertion motion
+/// upright VHS cases (02 D08). Select mode (owner-approved 2026-09-30) is the discoverable
+/// path to Rename/Delete: a Select button above the shelf, a selection bar in place of the tab
+/// bar and one native confirmation for every selected tape. Long-press keeps the iOS context
+/// menu with a RENN preview (the case large on the brown background), and VoiceOver has named
+/// Rename/Delete actions on every case. Opening a ready project plays the insertion motion
 /// (03 M05): the case lifts, travels along a curve to the slot and slides behind the player's
 /// front plate (real occlusion, not shrinking away), then the preview is presented once. The
 /// player is RENN's own layered vector art, approved by the owner as final (08 I02).
 struct ProjectsView: View {
     let viewModel: ProjectsViewModel
 
-    @State private var renaming: ProjectSummary?
     @State private var cellFrames: [ProjectID: CGRect] = [:]
     @State private var playerFrame: CGRect?
     @State private var slotFrame: CGRect?
@@ -40,11 +42,14 @@ struct ProjectsView: View {
                         .background(frameReader { playerFrame = $0 })
                         .padding(.horizontal, RENNMetrics.sideMargin)
                         .padding(.top, 8)
+                    if viewModel.hasLoaded && !viewModel.projects.isEmpty {
+                        shelfHeader
+                    }
                     // Shelf divider separating the player from the collection.
                     Rectangle()
                         .fill(Color.white.opacity(0.12))
                         .frame(height: 1)
-                        .padding(.top, 12)
+                        .padding(.top, viewModel.hasLoaded && !viewModel.projects.isEmpty ? 0 : 12)
                     collection
                 }
                 if let insertion {
@@ -58,25 +63,29 @@ struct ProjectsView: View {
         .onDisappear { insertion = nil }
         .onChange(of: scenePhase) { _, phase in if phase != .active { insertion = nil } }
         .task { await viewModel.observe() }
-        .sheet(item: $renaming) { project in
-            RenameProjectSheet(project: project) { text in
+        .sheet(item: Binding(
+            get: { viewModel.renaming },
+            set: { if $0 == nil { viewModel.dismissRename() } })
+        ) { project in
+            RenameProjectSheet(currentName: project.name.value) { text in
                 await viewModel.renameResult(project.id, to: text)
             }
         }
         .confirmationDialog(
-            Text("projects.delete.title"),
+            Text(deleteTitle),
             isPresented: Binding(
-                get: { viewModel.pendingDeletion != nil },
+                get: { !viewModel.pendingDeletion.isEmpty },
                 set: { if !$0 { viewModel.cancelDelete() } }),
-            titleVisibility: .visible,
-            presenting: viewModel.pendingDeletion
-        ) { _ in
-            Button("projects.delete.confirm", role: .destructive) {
+            titleVisibility: .visible
+        ) {
+            Button(role: .destructive) {
                 Task { await viewModel.confirmDelete() }
+            } label: {
+                Text(deleteConfirm)
             }
             Button("common.cancel", role: .cancel) { viewModel.cancelDelete() }
-        } message: { _ in
-            Text("projects.delete.message")
+        } message: {
+            Text(deleteMessage)
         }
         .alert(
             Text(errorMessage ?? ""),
@@ -140,39 +149,97 @@ struct ProjectsView: View {
         }
     }
 
+    /// "Projects" and Select; in select mode the count and Done.
+    private var shelfHeader: some View {
+        HStack {
+            Group {
+                if !viewModel.isSelecting {
+                    Text("tab.projects")
+                } else if viewModel.selection.isEmpty {
+                    Text("projects.select.prompt")
+                } else {
+                    Text("projects.select.count \(viewModel.selection.count)")
+                }
+            }
+            .font(RENNFont.roboto(18, medium: true, relativeTo: .headline))
+            .foregroundStyle(RENNColor.textPrimary)
+            .contentTransition(.numericText())
+            .accessibilityAddTraits(.isHeader)
+            Spacer()
+            Button {
+                if viewModel.isSelecting {
+                    viewModel.endSelection()
+                } else {
+                    viewModel.beginSelection()
+                }
+            } label: {
+                Text(viewModel.isSelecting ? LocalizedStringKey("common.done") : LocalizedStringKey("projects.select"))
+                    .font(RENNFont.bodyMedium)
+                    .foregroundStyle(RENNColor.brandYellow)
+                    .padding(.horizontal, 14)
+                    .frame(minHeight: 32)
+                    .background(Capsule().fill(Color.white.opacity(viewModel.isSelecting ? 0.14 : 0.08)))
+                    .frame(minHeight: RENNMetrics.minimumTouchTarget)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(insertion != nil)
+            .accessibilityIdentifier("projects.select")
+        }
+        .padding(.horizontal, RENNMetrics.sideMargin)
+        .padding(.top, 4)
+        .animation(.easeOut(duration: 0.18), value: viewModel.selection.count)
+        .animation(.easeOut(duration: 0.18), value: viewModel.isSelecting)
+    }
+
     private func caseCell(_ project: ProjectSummary) -> some View {
-        Button {
-            open(project)
+        let isSelected = viewModel.selection.contains(project.id)
+        return Button {
+            if viewModel.isSelecting {
+                viewModel.toggleSelection(project.id)
+            } else {
+                open(project)
+            }
         } label: {
             ProjectCaseView(
                 project: project,
                 loadPoster: { await viewModel.poster(for: $0) },
                 status: statusKey(project.readiness))
                 .background(frameReader { cellFrames[project.id] = $0 })
+                .overlay {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .strokeBorder(RENNColor.brandYellow, lineWidth: 2)
+                    }
+                }
+                .overlay(alignment: .topTrailing) {
+                    if viewModel.isSelecting {
+                        SelectionMark(isSelected: isSelected)
+                            .padding(6)
+                            .transition(.scale(scale: 0.6).combined(with: .opacity))
+                    }
+                }
+                .scaleEffect(isSelected ? 0.95 : 1)
                 // The cell keeps its space while its visual travels.
                 .opacity(insertion?.project.id == project.id ? 0 : 1)
         }
         .buttonStyle(.plain)
         .disabled(insertion != nil)
-        .overlay(alignment: .topTrailing) {
-            Menu {
-                actions(for: project)
-            } label: {
-                Image(systemName: "ellipsis")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(RENNColor.textPrimary)
-                    .frame(width: 28, height: 28)
-                    .background(Circle().fill(Color.black.opacity(0.45)))
-                    .frame(width: RENNMetrics.minimumTouchTarget, height: RENNMetrics.minimumTouchTarget)
-                    .contentShape(Rectangle())
-            }
-            .accessibilityLabel(Text("projects.action.more"))
+        .animation(reduceMotion ? nil : .spring(response: 0.25, dampingFraction: 0.8), value: isSelected)
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: viewModel.isSelecting)
+        .sensoryFeedback(.selection, trigger: isSelected)
+        // No menu in select mode: the selection bar carries the actions there.
+        .contextMenu {
+            if !viewModel.isSelecting { actions(for: project) }
+        } preview: {
+            ProjectContextPreview(project: project, loadPoster: { await viewModel.poster(for: $0) })
         }
-        .contextMenu { actions(for: project) }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(Text(verbatim: project.name.value))
-        .accessibilityHint(Text("projects.case.hint"))
-        .accessibilityAction(named: Text("projects.rename")) { renaming = project }
+        .accessibilityHint(Text(
+            viewModel.isSelecting ? LocalizedStringKey("projects.select.caseHint") : LocalizedStringKey("projects.case.hint")))
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityAction(named: Text("projects.rename")) { viewModel.requestRename(project.id) }
         .accessibilityAction(named: Text("projects.delete")) { viewModel.requestDelete(project.id) }
     }
 
@@ -238,7 +305,7 @@ struct ProjectsView: View {
     @ViewBuilder
     private func actions(for project: ProjectSummary) -> some View {
         Button {
-            renaming = project
+            viewModel.requestRename(project.id)
         } label: {
             Label("projects.rename", systemImage: "pencil")
         }
@@ -258,81 +325,28 @@ struct ProjectsView: View {
         }
     }
 
+    private var deleteTitle: LocalizedStringKey {
+        let count = viewModel.pendingDeletion.count
+        if count > 1 { return "projects.deleteSelected.title \(count)" }
+        return "projects.delete.title"
+    }
+
+    private var deleteConfirm: LocalizedStringKey {
+        let count = viewModel.pendingDeletion.count
+        if count > 1 { return "projects.deleteSelected.confirm \(count)" }
+        return "projects.delete.confirm"
+    }
+
+    private var deleteMessage: LocalizedStringKey {
+        if viewModel.pendingDeletion.count > 1 { return "projects.deleteSelected.message" }
+        return "projects.delete.message"
+    }
+
     private var errorMessage: LocalizedStringKey? {
         switch viewModel.actionError {
         case .none: nil
         case .projectInUse: "projects.error.inUse"
         case .deleteFailed: "projects.error.deleteFailed"
-        }
-    }
-}
-
-/// Rename sheet with inline validation (80 characters, single line, not empty).
-private struct RenameProjectSheet: View {
-    let project: ProjectSummary
-    /// Returns the error to show, or nil when the rename succeeded.
-    let onSave: (String) async -> ProjectsViewModel.RenameError?
-
-    @Environment(\.dismiss) private var dismiss
-    @State private var text: String
-    @State private var error: ProjectsViewModel.RenameError?
-    @State private var isSaving = false
-    @FocusState private var focused: Bool
-
-    init(project: ProjectSummary, onSave: @escaping (String) async -> ProjectsViewModel.RenameError?) {
-        self.project = project
-        self.onSave = onSave
-        _text = State(initialValue: project.name.value)
-    }
-
-    var body: some View {
-        RENNSheet("projects.rename.title", size: .form, onClose: { dismiss() }) {
-            VStack(alignment: .leading, spacing: 12) {
-                TextField(text: $text) { Text("projects.rename.placeholder") }
-                    .font(RENNFont.body)
-                    .foregroundStyle(RENNColor.textPrimary)
-                    .padding(12)
-                    .frame(minHeight: RENNMetrics.minimumTouchTarget)
-                    .glassBackground(cornerRadius: RENNMetrics.cardRadius)
-                    .focused($focused)
-                    .submitLabel(.done)
-                    .onSubmit { save() }
-                if let error {
-                    Text(message(for: error))
-                        .font(RENNFont.secondary)
-                        .foregroundStyle(RENNColor.brandRed)
-                }
-            }
-            .padding(.horizontal, RENNMetrics.sideMargin)
-            .padding(.top, 8)
-        } actions: {
-            Button("common.save") { save() }
-                .buttonStyle(.rennPrimary)
-                .disabled(isSaving)
-        }
-        .onAppear { focused = true }
-    }
-
-    private func save() {
-        guard !isSaving else { return }
-        isSaving = true
-        Task {
-            let failure = await onSave(text)
-            isSaving = false
-            if let failure {
-                error = failure
-            } else {
-                dismiss()
-            }
-        }
-    }
-
-    private func message(for error: ProjectsViewModel.RenameError) -> LocalizedStringKey {
-        switch error {
-        case .empty: "projects.rename.error.empty"
-        case .multiline: "projects.rename.error.multiline"
-        case .tooLong(let maximum): "projects.rename.error.tooLong \(maximum)"
-        case .failed: "projects.rename.error.failed"
         }
     }
 }
@@ -377,5 +391,55 @@ private struct PlayerArt: View {
         .aspectRatio(1.25, contentMode: .fit)
         .frame(maxWidth: .infinity)
         .accessibilityHidden(true)
+    }
+}
+
+/// Select-mode checkmark on a case, like Photos: an empty ring, filled yellow when selected.
+private struct SelectionMark: View {
+    let isSelected: Bool
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(isSelected ? RENNColor.brandYellow : Color.black.opacity(0.35))
+            Circle()
+                .strokeBorder(Color.white.opacity(isSelected ? 0 : 0.9), lineWidth: 1.5)
+            if isSelected {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(RENNColor.onPrimary)
+            }
+        }
+        .frame(width: 24, height: 24)
+        .shadow(color: .black.opacity(0.3), radius: 2, y: 1)
+        .accessibilityHidden(true)
+    }
+}
+
+/// Long-press preview (owner-approved 2026-09-30): the tape large on RENN's brown background,
+/// with its name and last change, instead of the system's white card around the small case.
+private struct ProjectContextPreview: View {
+    let project: ProjectSummary
+    let loadPoster: (ProjectID) async -> Data?
+
+    var body: some View {
+        VStack(spacing: 14) {
+            ProjectCaseView(project: project, loadPoster: loadPoster)
+                .frame(width: 180)
+            VStack(spacing: 4) {
+                Text(verbatim: project.name.value)
+                    .font(RENNFont.roboto(18, medium: true, relativeTo: .headline))
+                    .foregroundStyle(RENNColor.textPrimary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                Text(project.updatedAt, format: .dateTime.day().month(.abbreviated).year())
+                    .font(RENNFont.secondary)
+                    .foregroundStyle(RENNColor.textSecondary)
+            }
+        }
+        .padding(.horizontal, 24)
+        .padding(.vertical, 28)
+        .frame(width: 260)
+        .background(RENNColor.backgroundBase)
     }
 }

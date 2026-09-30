@@ -11,6 +11,7 @@ struct ProjectPreviewView: View {
     /// Dual-Cam projects render main + inset from the packed composition frames.
     @State private var dualSource: DualPlaybackFrameSource?
     @State private var showsIndicators = false
+    @State private var showsRename = false
     let engine: RenderEngine
 
     init(viewModel: @autoclosure () -> ProjectPreviewViewModel, engine: RenderEngine) {
@@ -68,6 +69,9 @@ struct ProjectPreviewView: View {
         } message: {
             Text("export.requiresPro.message")
         }
+        .sheet(isPresented: $showsRename) {
+            RenameProjectSheet(currentName: viewModel.name) { await viewModel.rename(to: $0) }
+        }
         .sheet(isPresented: $showsIndicators) {
             if let recipe = viewModel.recipe {
                 IndicatorsPanelView(
@@ -106,10 +110,27 @@ struct ProjectPreviewView: View {
             HStack {
                 CloseButton { Task { await viewModel.close() } }
                 Spacer()
-                Text(verbatim: viewModel.name)
-                    .font(RENNFont.bodyMedium)
-                    .foregroundStyle(RENNColor.textPrimary)
-                    .lineLimit(1)
+                // Tapping the title renames the tape (owner-approved 2026-09-30).
+                Button {
+                    showsRename = true
+                } label: {
+                    HStack(spacing: 6) {
+                        Text(verbatim: viewModel.name)
+                            .font(RENNFont.bodyMedium)
+                            .foregroundStyle(RENNColor.textPrimary)
+                            .lineLimit(1)
+                        Image(systemName: "pencil")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(RENNColor.textSecondary)
+                            .accessibilityHidden(true)
+                    }
+                    .frame(minHeight: RENNMetrics.minimumTouchTarget)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text(verbatim: viewModel.name))
+                .accessibilityHint(Text("preview.rename.hint"))
+                .accessibilityIdentifier("preview.title")
                 Spacer()
                 Color.clear.frame(width: RENNMetrics.minimumTouchTarget, height: RENNMetrics.minimumTouchTarget)
             }

@@ -1661,6 +1661,89 @@
         }
       }
     },
+    "common.done": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bitti"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Listo"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fertig"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完了"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "완료"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Готово"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เสร็จ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xong"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selesai"
+          }
+        }
+      }
+    },
     "common.ok": {
       "extractionState": "manual",
       "localizations": {
@@ -17265,6 +17348,89 @@
         }
       }
     },
+    "preview.rename.hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renames the tape"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaseti yeniden adlandırır"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cambia el nombre de la cinta"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renomeia a fita"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benennt das Tape um"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renomme la cassette"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テープの名前を変更します"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "테이프 이름을 변경합니다"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重命名录像带"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Переименовывает кассету"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปลี่ยนชื่อเทป"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi tên băng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mengganti nama kaset"
+          }
+        }
+      }
+    },
     "preview.unavailable.generic": {
       "extractionState": "manual",
       "localizations": {
@@ -17593,89 +17759,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kaset"
-          }
-        }
-      }
-    },
-    "projects.action.more": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "More actions"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diğer işlemler"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Más acciones"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mais ações"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weitere Aktionen"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Plus d'actions"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "その他の操作"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "추가 작업"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "更多操作"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Другие действия"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "การทำงานเพิ่มเติม"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Thao tác khác"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tindakan lain"
           }
         }
       }
@@ -18091,6 +18174,255 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hapus kaset ini?"
+          }
+        }
+      }
+    },
+    "projects.deleteSelected.confirm %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete %lld tapes"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld kaseti sil"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eliminar %lld cintas"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apagar %lld fitas"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld Tapes löschen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer %lld cassettes"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld本のテープを削除"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "테이프 %lld개 삭제"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "删除 %lld 盘录像带"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить (%lld)"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ลบเทป %lld ม้วน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa %lld cuộn băng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hapus %lld kaset"
+          }
+        }
+      }
+    },
+    "projects.deleteSelected.message": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "They will be removed from RENN on this iPhone. Videos already saved to Photos stay in Photos."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kasetler bu iPhone'daki RENN'den kaldırılır. Fotoğraflar'a kaydedilmiş videolar orada kalır."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se eliminarán de RENN en este iPhone. Los videos ya guardados en Fotos permanecen en Fotos."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elas serão removidas do RENN neste iPhone. Vídeos já salvos no Fotos continuam no Fotos."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sie werden aus RENN auf diesem iPhone entfernt. Bereits in Fotos gesicherte Videos bleiben in Fotos."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elles seront supprimées de RENN sur cet iPhone. Les vidéos déjà enregistrées dans Photos y restent."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このiPhoneのRENNから削除されます。すでに写真に保存したビデオは写真に残ります。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 iPhone의 RENN에서 삭제됩니다. 이미 사진에 저장된 비디오는 사진에 남아 있습니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "它们将从这台 iPhone 上的 RENN 中移除。已保存到“照片”的视频会保留在“照片”中。"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Они будут удалены из RENN на этом iPhone. Видео, уже сохраненные в Фото, останутся в Фото."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เทปจะถูกลบออกจาก RENN ใน iPhone เครื่องนี้ วิดีโอที่บันทึกลงในรูปภาพแล้วจะยังอยู่ในรูปภาพ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Các băng sẽ bị xóa khỏi RENN trên iPhone này. Video đã lưu vào Ảnh vẫn còn trong Ảnh."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset akan dihapus dari RENN di iPhone ini. Video yang sudah disimpan ke Foto tetap ada di Foto."
+          }
+        }
+      }
+    },
+    "projects.deleteSelected.title %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete %lld tapes?"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld kaset silinsin mi?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Eliminar %lld cintas?"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apagar %lld fitas?"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld Tapes löschen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer %lld cassettes ?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld本のテープを削除しますか？"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "테이프 %lld개를 삭제할까요?"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "删除 %lld 盘录像带？"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить кассеты (%lld)?"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ลบเทป %lld ม้วนหรือไม่"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa %lld cuộn băng?"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hapus %lld kaset?"
           }
         }
       }
@@ -19087,6 +19419,338 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ganti nama kaset"
+          }
+        }
+      }
+    },
+    "projects.select": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seç"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleccionar"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selecionar"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auswählen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sélectionner"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выбрать"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เลือก"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih"
+          }
+        }
+      }
+    },
+    "projects.select.caseHint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selects or deselects the tape"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaseti seçer veya seçimi kaldırır"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selecciona o deselecciona la cinta"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleciona ou desmarca a fita"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wählt das Tape aus oder ab"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sélectionne ou désélectionne la cassette"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テープを選択または選択解除します"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "테이프를 선택하거나 선택 해제합니다"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择或取消选择录像带"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выбирает кассету или снимает выбор"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เลือกหรือยกเลิกการเลือกเทป"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn hoặc bỏ chọn băng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Memilih atau membatalkan pilihan kaset"
+          }
+        }
+      }
+    },
+    "projects.select.count %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld selected"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld seçildi"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld seleccionadas"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld selecionadas"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld ausgewählt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld sélectionnée(s)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld本を選択中"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld개 선택됨"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已选择 %lld 盘"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выбрано: %lld"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เลือกแล้ว %lld"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã chọn %lld"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld dipilih"
+          }
+        }
+      }
+    },
+    "projects.select.prompt": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select tapes"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaset seç"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selecciona cintas"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selecione fitas"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tapes auswählen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sélectionnez des cassettes"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テープを選択"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "테이프 선택"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择录像带"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выберите кассеты"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เลือกเทป"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn băng"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih kaset"
           }
         }
       }
