@@ -66,6 +66,7 @@ struct LooksView: View {
             }
         }
         .scrollIndicators(.hidden)
+        .coachTarget(.looksFilters)
     }
 
     @ViewBuilder
@@ -117,6 +118,7 @@ struct LooksView: View {
                         }
                         .buttonStyle(.plain)
                         .accessibilityHint(Text("looks.card.hint"))
+                        .coachTarget(look.id == viewModel.visibleLooks.first?.id ? .looksFirstLook : nil)
                     }
                 }
             }

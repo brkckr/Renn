@@ -122,6 +122,7 @@ struct GlassNavigationBar: View {
         .accessibilityLabel(Text(tab.titleKey))
         .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
         .accessibilityIdentifier("tab.\(tab)")
+        .coachTarget(tab == .projects ? .homeProjectsTab : nil)
     }
 
     // MARK: Menu
@@ -208,6 +209,7 @@ struct GlassNavigationBar: View {
         .buttonStyle(PressScaleButtonStyle())
         .accessibilityLabel(Text(isMenuOpen ? LocalizedStringKey("creation.close") : LocalizedStringKey("creation.open")))
         .accessibilityIdentifier("creation.toggle")
+        .coachTarget(.homeCreate)
     }
 }
 

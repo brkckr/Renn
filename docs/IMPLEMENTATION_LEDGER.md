@@ -279,6 +279,26 @@ Owner-approved (2026-09-30) scope, from the owner's chosen demo footage:
 - Not verified yet: iOS compile in CI, device feel, whether the context menu stays fully silent in
   select mode (it has no items there), the preview's look on device.
 
+## One-time coach marks (owner-approved addition, 2026-09-30)
+
+- A few short tips the first time the user reaches Home (+, the recommended Look, the Projects
+  tab), Looks (a Look card, the filters), Projects (a tape, Select; only once a tape exists) and the
+  preview (Look, indicators, Export). Settings has none. At most three tips per screen.
+- Design: the screen dims with a spotlight (yellow ring, soft pulse; static under Reduce Motion)
+  that glides between tips; a dark card beside the target with a VHS-style `01/03` counter, title,
+  one or two lines, progress dots, Next / Got it and Skip. Tapping outside the card moves on.
+- Finishing a screen's tips marks only that screen; Skip turns every remaining tip off.
+  Settings → About → "Show tips again" brings them back. Stored in the app preferences (older
+  saved preferences decode with no tips seen; unknown tour names are ignored).
+- A tour starts 0.7–0.9 s after its screen is ready and uncovered (no flow, menu, Look sheet,
+  select mode or preview panel), never on top of another tour.
+- VoiceOver: the overlay is modal, focus moves to each tip, escape skips.
+- Tested on Linux: tour stepping, once-only, skip-all, Settings reset, disabled mode, preference
+  decoding. UI test: Home tips appear, Next, Skip closes them and turns Looks' off, + works after.
+  Other UI tests launch with `-RENNUITestNoCoachMarks` (DEBUG only).
+- Not verified yet: iOS compile in CI, device look, spotlight placement on small phones and with
+  large text, the preview tips' timing.
+
 ## M06 Commerce/telemetry: adapters in place, owner configuration pending (2026-09-28)
 
 - SPM: RevenueCat `purchases-ios` from 5.91.0 and `firebase-ios-sdk` from 12.19.2: **FirebaseAnalyticsCore**

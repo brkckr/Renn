@@ -185,6 +185,7 @@ struct ProjectsView: View {
             .buttonStyle(.plain)
             .disabled(insertion != nil)
             .accessibilityIdentifier("projects.select")
+            .coachTarget(.projectsSelect)
         }
         .padding(.horizontal, RENNMetrics.sideMargin)
         .padding(.top, 4)
@@ -241,6 +242,7 @@ struct ProjectsView: View {
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .accessibilityAction(named: Text("projects.rename")) { viewModel.requestRename(project.id) }
         .accessibilityAction(named: Text("projects.delete")) { viewModel.requestDelete(project.id) }
+        .coachTarget(project.id == viewModel.projects.first?.id ? .projectsFirstTape : nil)
     }
 
     // MARK: Insertion (03 M05)
