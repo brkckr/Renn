@@ -9,6 +9,8 @@ struct CaptureRecipeControls: View {
     let isSilent: Bool
     let engine: RenderEngine
     let source: any PreviewFrameSource
+    /// Set while the full-height Indicators panel (with its own preview) covers the viewfinder.
+    @Binding var coversViewfinder: Bool
 
     @State private var showsBeat = false
     @State private var showsIndicators = false
@@ -33,6 +35,7 @@ struct CaptureRecipeControls: View {
         .sheet(isPresented: $showsBeat) {
             CaptureBeatSheet(draft: draft, isSilent: isSilent)
         }
+        .onChange(of: showsIndicators) { _, shown in coversViewfinder = shown }
         .sheet(isPresented: $showsIndicators) {
             if let recipe = draft.recipe {
                 IndicatorsPanelView(

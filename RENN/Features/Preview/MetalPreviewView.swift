@@ -32,6 +32,9 @@ struct MetalPreviewView: UIViewRepresentable {
     var beatTimeline: BeatTimeline? = nil
     /// Composition time → Beat timeline time (Dual-Cam audio owner offset).
     var beatTimeOffset: RationalTime = .zero
+    /// True while a sheet or flow fully covers this view: it stops pulling frames, so another
+    /// preview of the same source (the Indicators panel) gets every frame, and the GPU is free.
+    var isPaused = false
 
     func makeCoordinator() -> PreviewRenderer {
         PreviewRenderer(engine: engine)
@@ -59,6 +62,7 @@ struct MetalPreviewView: UIViewRepresentable {
         renderer.bypassCreative = bypassCreative
         renderer.beatTimeline = beatTimeline
         renderer.beatTimeOffset = beatTimeOffset
+        view.isPaused = isPaused
     }
 
     static func dismantleUIView(_ view: MTKView, coordinator: PreviewRenderer) {
@@ -83,6 +87,10 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
     private var lastTime = RationalTime.zero
     private var watermarkCache: (width: Double, image: CIImage, aspect: Double)?
     private var indicatorCache: (key: String, overlays: [IndicatorRenderer.Overlay])?
+    /// Graph building, first-use kernel compilation (e.g. a newly selected Look) and encoding run
+    /// here, not on the main thread, so sheets and controls stay smooth; one frame in flight.
+    private let renderQueue = DispatchQueue(label: "tzlapp.studio.renn.preview-render", qos: .userInteractive)
+    private let gate = RenderGate()
 
     init(engine: RenderEngine) {
         self.engine = engine
@@ -94,7 +102,7 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
 
     func draw(in view: MTKView) {
-        guard let source, let drawable = view.currentDrawable,
+        guard let source, !gate.isBusy, let drawable = view.currentDrawable,
               let commandBuffer = commandQueue?.makeCommandBuffer() else { return }
         if let frame = source.nextFrame() {
             lastSource = frame.image
@@ -102,8 +110,8 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
         }
 
         let drawableSize = view.drawableSize
-        let bounds = CGRect(origin: .zero, size: drawableSize)
-        var frame = CIImage(color: .black).cropped(to: bounds)
+        var job = PreviewRenderJob(
+            engine: engine, drawable: drawable, commandBuffer: commandBuffer, drawableSize: drawableSize)
         if let sourceImage = lastSource, let recipe, let dimensions = sourceDimensions {
             let fit = Self.aspectFit(dimensions, in: drawableSize)
             let fitDimensions = try? PixelDimensions(width: Int(fit.width), height: Int(fit.height))
@@ -138,17 +146,18 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
                 request.inset = RenderEngine.Inset(
                     source: insetImage, orientation: dual.frameOrientation, mirrored: false, layout: insetLayout)
             }
-            let image = engine.image(for: request)
-            let offset = CGAffineTransform(
+            job.request = request
+            job.offset = CGAffineTransform(
                 translationX: ((drawableSize.width - fit.width) / 2).rounded(),
                 y: ((drawableSize.height - fit.height) / 2).rounded())
-            frame = image.transformed(by: offset).composited(over: frame)
         }
-        engine.context.render(
-            frame, to: drawable.texture, commandBuffer: commandBuffer, bounds: bounds,
-            colorSpace: engine.outputColorSpace)
-        commandBuffer.present(drawable)
-        commandBuffer.commit()
+        let gate = gate
+        let frameJob = job
+        guard gate.enter() else { return }
+        renderQueue.async {
+            frameJob.run()
+            gate.leave()
+        }
     }
 
     /// Preview shows the same effective indicator placement as export (02 D07).
@@ -177,5 +186,30 @@ final class PreviewRenderer: NSObject, @preconcurrency MTKViewDelegate {
         return CGSize(
             width: max(2, (CGFloat(dimensions.width) * scale).rounded(.down)),
             height: max(2, (CGFloat(dimensions.height) * scale).rounded(.down)))
+    }
+}
+
+/// One preview frame rendered off the main thread: the shared graph (built from a request made on
+/// the main thread), letterboxed on black, then encode, present and commit. The engine and its
+/// Core Image context are thread-safe; the drawable and command buffer belong to this job only.
+private struct PreviewRenderJob: @unchecked Sendable {
+    let engine: RenderEngine
+    let drawable: CAMetalDrawable
+    let commandBuffer: MTLCommandBuffer
+    let drawableSize: CGSize
+    var request: RenderEngine.FrameRequest?
+    var offset = CGAffineTransform.identity
+
+    func run() {
+        let bounds = CGRect(origin: .zero, size: drawableSize)
+        var frame = CIImage(color: .black).cropped(to: bounds)
+        if let request {
+            frame = engine.image(for: request).transformed(by: offset).composited(over: frame)
+        }
+        engine.context.render(
+            frame, to: drawable.texture, commandBuffer: commandBuffer, bounds: bounds,
+            colorSpace: engine.outputColorSpace)
+        commandBuffer.present(drawable)
+        commandBuffer.commit()
     }
 }

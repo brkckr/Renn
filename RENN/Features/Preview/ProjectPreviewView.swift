@@ -119,7 +119,10 @@ struct ProjectPreviewView: View {
                 engine: engine, source: frameSource, recipe: viewModel.displayRecipe,
                 sourceDimensions: viewModel.displayDimensions, showsWatermark: viewModel.showsWatermark,
                 bypassCreative: viewModel.showsOriginal, beatTimeline: viewModel.beatTimeline,
-                beatTimeOffset: viewModel.beatTimeOffset)
+                beatTimeOffset: viewModel.beatTimeOffset,
+                // Fully covered: the Indicators panel (its own preview of this source), the export
+                // summary and the export itself.
+                isPaused: showsIndicators || summaryBinding.wrappedValue || viewModel.exportState != .idle)
                 .clipShape(RoundedRectangle(cornerRadius: RENNMetrics.cardRadius, style: .continuous))
                 .padding(.horizontal, RENNMetrics.sideMargin)
                 .accessibilityLabel(Text("preview.accessibility"))

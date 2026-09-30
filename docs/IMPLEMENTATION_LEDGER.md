@@ -215,7 +215,13 @@ Owner-approved (2026-09-30) scope, from the owner's chosen demo footage:
   system video picker.
 - Import opens the system picker straight away (it needs no Photos permission); the RENN screen
   appears only after a pick (preparing, 30 s limit, failures). Dismissing the picker closes the flow.
-- Not verified yet: iOS compile in CI and device look.
+- Performance around sheets: the live preview (project preview, camera, Dual-Cam) builds and
+  encodes frames on a render queue with one frame in flight, like the demo scenes, so a sheet's
+  animation or a newly selected Look's first-frame kernel compile no longer blocks the main thread.
+  A preview fully covered by the Indicators panel (which shows its own preview of the same source),
+  the export summary or a running export is paused: before, two previews pulled alternate frames
+  from one source and both stuttered. Look posters are decoded off the main thread.
+- Not verified yet: iOS compile in CI, device look and frame timing (Instruments).
 
 ## M06 Commerce/telemetry: adapters in place, owner configuration pending (2026-09-28)
 
