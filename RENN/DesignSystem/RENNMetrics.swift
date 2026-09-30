@@ -18,8 +18,9 @@ enum RENNMetrics {
     static let otherCapsuleWidthInset: CGFloat = 32
     static let createButtonSize: CGFloat = 56
     static let createButtonGap: CGFloat = 12
-    static let capsuleInnerPadding: CGFloat = 8
-    static let tabCellHeight: CGFloat = 48
+    /// 4 pt keeps the selection pill concentric with the capsule (native tab bar look).
+    static let capsuleInnerPadding: CGFloat = 4
+    static let tabCellHeight: CGFloat = 56
     static let menuOpenHeight: CGFloat = 256
     static let menuRowMinHeight: CGFloat = 72
     static let menuRowPadding: CGFloat = 12
