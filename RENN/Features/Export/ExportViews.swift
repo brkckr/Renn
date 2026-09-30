@@ -13,48 +13,44 @@ struct ExportSummarySheet: View {
     let onCancel: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("export.summary.title")
-                .font(RENNFont.heading)
-                .foregroundStyle(RENNColor.textPrimary)
-                .accessibilityAddTraits(.isHeader)
-            VStack(alignment: .leading, spacing: 10) {
-                row("export.summary.resolution",
-                    value: "\(summary.policy.dimensions.width) × \(summary.policy.dimensions.height)")
-                row("export.summary.frameRate", value: Self.fps(summary.policy.frameRate))
-                row("export.summary.duration", value: ProjectPreviewView.timestamp(summary.duration.approximateSeconds))
-                rowKey("export.summary.sound",
-                       value: summary.includesAudio ? "export.summary.soundOn" : "export.summary.soundOff")
-                rowKey("export.summary.watermark",
-                       value: summary.policy.requiresWatermark ? "export.summary.watermarkOn" : "export.summary.watermarkOff")
+        RENNSheet("export.summary.title", size: .full, onClose: onCancel) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        row("export.summary.resolution",
+                            value: "\(summary.policy.dimensions.width) × \(summary.policy.dimensions.height)")
+                        row("export.summary.frameRate", value: Self.fps(summary.policy.frameRate))
+                        row("export.summary.duration", value: ProjectPreviewView.timestamp(summary.duration.approximateSeconds))
+                        rowKey("export.summary.sound",
+                               value: summary.includesAudio ? "export.summary.soundOn" : "export.summary.soundOff")
+                        rowKey("export.summary.watermark",
+                               value: summary.policy.requiresWatermark ? "export.summary.watermarkOn" : "export.summary.watermarkOff")
+                    }
+                    .padding(16)
+                    .glassBackground(cornerRadius: RENNMetrics.cardRadius)
+                    if summary.isHDRSource {
+                        Text("export.summary.hdr")
+                            .font(RENNFont.secondary)
+                            .foregroundStyle(RENNColor.textSecondary)
+                    }
+                    if summary.isLongOrHighQuality {
+                        Text("export.summary.longJob")
+                            .font(RENNFont.secondary)
+                            .foregroundStyle(RENNColor.textSecondary)
+                    }
+                }
+                .padding(.horizontal, RENNMetrics.sideMargin)
+                .padding(.top, 8)
             }
-            .padding(16)
-            .glassBackground(cornerRadius: RENNMetrics.cardRadius)
-            if summary.isHDRSource {
-                Text("export.summary.hdr")
-                    .font(RENNFont.secondary)
-                    .foregroundStyle(RENNColor.textSecondary)
-            }
-            if summary.isLongOrHighQuality {
-                Text("export.summary.longJob")
-                    .font(RENNFont.secondary)
-                    .foregroundStyle(RENNColor.textSecondary)
-            }
-            Spacer(minLength: 0)
+            .scrollIndicators(.hidden)
+        } actions: {
             Button("export.summary.cta", action: onExport)
                 .buttonStyle(.rennPrimary)
             if summary.policy.tier == .free {
                 Button("export.summary.upgrade", action: onUpgrade)
                     .buttonStyle(.rennSecondary)
             }
-            Button("common.cancel", action: onCancel)
-                .font(RENNFont.body)
-                .foregroundStyle(RENNColor.textSecondary)
-                .frame(maxWidth: .infinity, minHeight: RENNMetrics.minimumTouchTarget)
         }
-        .padding(RENNMetrics.sideMargin)
-        .presentationDetents([.large])
-        .presentationBackground(RENNColor.backgroundBase)
     }
 
     private func row(_ title: LocalizedStringKey, value: String) -> some View {
@@ -169,9 +165,9 @@ struct ExportStatusView: View {
     private func result(_ output: OutputRecord, saving: Bool) -> some View {
         VStack(spacing: 16) {
             HStack {
-                Spacer()
                 CloseButton { viewModel.acknowledgeExport() }
                     .disabled(saving)
+                Spacer()
             }
             Spacer()
             Button {

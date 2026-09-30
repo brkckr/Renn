@@ -202,7 +202,28 @@ Owner-approved (2026-09-30) scope, from the owner's chosen demo footage:
 - Not verified yet: iOS compile in CI, simulator and device look/performance of the live scenes,
   audio behaviour of the sound toggle, poster render quality.
 
-: adapters in place, owner configuration pending (2026-09-28)
+## Sheet and modal consistency (owner-approved, 2026-09-30)
+
+- `RENNSheet` (DesignSystem): every RENN bottom sheet has the grabber, the glass ✕ at the top
+  leading corner, a centred title, the brown background and its actions pinned at the bottom (one
+  yellow primary, optional glass secondary). Cancelling is ✕ or swipe; no text Cancel/Close buttons.
+- Sizes: `panel` (half ↔ full: Look inspection, Look selector), `form` (half: rename), `overCamera`
+  (low, keeps the viewfinder: camera Beat), `full` (export summary, Indicators with its preview).
+- Full-screen flows use the same ✕ at the top leading corner (camera and preview already did;
+  import, paywall, export result and the Dual-Cam explanation moved from the right).
+- Stay native on purpose: confirmation dialogs, alerts, the share sheet, the video player and the
+  system video picker.
+- Import opens the system picker straight away (it needs no Photos permission); the RENN screen
+  appears only after a pick (preparing, 30 s limit, failures). Dismissing the picker closes the flow.
+- Performance around sheets: the live preview (project preview, camera, Dual-Cam) builds and
+  encodes frames on a render queue with one frame in flight, like the demo scenes, so a sheet's
+  animation or a newly selected Look's first-frame kernel compile no longer blocks the main thread.
+  A preview fully covered by the Indicators panel (which shows its own preview of the same source),
+  the export summary or a running export is paused: before, two previews pulled alternate frames
+  from one source and both stuttered. Look posters are decoded off the main thread.
+- Not verified yet: iOS compile in CI, device look and frame timing (Instruments).
+
+## M06 Commerce/telemetry: adapters in place, owner configuration pending (2026-09-28)
 
 - SPM: RevenueCat `purchases-ios` from 5.91.0 and `firebase-ios-sdk` from 12.19.2: **FirebaseAnalyticsCore**
   + FirebaseCrashlytics. Correction: the plain `FirebaseAnalytics` product (first used) links

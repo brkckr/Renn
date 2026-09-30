@@ -11,7 +11,7 @@ import RENNFeatures
 struct ImportFlowView: View {
     @State private var viewModel: ImportFlowViewModel
     @State private var pickerItem: PhotosPickerItem?
-    @State private var showsPicker = true
+    @State private var showsPicker = false
     @State private var loadTask: Task<Void, Never>?
 
     init(viewModel: @autoclosure () -> ImportFlowViewModel) {
@@ -23,8 +23,8 @@ struct ImportFlowView: View {
             RENNColor.backgroundBase.ignoresSafeArea()
             VStack(spacing: 16) {
                 HStack {
-                    Spacer()
                     CloseButton { cancel() }
+                    Spacer()
                 }
                 Spacer()
                 content
@@ -34,6 +34,23 @@ struct ImportFlowView: View {
         }
         .photosPicker(isPresented: $showsPicker, selection: $pickerItem, matching: .videos, preferredItemEncoding: .current)
         .task { await viewModel.observeAccess() }
+        // Import opens the system picker straight away (it needs no Photos permission); this
+        // screen only shows what happens after a pick. Dismissing the picker without a pick
+        // closes the flow.
+        .task {
+            // Present once the full-screen cover has settled; a picker requested during the
+            // cover's own presentation can be dropped, which left the old "Open library" step.
+            try? await Task.sleep(for: .milliseconds(350))
+            if viewModel.state == .picking, pickerItem == nil { showsPicker = true }
+        }
+        .onChange(of: showsPicker) { _, shown in
+            guard !shown else { return }
+            Task {
+                // The selection can land just after the picker reports dismissal.
+                try? await Task.sleep(for: .milliseconds(400))
+                if pickerItem == nil, viewModel.state == .picking { cancel() }
+            }
+        }
         .onChange(of: pickerItem) { _, item in
             guard let item else { return }
             loadTask = Task { await load(item) }
@@ -44,13 +61,8 @@ struct ImportFlowView: View {
     private var content: some View {
         switch viewModel.state {
         case .picking:
-            VStack(spacing: 12) {
-                Text("import.pick.title")
-                    .font(RENNFont.heading)
-                    .foregroundStyle(RENNColor.textPrimary)
-                Button("import.pick.cta") { showsPicker = true }
-                    .buttonStyle(.rennPrimary)
-            }
+            // The system picker is on top; nothing to show underneath.
+            EmptyView()
         case .preparing, .creatingProject, .finished:
             VStack(spacing: 12) {
                 ProgressView()

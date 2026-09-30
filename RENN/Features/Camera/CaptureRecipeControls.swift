@@ -9,6 +9,8 @@ struct CaptureRecipeControls: View {
     let isSilent: Bool
     let engine: RenderEngine
     let source: any PreviewFrameSource
+    /// Set while the full-height Indicators panel (with its own preview) covers the viewfinder.
+    @Binding var coversViewfinder: Bool
 
     @State private var showsBeat = false
     @State private var showsIndicators = false
@@ -33,6 +35,7 @@ struct CaptureRecipeControls: View {
         .sheet(isPresented: $showsBeat) {
             CaptureBeatSheet(draft: draft, isSilent: isSilent)
         }
+        .onChange(of: showsIndicators) { _, shown in coversViewfinder = shown }
         .sheet(isPresented: $showsIndicators) {
             if let recipe = draft.recipe {
                 IndicatorsPanelView(
@@ -70,6 +73,7 @@ struct CaptureRecipeControls: View {
 }
 
 /// Beat before recording: enable + intensity only, with the audio source explained (02 D05 S11).
+/// Changes apply live, so the sheet has only ✕ (RENNSheet).
 struct CaptureBeatSheet: View {
     let draft: RecipeDraftEditor
     let isSilent: Bool
@@ -77,10 +81,12 @@ struct CaptureBeatSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
+        RENNSheet("preview.beat", size: .overCamera, onClose: { dismiss() }) {
             VStack(alignment: .leading, spacing: 16) {
                 Toggle(isOn: Binding(get: { draft.recipe?.beat.isEnabled ?? false }, set: { draft.setBeatEnabled($0) })) {
-                    Text("preview.beat").font(RENNFont.body)
+                    Text("preview.beat")
+                        .font(RENNFont.body)
+                        .foregroundStyle(RENNColor.textPrimary)
                 }
                 .tint(RENNColor.brandYellow)
                 VStack(alignment: .leading, spacing: 6) {
@@ -98,18 +104,9 @@ struct CaptureBeatSheet: View {
                 Text(isSilent ? LocalizedStringKey("camera.beat.silent") : LocalizedStringKey("preview.beat.source"))
                     .font(RENNFont.secondary)
                     .foregroundStyle(RENNColor.textSecondary)
-                Spacer()
             }
-            .padding(RENNMetrics.sideMargin)
-            .background(RENNColor.backgroundBase)
-            .navigationTitle(Text("preview.beat"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("common.close") { dismiss() }
-                }
-            }
+            .padding(.horizontal, RENNMetrics.sideMargin)
+            .padding(.top, 8)
         }
-        .presentationDetents([.fraction(0.4), .medium])
     }
 }

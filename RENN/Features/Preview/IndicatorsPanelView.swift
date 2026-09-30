@@ -3,7 +3,7 @@ import RENNDomain
 import RENNFeatures
 
 /// On-screen Indicators panel (02 D06): aspect-correct preview up to 240 pt, four rows,
-/// Gregorian date-only picker when Date is on, Turn all off, staged Apply / Cancel.
+/// Gregorian date-only picker when Date is on, Turn all off, staged Apply (✕ or swipe cancels).
 struct IndicatorsPanelView: View {
     let engine: RenderEngine
     let source: any PreviewFrameSource
@@ -30,7 +30,7 @@ struct IndicatorsPanelView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        RENNSheet("indicators.title", size: .full, onClose: onCancel) {
             ScrollView {
                 VStack(spacing: 12) {
                     MetalPreviewView(
@@ -55,24 +55,18 @@ struct IndicatorsPanelView: View {
                         .frame(minHeight: 52)
                         .glassBackground(cornerRadius: RENNMetrics.cardRadius)
                     }
-                    Button("indicators.turnAllOff") { draft.turnAllOff() }
-                        .buttonStyle(.rennSecondary)
-                        .disabled(!draft.anyOn)
-                    Button("indicators.apply") { onApply(draft) }
-                        .buttonStyle(.rennPrimary)
                 }
-                .padding(RENNMetrics.sideMargin)
+                .padding(.horizontal, RENNMetrics.sideMargin)
+                .padding(.vertical, 8)
             }
-            .background(RENNColor.backgroundBase.ignoresSafeArea())
-            .navigationTitle(Text("indicators.title"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel", action: onCancel)
-                }
-            }
+            .scrollIndicators(.hidden)
+        } actions: {
+            Button("indicators.apply") { onApply(draft) }
+                .buttonStyle(.rennPrimary)
+            Button("indicators.turnAllOff") { draft.turnAllOff() }
+                .buttonStyle(.rennSecondary)
+                .disabled(!draft.anyOn)
         }
-        .presentationBackground(RENNColor.backgroundBase)
     }
 
     private var stagedRecipe: Recipe {

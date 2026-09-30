@@ -12,6 +12,8 @@ struct DualCameraView: View {
     @State private var viewModel: DualCaptureFlowViewModel
     @State private var source: DualCameraFrameSource
     let engine: RenderEngine
+    /// The Indicators panel shows its own viewfinder; this one pauses meanwhile.
+    @State private var viewfinderCovered = false
 
     @Environment(\.openURL) private var openURL
 
@@ -34,7 +36,7 @@ struct DualCameraView: View {
             MetalPreviewView(
                 engine: engine, source: source, recipe: viewModel.previewRecipe,
                 sourceDimensions: try? PixelDimensions(width: 1080, height: 1920),
-                showsWatermark: false, bypassCreative: false)
+                showsWatermark: false, bypassCreative: false, isPaused: viewfinderCovered)
                 .ignoresSafeArea()
                 .accessibilityLabel(Text("camera.viewfinder"))
             VStack {
@@ -49,7 +51,9 @@ struct DualCameraView: View {
                         .padding(.vertical, 6)
                         .glassBackground(Capsule())
                         .padding(.bottom, 8)
-                    CaptureRecipeControls(draft: viewModel.draft, isSilent: viewModel.isSilent, engine: engine, source: source)
+                    CaptureRecipeControls(
+                    draft: viewModel.draft, isSilent: viewModel.isSilent, engine: engine, source: source,
+                    coversViewfinder: $viewfinderCovered)
                         .padding(.bottom, 12)
                     cornerPicker
                 }

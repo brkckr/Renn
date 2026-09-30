@@ -197,26 +197,6 @@ final class DemoVideoRenderer: NSObject, @preconcurrency MTKViewDelegate {
     }
 }
 
-/// Lock-protected in-flight flag shared by the main thread and the render queue.
-private final class RenderGate: @unchecked Sendable {
-    private let lock = NSLock()
-    private var busy = false
-
-    var isBusy: Bool { lock.withLock { busy } }
-
-    func enter() -> Bool {
-        lock.withLock {
-            guard !busy else { return false }
-            busy = true
-            return true
-        }
-    }
-
-    func leave() {
-        lock.withLock { busy = false }
-    }
-}
-
 /// One demo frame rendered off the main thread: the shared graph, the optional clean-to-Look
 /// sweep, then encode, present and commit. Core Image contexts and the engine are thread-safe;
 /// the drawable and command buffer are used only by this job.

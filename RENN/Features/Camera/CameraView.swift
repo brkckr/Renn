@@ -12,6 +12,8 @@ struct CameraView: View {
     @State private var viewModel: CaptureFlowViewModel
     @State private var source: CameraFrameSource
     let engine: RenderEngine
+    /// The Indicators panel shows its own viewfinder; this one pauses meanwhile.
+    @State private var viewfinderCovered = false
 
     @Environment(\.openURL) private var openURL
 
@@ -34,7 +36,7 @@ struct CameraView: View {
             MetalPreviewView(
                 engine: engine, source: source, recipe: viewModel.previewRecipe,
                 sourceDimensions: try? PixelDimensions(width: 1080, height: 1920),
-                showsWatermark: false, bypassCreative: false)
+                showsWatermark: false, bypassCreative: false, isPaused: viewfinderCovered)
                 .ignoresSafeArea()
                 .accessibilityLabel(Text("camera.viewfinder"))
             VStack {
@@ -94,7 +96,9 @@ struct CameraView: View {
     private var bottomBar: some View {
         VStack(spacing: 12) {
             if viewModel.state == .ready {
-                CaptureRecipeControls(draft: viewModel.draft, isSilent: viewModel.isSilent, engine: engine, source: source)
+                CaptureRecipeControls(
+                    draft: viewModel.draft, isSilent: viewModel.isSilent, engine: engine, source: source,
+                    coversViewfinder: $viewfinderCovered)
             }
             HStack {
                 Button {

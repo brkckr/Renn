@@ -63,7 +63,10 @@ final class ShowcaseMedia {
         }
         let renderer = renderer
         let task = Task { [weak self] in
-            guard let data = await renderer.posterJPEG(for: look), let image = UIImage(data: data) else { return }
+            // Decoded off the main thread, so a grid of new posters never hitches a sheet.
+            guard let data = await renderer.posterJPEG(for: look),
+                  let image = await UIImage(data: data)?.byPreparingForDisplay()
+            else { return }
             self?.posters[key] = image
         }
         inFlight[key] = task

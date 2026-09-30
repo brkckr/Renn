@@ -3,7 +3,7 @@ import RENNDomain
 import RENNFeatures
 
 /// Camera/preview Look selector (02 D05 S10): the catalog grid with a selected outline + check,
-/// one intensity slider and staged Apply/Cancel. No global tabs or Create button. The preview
+/// one intensity slider and staged Apply (✕ or swipe cancels, RENNSheet). No global tabs or Create button. The preview
 /// behind the sheet renders the staged choice; nothing is saved until Apply.
 struct LookSelectorSheet: View {
     let looks: [LookDefinition]
@@ -20,7 +20,7 @@ struct LookSelectorSheet: View {
     }
 
     var body: some View {
-        NavigationStack {
+        RENNSheet("lookSelector.title", size: .panel, onClose: onCancel) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     LazyVGrid(
@@ -40,21 +40,15 @@ struct LookSelectorSheet: View {
                             .accessibilityLabel(Text("preview.intensity"))
                     }
                 }
-                .padding(RENNMetrics.sideMargin)
+                .padding(.horizontal, RENNMetrics.sideMargin)
+                .padding(.vertical, 8)
             }
-            .background(RENNColor.backgroundBase)
-            .navigationTitle(Text("lookSelector.title"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel", action: onCancel)
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("indicators.apply", action: onApply)
-                }
-            }
+            .scrollIndicators(.hidden)
+        } actions: {
+            Button("indicators.apply", action: onApply)
+                .buttonStyle(.rennPrimary)
         }
-        .presentationDetents([.medium, .large])
+        // The preview behind stays live while the sheet is at half height.
         .presentationBackgroundInteraction(.enabled(upThrough: .medium))
     }
 
