@@ -202,7 +202,7 @@ struct GlassNavigationBar: View {
                 .foregroundStyle(Color.white)
                 .rotationEffect(.degrees(isMenuOpen ? 45 : 0))
                 .frame(width: RENNMetrics.createButtonSize, height: RENNMetrics.createButtonSize)
-                .barGlass(Circle(), interactive: true)
+                .barGlass(Circle())
                 .contentShape(Circle())
         }
         .buttonStyle(PressScaleButtonStyle())
