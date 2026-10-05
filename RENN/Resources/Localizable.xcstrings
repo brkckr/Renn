@@ -16850,6 +16850,89 @@
         }
       }
     },
+    "paywall.cta.trial": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start free trial"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ücretsiz denemeyi başlat"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Empezar prueba gratis"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Começar teste grátis"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gratis testen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commencer l'essai gratuit"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無料トライアルを開始"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "무료 체험 시작"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "开始免费试用"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Начать бесплатный период"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เริ่มทดลองใช้ฟรี"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bắt đầu dùng thử miễn phí"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mulai uji coba gratis"
+          }
+        }
+      }
+    },
     "paywall.freeReminder": {
       "extractionState": "manual",
       "localizations": {
@@ -17842,6 +17925,255 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pembelian Anda menunggu persetujuan."
+          }
+        }
+      }
+    },
+    "paywall.trial.badge %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ free"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ücretsiz"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ gratis"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ grátis"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ gratis"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ offert(e)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@無料"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 무료"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "免费 %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ бесплатно"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ฟรี %@"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miễn phí %@"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gratis %@"
+          }
+        }
+      }
+    },
+    "paywall.trialTerms.annual %@ %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ free, then %2$@ per year. Cancel at least 24 hours before the trial ends and you won't be charged."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ ücretsiz, ardından yıllık %2$@. Deneme bitmeden en az 24 saat önce iptal edersen ücret alınmaz."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ gratis y luego %2$@ al año. Cancela al menos 24 horas antes de que termine la prueba y no se te cobrará."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ grátis e depois %2$@ por ano. Cancele pelo menos 24 horas antes do fim do teste e nada será cobrado."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ gratis, danach %2$@ pro Jahr. Kündige mindestens 24 Stunden vor Ende des Tests, dann wird nichts berechnet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ offert(e), puis %2$@ par an. Annulez au moins 24 heures avant la fin de l'essai pour ne rien payer."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@無料、その後は年額%2$@。トライアル終了の24時間前までに解約すれば請求されません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ 무료, 이후 연 %2$@. 체험 종료 최소 24시간 전에 취소하면 요금이 청구되지 않아요."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "免费 %1$@，之后每年 %2$@。在试用结束前至少 24 小时取消即不收费。"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ бесплатно, затем %2$@ в год. Отмените не позднее чем за 24 часа до конца пробного периода — и оплата не спишется."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ฟรี %1$@ จากนั้น %2$@ ต่อปี ยกเลิกก่อนสิ้นสุดช่วงทดลองอย่างน้อย 24 ชั่วโมงจะไม่ถูกเรียกเก็บเงิน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miễn phí %1$@, sau đó %2$@ mỗi năm. Hủy ít nhất 24 giờ trước khi hết thời gian dùng thử để không bị tính phí."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gratis %1$@, lalu %2$@ per tahun. Batalkan paling lambat 24 jam sebelum uji coba berakhir agar tidak ditagih."
+          }
+        }
+      }
+    },
+    "paywall.trialTerms.monthly %@ %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ free, then %2$@ per month. Cancel at least 24 hours before the trial ends and you won't be charged."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ ücretsiz, ardından aylık %2$@. Deneme bitmeden en az 24 saat önce iptal edersen ücret alınmaz."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ gratis y luego %2$@ al mes. Cancela al menos 24 horas antes de que termine la prueba y no se te cobrará."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ grátis e depois %2$@ por mês. Cancele pelo menos 24 horas antes do fim do teste e nada será cobrado."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ gratis, danach %2$@ pro Monat. Kündige mindestens 24 Stunden vor Ende des Tests, dann wird nichts berechnet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ offert(e), puis %2$@ par mois. Annulez au moins 24 heures avant la fin de l'essai pour ne rien payer."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@無料、その後は月額%2$@。トライアル終了の24時間前までに解約すれば請求されません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ 무료, 이후 월 %2$@. 체험 종료 최소 24시간 전에 취소하면 요금이 청구되지 않아요."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "免费 %1$@，之后每月 %2$@。在试用结束前至少 24 小时取消即不收费。"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ бесплатно, затем %2$@ в месяц. Отмените не позднее чем за 24 часа до конца пробного периода — и оплата не спишется."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ฟรี %1$@ จากนั้น %2$@ ต่อเดือน ยกเลิกก่อนสิ้นสุดช่วงทดลองอย่างน้อย 24 ชั่วโมงจะไม่ถูกเรียกเก็บเงิน"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miễn phí %1$@, sau đó %2$@ mỗi tháng. Hủy ít nhất 24 giờ trước khi hết thời gian dùng thử để không bị tính phí."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gratis %1$@, lalu %2$@ per bulan. Batalkan paling lambat 24 jam sebelum uji coba berakhir agar tidak ditagih."
           }
         }
       }

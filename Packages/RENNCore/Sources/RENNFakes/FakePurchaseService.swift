@@ -14,7 +14,8 @@ public actor FakePurchaseService: Purchasing {
     /// Development fixture products. Prices are marked as fixtures and are not Store prices.
     public static let fixtureProducts: [PurchaseProduct] = [
         PurchaseProduct(id: "dev.fixture.monthly", plan: .monthly, localizedPrice: "DEV 2.99"),
-        PurchaseProduct(id: "dev.fixture.annual", plan: .annual, localizedPrice: "DEV 14.99"),
+        PurchaseProduct(
+            id: "dev.fixture.annual", plan: .annual, localizedPrice: "DEV 14.99", freeTrial: FreeTrial(value: 1, unit: .week)),
         PurchaseProduct(id: "dev.fixture.lifetime", plan: .lifetime, localizedPrice: "DEV 29.99"),
     ]
 

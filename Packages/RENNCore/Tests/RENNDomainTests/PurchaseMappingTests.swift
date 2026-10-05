@@ -26,6 +26,20 @@ struct PurchaseMappingTests {
         #expect(PurchaseMapping.products(from: [Package(productID: "y", kind: .annual, localizedPrice: "$14.99")]).map(\.plan) == [.annual])
     }
 
+    @Test func eligibleFreeTrialStaysOnSubscriptionsOnly() {
+        let week = FreeTrial(value: 1, unit: .week)
+        let products = PurchaseMapping.products(from: [
+            Package(productID: "month", kind: .monthly, localizedPrice: "$2.99"),
+            Package(productID: "year", kind: .annual, localizedPrice: "$14.99", eligibleFreeTrial: week),
+            Package(productID: "life", kind: .lifetime, localizedPrice: "$29.99", eligibleFreeTrial: week),
+        ])
+        #expect(products.map(\.freeTrial) == [nil, week, nil], "Only the subscription the Store offers it on; never lifetime")
+        let zero = PurchaseMapping.products(from: [
+            Package(productID: "year", kind: .annual, localizedPrice: "$14.99", eligibleFreeTrial: FreeTrial(value: 0, unit: .day)),
+        ])
+        #expect(zero.first?.freeTrial == nil, "A zero-length period is no trial")
+    }
+
     @Test func onlyTheProEntitlementGrantsPro() {
         let pro = PurchaseMapping.access(activeEntitlements: ["pro"], fromCache: false, checkedAt: now)
         #expect(pro == AccessState(level: .pro, provenance: .providerVerified, checkedAt: now))

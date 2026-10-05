@@ -7,6 +7,8 @@ import RENNFeatures
 /// three stacked plans, a fixed Continue, the auto-renewal disclosure and centred Restore · Terms ·
 /// Privacy. Prices come only from the Store/provider; when products are unavailable it offers retry,
 /// restore or continuing Free. The selection is authoritative at once; no decoration delays it.
+/// A free trial (owner-approved, annual, 2026-10-05) is shown only when the Store offers one and
+/// this user is eligible: a badge on the plan, "Start free trial" and the trial terms.
 struct PaywallView: View {
     @State private var viewModel: PaywallViewModel
     /// Owner-hosted documents; nil until supplied (08 I04). Shown disabled, never faked.
@@ -14,6 +16,7 @@ struct PaywallView: View {
     let privacyURL: URL?
     @Environment(\.openURL) private var openURL
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.locale) private var locale
 
     init(viewModel: @autoclosure () -> PaywallViewModel, termsURL: URL?, privacyURL: URL?) {
         _viewModel = State(initialValue: viewModel())
@@ -138,11 +141,24 @@ struct PaywallView: View {
         } label: {
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(planTitle(product.plan))
-                        .font(RENNFont.roboto(15, medium: true, relativeTo: .headline))
-                        .textCase(.uppercase)
-                        .kerning(0.6)
-                        .foregroundStyle(isSelected ? RENNColor.brandYellow : RENNColor.textPrimary)
+                    HStack(spacing: 8) {
+                        Text(planTitle(product.plan))
+                            .font(RENNFont.roboto(15, medium: true, relativeTo: .headline))
+                            .textCase(.uppercase)
+                            .kerning(0.6)
+                            .foregroundStyle(isSelected ? RENNColor.brandYellow : RENNColor.textPrimary)
+                        if let trial = product.freeTrial {
+                            Text("paywall.trial.badge \(Self.duration(trial, locale: locale))")
+                                .font(RENNFont.roboto(10.5, medium: true, relativeTo: .caption2))
+                                .textCase(.uppercase)
+                                .kerning(0.4)
+                                .foregroundStyle(RENNColor.onPrimary)
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 3)
+                                .background(Capsule().fill(RENNColor.brandYellow))
+                                .lineLimit(1)
+                        }
+                    }
                     Text(planPeriod(product.plan))
                         .font(RENNFont.roboto(12.5, relativeTo: .caption))
                         .foregroundStyle(RENNColor.textSecondary)
@@ -190,7 +206,7 @@ struct PaywallView: View {
                 } else {
                     HStack {
                         Spacer()
-                        Text("paywall.cta")
+                        Text(viewModel.selectedFreeTrial == nil ? LocalizedStringKey("paywall.cta") : LocalizedStringKey("paywall.cta.trial"))
                         Spacer()
                     }
                     .overlay(alignment: .trailing) {
@@ -202,6 +218,16 @@ struct PaywallView: View {
             }
             .buttonStyle(.rennPrimary)
             .disabled(!viewModel.canPurchase)
+
+            // A trial's terms sit right under the button that starts it: how long it is free, what it
+            // costs after, and how to avoid the charge.
+            if let trial = viewModel.selectedFreeTrial, let product = viewModel.selectedProduct {
+                Text(trialTerms(trial, product: product))
+                    .font(RENNFont.roboto(12, medium: true, relativeTo: .caption))
+                    .foregroundStyle(RENNColor.textPrimary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
 
             // Required with auto-renewing subscriptions (App Store): renewal terms at the point of sale.
             Text("paywall.renewalDisclosure")
@@ -234,6 +260,31 @@ struct PaywallView: View {
         case .failed(.notConfigured): "paywall.unavailable.notConfigured"
         case .failed: "paywall.status.failed"
         }
+    }
+
+    private func trialTerms(_ trial: FreeTrial, product: PurchaseProduct) -> LocalizedStringKey {
+        let length = Self.duration(trial, locale: locale)
+        if product.plan == .monthly { return "paywall.trialTerms.monthly \(length) \(product.localizedPrice)" }
+        return "paywall.trialTerms.annual \(length) \(product.localizedPrice)"
+    }
+
+    /// "1 week", "7 days", "1 hafta"… in the app's language, from the Store-configured period.
+    static func duration(_ trial: FreeTrial, locale: Locale) -> String {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = locale
+        let formatter = DateComponentsFormatter()
+        formatter.calendar = calendar
+        formatter.unitsStyle = .full
+        formatter.maximumUnitCount = 1
+        formatter.allowedUnits = [.day, .weekOfMonth, .month, .year]
+        var components = DateComponents()
+        switch trial.unit {
+        case .day: components.day = trial.value
+        case .week: components.weekOfMonth = trial.value
+        case .month: components.month = trial.value
+        case .year: components.year = trial.value
+        }
+        return formatter.string(from: components) ?? "\(trial.value)"
     }
 
     private func planTitle(_ plan: PurchasePlan) -> LocalizedStringKey {
