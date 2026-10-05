@@ -321,7 +321,9 @@ Owner-approved (2026-09-30) scope, from the owner's chosen demo footage:
 - 2026-10-05: the owner confirmed the 06 C02 prices as final and fixed (no planned increases):
   monthly $2.99, annual $14.99, lifetime $29.99 (C02 Turkey targets ₺49.99 / ₺249.99 / ₺599.99).
   Prices live only in App Store Connect; the app shows Store-localized prices and hardcodes none.
-  The owner also decided against a daily Free export quota (01 keeps "no commercial quota").
+  The owner also decided against a daily Free export quota (01 keeps "no commercial quota"), and
+  against an in-app subscription-to-lifetime upgrade: existing Pro (any plan) keeps seeing
+  "already Pro" with purchase disabled, so no one can pay twice for the same access.
 - SPM: RevenueCat `purchases-ios` from 5.91.0 and `firebase-ios-sdk` from 12.19.2: **FirebaseAnalyticsCore**
   + FirebaseCrashlytics. Correction: the plain `FirebaseAnalytics` product (first used) links
   GoogleAppMeasurement with IdentitySupport (IDFA) and Google Ads on-device conversion; `…Core` links
