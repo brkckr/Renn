@@ -279,6 +279,23 @@ Owner-approved (2026-09-30) scope, from the owner's chosen demo footage:
 - Not verified yet: iOS compile in CI, device feel, whether the context menu stays fully silent in
   select mode (it has no items there), the preview's look on device.
 
+## Watermark redesign (owner-approved deviation from 02 D07, 2026-10-05)
+
+- The owner reviewed four retro treatments of "shot by" (camcorder pixel font stacked or inline,
+  film credit, VHS split) and chose the film credit with the stronger VHS split: "— SHOT BY —" in
+  letter-spaced Roboto Medium caps, off-white, with a fixed red/cyan channel split on the text and
+  its two rules, centered over "RENN". Deviation: 02 D07 specifies `shot by` in Roboto Medium
+  lower case on one line; the phrase stays exactly `shot by RENN` (set in caps).
+- Unchanged: RENN in Monoton with R #F8C43F, E #F2A83A, N #F27D3B, N #F14A42, clean (no split),
+  fine dark shadow; bottom-right anchor, 4% inset, 28% of the short edge wide; no gradient,
+  stripes, card or animation; drawn once after effects/OSD in preview and export.
+- Stacked, the mark is taller (aspect about 2.6 instead of about 4), so RENN is about 1.5× larger
+  at the same width, which helps Monoton's fine strokes at Free 720p. Indicators and the Dual-Cam
+  gutter already reserve the rendered watermark's real frame.
+- Checked: layout simulated with the bundled fonts' metrics at 720p (no clipping). Not verified
+  yet: the iOS render itself (CI builds it; MediaPipelineTests draws it), device look on light
+  footage (the orange N is low-contrast on orange scenes, as before).
+
 ## One-time coach marks (owner-approved addition, 2026-09-30)
 
 - A few short tips the first time the user reaches Home (+, the recommended Look, the Projects
