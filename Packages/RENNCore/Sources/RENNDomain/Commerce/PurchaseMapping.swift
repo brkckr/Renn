@@ -14,22 +14,28 @@ public enum PurchaseMapping {
         public let kind: Kind
         /// Store-localized price string (never hardcoded by the app).
         public let localizedPrice: String
+        /// The Store's free introductory period, only when the user is eligible for it.
+        public let eligibleFreeTrial: FreeTrial?
 
-        public init(productID: String, kind: Kind, localizedPrice: String) {
+        public init(productID: String, kind: Kind, localizedPrice: String, eligibleFreeTrial: FreeTrial? = nil) {
             self.productID = productID
             self.kind = kind
             self.localizedPrice = localizedPrice
+            self.eligibleFreeTrial = eligibleFreeTrial
         }
     }
 
     /// The three plans in display order (monthly, annual, lifetime). The first package of each
     /// kind wins; other package types are ignored; a missing plan is simply absent. Empty means
     /// "products unavailable" (retry / restore / continue Free), never a hardcoded price.
+    /// A free trial is kept only on a subscription (a one-time lifetime purchase never has one)
+    /// and only with a positive length.
     public static func products(from packages: [OfferedPackage]) -> [PurchaseProduct] {
         let order: [(OfferedPackage.Kind, PurchasePlan)] = [(.monthly, .monthly), (.annual, .annual), (.lifetime, .lifetime)]
         return order.compactMap { kind, plan in
             packages.first { $0.kind == kind && !$0.productID.isEmpty }.map {
-                PurchaseProduct(id: $0.productID, plan: plan, localizedPrice: $0.localizedPrice)
+                let trial = plan == .lifetime ? nil : $0.eligibleFreeTrial.flatMap { $0.value > 0 ? $0 : nil }
+                return PurchaseProduct(id: $0.productID, plan: plan, localizedPrice: $0.localizedPrice, freeTrial: trial)
             }
         }
     }

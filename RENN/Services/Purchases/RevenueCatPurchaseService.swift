@@ -82,11 +82,13 @@ actor RevenueCatPurchaseService: Purchasing {
         }
         let available = offerings.current?.availablePackages ?? []
         packages = Dictionary(available.map { ($0.storeProduct.productIdentifier, $0) }, uniquingKeysWith: { first, _ in first })
+        let trials = await Self.eligibleFreeTrials(in: available)
         let products = PurchaseMapping.products(from: available.map { package in
             PurchaseMapping.OfferedPackage(
                 productID: package.storeProduct.productIdentifier,
                 kind: Self.kind(package.packageType),
-                localizedPrice: package.storeProduct.localizedPriceString)
+                localizedPrice: package.storeProduct.localizedPriceString,
+                eligibleFreeTrial: trials[package.storeProduct.productIdentifier])
         })
         guard !products.isEmpty else { throw .productsUnavailable }
         return products
@@ -125,6 +127,32 @@ actor RevenueCatPurchaseService: Purchasing {
     }
 
     // MARK: Mapping SDK types
+
+    /// Free introductory periods (configured in App Store Connect) this user can still take, by
+    /// product ID. Only a definite "eligible" counts, so someone who already used the trial, or
+    /// whose eligibility is unknown, never sees "free" copy; the Store applies the offer itself.
+    private static func eligibleFreeTrials(in packages: [Package]) async -> [String: FreeTrial] {
+        let candidates = packages.filter { $0.storeProduct.introductoryDiscount?.paymentMode == .freeTrial }
+        guard !candidates.isEmpty else { return [:] }
+        let eligibility = await Purchases.shared.checkTrialOrIntroDiscountEligibility(packages: candidates)
+        var trials: [String: FreeTrial] = [:]
+        for package in candidates {
+            guard eligibility[package]?.status == .eligible,
+                  let period = package.storeProduct.introductoryDiscount?.subscriptionPeriod
+            else { continue }
+            trials[package.storeProduct.productIdentifier] = FreeTrial(value: period.value, unit: unit(period.unit))
+        }
+        return trials
+    }
+
+    private static func unit(_ unit: SubscriptionPeriod.Unit) -> FreeTrial.Unit {
+        switch unit {
+        case .day: .day
+        case .week: .week
+        case .month: .month
+        case .year: .year
+        }
+    }
 
     private static func kind(_ type: PackageType) -> PurchaseMapping.OfferedPackage.Kind {
         switch type {

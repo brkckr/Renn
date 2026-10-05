@@ -58,6 +58,9 @@ public final class PaywallViewModel {
         products.first { $0.id == selectedProductID }
     }
 
+    /// The free trial the selected plan starts with, if the Store offers one this user can take.
+    public var selectedFreeTrial: FreeTrial? { selectedProduct?.freeTrial }
+
     public var isPurchasing: Bool {
         if case .purchasing = purchaseState { return true }
         return false

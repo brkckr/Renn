@@ -12,11 +12,30 @@ public struct PurchaseProduct: Sendable, Equatable, Identifiable {
     public let id: String
     public let plan: PurchasePlan
     public let localizedPrice: String
+    /// A free introductory period the Store reports for this subscription and this user is
+    /// eligible for; nil shows no trial copy (owner-approved annual trial, 2026-10-05).
+    public let freeTrial: FreeTrial?
 
-    public init(id: String, plan: PurchasePlan, localizedPrice: String) {
+    public init(id: String, plan: PurchasePlan, localizedPrice: String, freeTrial: FreeTrial? = nil) {
         self.id = id
         self.plan = plan
         self.localizedPrice = localizedPrice
+        self.freeTrial = freeTrial
+    }
+}
+
+/// Length of a free introductory period, as configured in the Store (never invented here).
+public struct FreeTrial: Sendable, Equatable {
+    public enum Unit: Sendable, Equatable {
+        case day, week, month, year
+    }
+
+    public let value: Int
+    public let unit: Unit
+
+    public init(value: Int, unit: Unit) {
+        self.value = value
+        self.unit = unit
     }
 }
 

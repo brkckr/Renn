@@ -324,6 +324,14 @@ Owner-approved (2026-09-30) scope, from the owner's chosen demo footage:
   The owner also decided against a daily Free export quota (01 keeps "no commercial quota"), and
   against an in-app subscription-to-lifetime upgrade: existing Pro (any plan) keeps seeing
   "already Pro" with purchase disabled, so no one can pay twice for the same access.
+- 2026-10-05: owner-approved deviation from 01/02/06 ("no trial"): the annual plan gets a 1-week
+  free trial, configured by the owner as an App Store introductory offer (Free, 1 week). The app
+  shows it only when the Store reports a free-trial intro offer and RevenueCat says this user is
+  eligible (unknown or used-up eligibility shows the plain plan): a "1 week free" badge on the
+  plan, "Start free trial", and the terms under the button ("1 week free, then <Store price> per
+  year; cancel at least 24 hours before the trial ends and you won't be charged"). Lifetime never
+  carries a trial. The length comes from the Store, formatted in the app's language. Tested on
+  Linux (mapping, paywall selection); iOS compile in CI; sandbox purchase on a device pending.
 - SPM: RevenueCat `purchases-ios` from 5.91.0 and `firebase-ios-sdk` from 12.19.2: **FirebaseAnalyticsCore**
   + FirebaseCrashlytics. Correction: the plain `FirebaseAnalytics` product (first used) links
   GoogleAppMeasurement with IdentitySupport (IDFA) and Google Ads on-device conversion; `…Core` links

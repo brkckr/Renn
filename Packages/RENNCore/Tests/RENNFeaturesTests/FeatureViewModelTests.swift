@@ -333,6 +333,26 @@ struct PaywallViewModelTests {
         #expect(viewModel.selectedProduct?.plan == .annual)
     }
 
+    @Test func freeTrialFollowsTheSelectedPlan() async {
+        let viewModel = makeViewModel(FakePurchaseService())
+        await viewModel.load()
+        #expect(viewModel.selectedFreeTrial == FreeTrial(value: 1, unit: .week), "The annual default carries its trial")
+        viewModel.select("dev.fixture.monthly")
+        #expect(viewModel.selectedFreeTrial == nil)
+        viewModel.select("dev.fixture.lifetime")
+        #expect(viewModel.selectedFreeTrial == nil)
+    }
+
+    @Test func noTrialCopyWithoutAnEligibleOffer() async {
+        let plain = FakePurchaseService.fixtureProducts.map {
+            PurchaseProduct(id: $0.id, plan: $0.plan, localizedPrice: $0.localizedPrice)
+        }
+        let viewModel = makeViewModel(FakePurchaseService(products: .success(plain)))
+        await viewModel.load()
+        #expect(viewModel.selectedProduct?.plan == .annual)
+        #expect(viewModel.selectedFreeTrial == nil, "Ineligible users (or no configured offer) see the plain annual plan")
+    }
+
     @Test func unavailableProductsNeverShowHardcodedPrices() async {
         let purchases = FakePurchaseService(products: .failure(.notConfigured))
         let viewModel = makeViewModel(purchases)
