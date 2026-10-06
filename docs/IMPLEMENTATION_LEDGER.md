@@ -279,6 +279,15 @@ Owner-approved (2026-09-30) scope, from the owner's chosen demo footage:
 - Not verified yet: iOS compile in CI, device feel, whether the context menu stays fully silent in
   select mode (it has no items there), the preview's look on device.
 
+## App icon (owner-approved, 2026-10-06)
+
+- Derived from the splash: brown background, the four brand ribbons (40% of the width) bending
+  outward at 70% height, with depth shading, a fine grain and vignette, white camcorder viewfinder
+  corners and a red REC dot. No text (the owner reviewed text, OSD and VHS-label variants).
+- `AppIcon.png` (1024, opaque) plus iOS 18 dark (transparent background) and tinted (grayscale)
+  appearances in `AppIcon.appiconset`. Source: `scripts/app_icon.html` (render notes inside).
+- Not verified yet: the icon on a device home screen, dark and tinted modes on iOS 18.
+
 ## Watermark redesign (owner-approved deviation from 02 D07, 2026-10-05)
 
 - The owner reviewed four retro treatments of "shot by" (camcorder pixel font stacked or inline,

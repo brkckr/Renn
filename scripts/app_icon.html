@@ -1,0 +1,51 @@
+<!-- RENN app icon source (owner-approved 2026-10-06). Render 1024x1024 with headless Chromium:
+  light:  ?shade=1&vf=1&dot=1&vig=1&grain=1   -> AppIcon.png (flatten to RGB, no alpha)
+  dark:   ?shade=1&vf=1&dot=1&clear=1         -> AppIcon-Dark.png (transparent background)
+  tinted: ?vf=1&dot=1&clear=1&gray=1          -> AppIcon-Tinted.png (grayscale, transparent)
+  e.g. chrome --headless=new --default-background-color=00000000 --window-size=1024,1300 --screenshot=out.png "file://.../app_icon.html?..." then crop to 1024x1024. -->
+<!doctype html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;width:1024px;height:1024px;overflow:hidden;background:#403529}body{position:relative}svg{position:absolute;inset:0}
+</style></head><body><svg id="s" width="1024" height="1024" viewBox="0 0 1024 1024"></svg>
+<script>
+const q=new URLSearchParams(location.search), has=k=>q.get(k)==='1';
+const W=1024,H=1024,cols=['#F8C43F','#F2A83A','#F27D3B','#F14A42'];
+const frac=0.40,bend=+(q.get('b')||0.70); const sw=W*frac/4,sx=(W-sw*4)/2,by=H*bend;
+let defs=`<defs>
+<radialGradient id="vig" cx="50%" cy="45%" r="75%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".55"/></radialGradient>
+<linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".28"/><stop offset=".35" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".10"/></linearGradient>
+<linearGradient id="col" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".30"/><stop offset=".6" stop-color="#000" stop-opacity="0"/></linearGradient>
+<filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
+<pattern id="scan" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="3" fill="#000" opacity=".22"/></pattern>
+<linearGradient id="sun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F8C43F"/><stop offset="1" stop-color="#F14A42"/></linearGradient>
+<clipPath id="sunclip"><rect x="0" y="0" width="1024" height="1024"/></clipPath>
+</defs>`;
+let s=defs;
+if(has('sun')){ // retro sun with horizontal cuts, behind stripes
+  const cx=W/2, cy=300, r=255; let cuts='';
+  for(let i=0;i<6;i++){const y=cy+20+i*36, h=6+i*4; cuts+=`<rect x="0" y="${y}" width="1024" height="${h}" fill="#403529"/>`;}
+  s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#sun)" opacity=".9"/>${cuts}`;
+}
+const poly=(i,dx=0)=>{const l=sx+sw*i+dx,r=l+sw,bl=W*i/4+dx,br=W*(i+1)/4+dx;return `${l},0 ${l},${by} ${bl},${H} ${br},${H} ${r},${by} ${r},0`;};
+if(has('rgb')){ for(let i=0;i<4;i++){s+=`<polygon points="${poly(i,-10)}" fill="#ff2d55" opacity=".35"/><polygon points="${poly(i,10)}" fill="#00c8ff" opacity=".30"/>`;} }
+if(has('shadow')){ for(let i=0;i<4;i++) s+=`<polygon points="${poly(i,0)}" fill="#000" opacity=".35" transform="translate(0,14)" style="filter:blur(14px)"/>`; }
+for(let i=0;i<4;i++) s+=`<polygon points="${poly(i)}" fill="${cols[i]}"/>`;
+if(has('shade')){ // column darkening at top, floor light
+  s+=`<rect x="${sx}" y="0" width="${sw*4}" height="${by}" fill="url(#col)"/>`;
+  s+=`<polygon points="${sx},${by} 0,${H} ${W},${H} ${sx+sw*4},${by}" fill="url(#floor)"/>`;
+  for(let i=1;i<4;i++){const x=sx+sw*i; s+=`<line x1="${x}" y1="0" x2="${x}" y2="${by}" stroke="#000" stroke-opacity=".12" stroke-width="3"/><line x1="${x}" y1="${by}" x2="${W*i/4}" y2="${H}" stroke="#000" stroke-opacity=".12" stroke-width="3"/>`;}
+  s+=`<line x1="${sx}" y1="${by}" x2="${sx+sw*4}" y2="${by}" stroke="#fff" stroke-opacity=".35" stroke-width="4"/>`;
+}
+if(has('scan')) s+=`<rect width="1024" height="1024" fill="url(#scan)"/>`;
+if(has('grain')) s+=`<rect width="1024" height="1024" filter="url(#grain)" opacity=".10"/>`;
+if(has('vig')) s+=`<rect width="1024" height="1024" fill="url(#vig)"/>`;
+if(has('vf')){ // camcorder viewfinder brackets + REC dot
+  const m=150,L=110,t=18,c='#F5F5F5';
+  const b=(x,y,dx,dy)=>`<path d="M${x+dx*L},${y} L${x},${y} L${x},${y+dy*L}" fill="none" stroke="${c}" stroke-width="${t}" stroke-linecap="square" opacity=".92"/>`;
+  s+=b(m,m,1,1)+b(W-m,m,-1,1)+b(m,H-m,1,-1)+b(W-m,H-m,-1,-1);
+  if(has('rec')) s+=`<circle cx="${m+40}" cy="${m+42}" r="0" fill="#F14A42"/>`;
+}
+if(has('dot')) s+=`<circle cx="232" cy="232" r="32" fill="#F14A42"/>`;
+if(has('clear')){document.documentElement.style.background='transparent';document.body.style.background='transparent';}
+if(has('gray')){s=s.replace(/#F8C43F/g,'#F2F2F2').replace(/#F2A83A/g,'#C9C9C9').replace(/#F27D3B/g,'#A3A3A3').replace(/#F14A42/g,'#FFFFFF');}
+document.getElementById('s').innerHTML=s; document.title='ok';
+</script></body></html>
